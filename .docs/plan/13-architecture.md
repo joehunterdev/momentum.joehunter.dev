@@ -47,3 +47,9 @@
 
 ## 13.7 Views
 - Daily view 
+    - here we have start to end of day with slots for each habit to check off
+- Weekly view
+    - here is where we can tap into a day or get an overview or configure habits
+- Dashbaord or Overview
+    - See E:\www\momentum.joehunter.dev\.docs\.private\screens\overview.webp
+- Config:
