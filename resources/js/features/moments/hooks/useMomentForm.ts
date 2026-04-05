@@ -1,6 +1,7 @@
 import { useForm } from '@inertiajs/react';
 import type { Moment, MomentFormData } from '../types';
-//TODO: Move cant we just pass a type and or use zod ? if that makes sense
+// Inertia's useForm handles form state, errors, and submission — no Zod needed here.
+// Validation lives in the Laravel FormRequest; errors are returned via Inertia's error bag.
 const defaults: MomentFormData = {
     name: '',
     description: '',

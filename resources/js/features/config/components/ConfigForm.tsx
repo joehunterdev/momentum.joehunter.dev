@@ -5,16 +5,7 @@ import { useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import type { UserConfig } from '../types';
 
-//TODO: Move to a shared constants file if used elsewhere
-const DAY_OPTIONS = [
-    { value: 1, label: 'Monday' },
-    { value: 2, label: 'Tuesday' },
-    { value: 3, label: 'Wednesday' },
-    { value: 4, label: 'Thursday' },
-    { value: 5, label: 'Friday' },
-    { value: 6, label: 'Saturday' },
-    { value: 7, label: 'Sunday' },
-];
+import { WEEK_DAYS } from '@/shared/constants/moments';
 
 interface ConfigFormProps {
     config: UserConfig;
@@ -68,7 +59,7 @@ export default function ConfigForm({ config }: ConfigFormProps) {
                     onChange={(e) => form.setData('week_starts_on', Number(e.target.value))}
                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
-                    {DAY_OPTIONS.map((opt) => (
+                    {WEEK_DAYS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
                             {opt.label}
                         </option>

@@ -22,8 +22,7 @@ export default function MomentCard({ moment, date, onToggled }: MomentCardProps)
             return;
         }
 
-        // Optimistic update
-        // TODO: is String can be a generic function
+        // Optimistic update — use current timestamp; server response will correct it
         onToggled(
             moment.id,
             isCompleted ? null : new Date().toISOString(),

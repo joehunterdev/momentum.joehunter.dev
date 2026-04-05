@@ -1,16 +1,4 @@
-//TODO: Move to a shared constants file if used elsewhere 
-const PALETTE = [
-    '#3B82F6', // blue
-    '#8B5CF6', // purple
-    '#10B981', // emerald
-    '#EF4444', // red
-    '#F59E0B', // amber
-    '#EC4899', // pink
-    '#06B6D4', // cyan
-    '#84CC16', // lime
-    '#6366F1', // indigo
-    '#F97316', // orange
-];
+import { MOMENT_COLOR_PALETTE } from '@/shared/constants/moments';
 
 interface ColorPickerProps {
     value: string;
@@ -20,7 +8,7 @@ interface ColorPickerProps {
 export default function ColorPicker({ value, onChange }: ColorPickerProps) {
     return (
         <div className="flex flex-wrap gap-2">
-            {PALETTE.map((color) => (
+            {MOMENT_COLOR_PALETTE.map((color) => (
                 <button
                     key={color}
                     type="button"

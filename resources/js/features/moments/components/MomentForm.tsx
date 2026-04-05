@@ -10,18 +10,7 @@ import CueFields from './CueFields';
 import RewardFields from './RewardFields';
 import ScheduleFields from './ScheduleFields';
 
-interface Section {
-    id: string;
-    label: string;
-    emoji: string;
-}
-//TODO: Move to a shared constants file if used elsewhere
-const SECTIONS: Section[] = [
-    { id: 'basics', label: 'Basics', emoji: '✏️' },
-    { id: 'schedule', label: 'Schedule', emoji: '📅' },
-    { id: 'cue', label: 'Cue', emoji: '🔔' },
-    { id: 'reward', label: 'Reward', emoji: '🏆' },
-];
+import { MOMENT_FORM_SECTIONS } from '@/shared/constants/moments';
 
 interface MomentFormProps {
     moment?: Moment;
@@ -44,7 +33,7 @@ export default function MomentForm({ moment, onSubmit, submitLabel = 'Save' }: M
 
     return (
         <form onSubmit={handleSubmit} className="space-y-3">
-            {SECTIONS.map((section) => {
+            {MOMENT_FORM_SECTIONS.map((section) => {
                 const isOpen = openSection === section.id;
 
                 return (

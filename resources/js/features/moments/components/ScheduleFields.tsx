@@ -1,21 +1,6 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-//TODO: Move to a shared constants file if used elsewhere same for frequencies
-const DAYS = [
-    { label: 'M', value: 1, full: 'Monday' },
-    { label: 'T', value: 2, full: 'Tuesday' },
-    { label: 'W', value: 3, full: 'Wednesday' },
-    { label: 'T', value: 4, full: 'Thursday' },
-    { label: 'F', value: 5, full: 'Friday' },
-    { label: 'S', value: 6, full: 'Saturday' },
-    { label: 'S', value: 7, full: 'Sunday' },
-];
-
-const FREQUENCIES = [
-    { label: 'Daily', value: 'daily' },
-    { label: 'Weekly', value: 'weekly' },
-    { label: 'Custom', value: 'custom' },
-] as const;
+import { WEEK_DAYS, SCHEDULE_FREQUENCIES } from '@/shared/constants/moments';
 
 interface ScheduleFieldsProps {
     frequency: string;
@@ -44,7 +29,7 @@ export default function ScheduleFields({
             <div>
                 <InputLabel value="Frequency" />
                 <div className="mt-1 inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
-                    {FREQUENCIES.map((freq) => (
+                    {SCHEDULE_FREQUENCIES.map((freq) => (
                         <button
                             key={freq.value}
                             type="button"
@@ -65,7 +50,7 @@ export default function ScheduleFields({
                 <div>
                     <InputLabel value="Days of the week" />
                     <div className="mt-1 flex gap-2">
-                        {DAYS.map((day) => (
+                        {WEEK_DAYS.map((day) => (
                             <button
                                 key={day.value}
                                 type="button"
