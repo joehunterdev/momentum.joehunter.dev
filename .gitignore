@@ -24,6 +24,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 
-# Private docs (never commit)
+# Private docs and workflows (never commit)
 .docs/.private/
+.github/workflows/.private/
 
