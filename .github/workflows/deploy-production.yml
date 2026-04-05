@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy to Production Env
 
 on:
   push:
@@ -59,8 +59,9 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
+          port: 65002
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          debug: true
           script: |
             cd ${{ secrets.FTP_SERVER_DIR }}
             composer install --no-dev --no-interaction --optimize-autoloader
