@@ -1,0 +1,116 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"todo-tree.tree.showBadges": true,
+		"todo-tree.tree.scanMode": "workspace only",
+
+		"files.exclude": {
+			"**/node_modules": true,
+			"**/vendor": true,
+			"**/.git": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			"**/package-lock.json": true,
+			"**/yarn.lock": true,
+			"**/.phpunit.result.cache": true,
+			"**/.phpunit.cache": true,
+			"**/storage/framework/cache/**": true,
+			"**/storage/framework/sessions/**": true,
+			"**/storage/framework/views/**": true,
+			"**/storage/debugbar/**": true,
+			"**/public/hot": true,
+			"**/public/storage": true,
+			"**/public/build": true,
+			"**/bootstrap/ssr": true
+		},
+
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/vendor": true,
+			"**/storage/framework": true,
+			"**/public/css": true,
+			"**/public/js": true,
+			"**/public/fonts": true,
+			"**/public/webfonts": true,
+			"**/public/build": true,
+			"**/.phpunit.cache": true,
+			"**/composer.lock": true,
+			"**/package-lock.json": true,
+			"**/*.min.css": true,
+			"**/*.min.js": true,
+			"**/*.map": true,
+			"**/dist": true,
+			"**/.docs": true,
+			"**/.docs/**": true,
+			"**/.private": true,
+			"**/.private/**": true,
+			"**/*.bak": true,
+			"**/bootstrap/ssr": true
+		},
+
+		"files.watcherExclude": {
+			"**/node_modules/**": true,
+			"**/vendor/**": true,
+			"**/storage/framework/**": true,
+			"**/public/css/**": true,
+			"**/public/js/**": true,
+			"**/public/fonts/**": true,
+			"**/public/webfonts/**": true,
+			"**/public/build/**": true,
+			"**/bootstrap/ssr/**": true
+		},
+
+		"editor.formatOnSave": true,
+		"editor.tabSize": 4,
+		"editor.rulers": [120],
+		"editor.defaultFormatter": "vscode.typescript-language-features",
+
+		"[typescript]": {
+			"editor.defaultFormatter": "vscode.typescript-language-features"
+		},
+		"[typescriptreact]": {
+			"editor.defaultFormatter": "vscode.typescript-language-features"
+		},
+		"[php]": {
+			"editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+			"editor.tabSize": 4
+		},
+		"[scss]": {
+			"editor.defaultFormatter": "vscode.css-language-features"
+		},
+		"[blade]": {
+			"editor.defaultFormatter": "shufo.vscode-blade-formatter"
+		},
+
+		"intelephense.environment.phpVersion": "8.4.0",
+
+		"files.associations": {
+			"*.blade.php": "blade",
+			"*.scss": "scss"
+		},
+
+		"emmet.includeLanguages": {
+			"blade": "html"
+		},
+
+		"tailwindCSS.experimental.configFile": "tailwind.config.js"
+	},
+
+	"extensions": {
+		"recommendations": [
+			"bmewburn.vscode-intelephense-client",
+			"laravel.vscode-laravel",
+			"codingyu.laravel-goto-view",
+			"shufo.vscode-blade-formatter",
+			"recca0120.vscode-phpunit",
+			"Gruntfuggly.todo-tree",
+			"DavidAnson.vscode-markdownlint",
+			"vscode.git",
+			"vscode.github"
+		]
+	}
+}
