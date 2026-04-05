@@ -12,15 +12,25 @@ Build a **maintainable, scalable React + TypeScript application** using:
 
 # 🧱 Project Structure
 
+This project uses **Laravel Breeze + Inertia**, so the structure is under `resources/js/`
+with Breeze's capitalised conventions. Our additions use lowercase.
+
 ```
-src/
-├── app/                # App setup (routing, providers)
-├── features/           # Business domains (core logic)
-├── shared/             # Reusable, generic code
-├── pages/              # Route-level composition
-├── styles/             # Global styles/theme
-└── main.tsx
+resources/js/
+├── app.tsx                   # Inertia entry point (existing)
+├── types/                    # Global types: User, PageProps
+├── Layouts/                  # App shells (Breeze — AuthenticatedLayout, GuestLayout)
+├── Components/               # Breeze generic UI primitives
+├── Pages/                    # Inertia page components (1:1 with routes)
+├── features/                 # Business domains (our code)
+│   ├── daily/                #   components/, hooks/, types.ts, index.ts
+│   ├── moments/              #   components/, hooks/, types.ts, index.ts
+│   └── config/               #   components/, types.ts, index.ts
+└── shared/                   # Cross-feature: utils/, components/
 ```
+
+> Breeze scaffolding (`Pages/Auth/`, `Pages/Profile/`, `Components/`) is not modified.
+> New domain code lives in `features/` and is imported by thin `Pages/`.
 
 ---
 
@@ -89,17 +99,24 @@ export const useProducts = () => {
 
 ---
 
-## 🔌 Services = API Only
+## 🔌 API Calls (Inertia Context)
 
-* No React code
-* No UI logic
-* No state
+With Inertia there is **no separate API service layer** for most operations:
 
-✅ Example:
+* **Form mutations** → `useForm` from `@inertiajs/react` or `router.post/put/delete`
+* **JSON endpoints** (e.g. toggling a checkbox) → `axios.post()` in a hook
+
+Only create a `services/` folder in a feature if you have multiple complex JSON
+endpoints for that domain. For MVP this is unlikely.
+
+✅ Example (hook handling a JSON call):
 
 ```ts
-export const getProducts = () => api.get("/products")
+const toggle = (momentId: number, date: string) =>
+    axios.post(route('moments.toggle', momentId), { date })
 ```
+
+❌ Don't create `api.ts` wrappers for Inertia page routes — that's what `router.*` is for.
 
 ---
 
@@ -194,10 +211,14 @@ if (isLoading) return <Spinner />
 Always follow:
 
 ```
-shared → features → pages → app
+types/  →  shared/  →  features/  →  Pages/  →  Layouts/
 ```
 
-❌ Never reverse this flow
+* `Pages/` import from `features/` and `shared/` — never the reverse.
+* `features/` import from `shared/` and `types/` — never from other features.
+* `Layouts/` wrap `Pages/` — they don't import feature code.
+
+❌ Never reverse this flow.
 
 ---
 
@@ -267,11 +288,15 @@ features/auth/
 
 When generating code:
 
-* Place new logic inside the **correct feature folder**
+* Place new logic inside the **correct feature folder** under `resources/js/features/`
+* Pages go in `resources/js/Pages/` — thin shells that compose feature components
 * Prefer **hooks over inline logic**
+* Use `useForm` from `@inertiajs/react` for form state — not manual `useState`
+* Use `route()` (Ziggy) for all URLs — never hardcode paths
 * Do NOT introduce cross-feature dependencies
 * Reuse from `shared/` only when appropriate
 * Keep code simple and readable over clever
+* Type all component props — import types from `features/*/types.ts`
 
 ---
 
@@ -279,9 +304,14 @@ When generating code:
 
 * Fetching data directly inside components
 * Large multi-purpose hooks
-* Global “utils” dumping ground
+* Global "utils" dumping ground
 * Tight coupling between features
 * Over-abstraction too early
+* Syncing Inertia props into `useState` via `useEffect`
+* Using `fetch()` instead of `axios` (CSRF is pre-configured on axios)
+* Hardcoding URL strings instead of `route()` helper
+* Creating API service files for Inertia page routes
+* Putting domain components in `Components/` (that's for Breeze generics)
 
 ---
 
