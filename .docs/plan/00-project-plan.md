@@ -10,12 +10,15 @@
 - Desired outcomes?
 
 ## 3) Core Concepts (Momentum)
+
 - **Cue → Craving → Response → Reward**
 - **Make it obvious / invisible**
 - **Make it attractive / unattractive**
 - **Make it easy / difficult**
 - **Make it satisfying / unsatisfying**
 - **Identity-based moments**
+
+
 
 ## 4) Product Principles-
 - Low friction
@@ -38,6 +41,11 @@
 - Reward marker after completion
 - Identity streaks (e.g., “I am a runner”)
 - Friction slider (easy ↔ hard)
+The 4 Laws of Behavior Change:
+Make it Obvious (Cue): Use "implementation intentions" (I will [BEHAVIOR] at [TIME] in [LOCATION]) and "habit stacking" (stacking a new habit on an old one).
+Make it Attractive (Craving): Use "temptation bundling" (pairing an action you need to do with one you want to do).
+Make it Easy (Response): Reduce friction. Start with the "Two-Minute Rule" (your new habit should take less than two minutes to do).
+Make it Satisfying (Reward): Use instant reinforcement. What is rewarded is repeated; what is punished is avoided.
 
 ## 7) Information Architecture
 - **/daily** — schedule view
@@ -49,11 +57,11 @@
 ## 8) Data Model Draft
 - User
 - moment
-- momentSchedule
-- momentInstance
-- momentCue
-- momentReward
-- momentIdentity
+  - Schedule
+  - Instance
+  - Cue
+  - Reward
+  - Identity
 
 ## 9) Technical Stack
 - Laravel + React + Inertia
