@@ -35,17 +35,23 @@
 - Config: wake, sleep, work hours
 
 ## 6) Psychology-Driven UX Ideas
+
+### The 4 Laws of Behavior Change
+
+| Law | Principle | UX Application |
+|---|---|---|
+| **Make it Obvious** (Cue) | Implementation intentions: *I will [BEHAVIOR] at [TIME] in [LOCATION]* | Cue checklist in calendar slot, habit stacking prompts |
+| **Make it Attractive** (Craving) | Temptation bundling: pair a needed action with a wanted one | Reward preview before task, motivational identity framing |
+| **Make it Easy** (Response) | Reduce friction. Two-Minute Rule: new habits take < 2 mins | Friction slider (easy ↔ hard), If–Then plan builder |
+| **Make it Satisfying** (Reward) | Instant reinforcement. What is rewarded is repeated | Reward marker on completion, identity streaks (*"I am a runner"*) |
+
+### UX Features
 - Cue checklist shown in calendar slot
 - If–Then plan per moment
-- Environment prompts (e.g., “Book on table”)
+- Environment prompts (e.g., "Book on table")
 - Reward marker after completion
-- Identity streaks (e.g., “I am a runner”)
+- Identity streaks (e.g., "I am a runner")
 - Friction slider (easy ↔ hard)
-The 4 Laws of Behavior Change:
-Make it Obvious (Cue): Use "implementation intentions" (I will [BEHAVIOR] at [TIME] in [LOCATION]) and "habit stacking" (stacking a new habit on an old one).
-Make it Attractive (Craving): Use "temptation bundling" (pairing an action you need to do with one you want to do).
-Make it Easy (Response): Reduce friction. Start with the "Two-Minute Rule" (your new habit should take less than two minutes to do).
-Make it Satisfying (Reward): Use instant reinforcement. What is rewarded is repeated; what is punished is avoided.
 
 ## 7) Information Architecture
 - **/daily** — schedule view
@@ -56,7 +62,7 @@ Make it Satisfying (Reward): Use instant reinforcement. What is rewarded is repe
 
 ## 8) Data Model Draft
 - User
-- moment
+- Moment
   - Schedule
   - Instance
   - Cue
@@ -72,6 +78,7 @@ Make it Satisfying (Reward): Use instant reinforcement. What is rewarded is repe
 
 ## 10) Milestones
 - **M1**: Routes + basic UI shell
+  - 
 - **M2**: moment creation + schedule
 - **M3**: Daily check-offs
 - **M4**: Dashboard charts
@@ -87,7 +94,7 @@ Make it Satisfying (Reward): Use instant reinforcement. What is rewarded is repe
 - Notifications?
 - Privacy model?
 
-## 13)
+## 13) Architecture
 
 ## 14) Doc Structure (suggested)
 - `.docs/`

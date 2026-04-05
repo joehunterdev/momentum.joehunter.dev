@@ -28,10 +28,16 @@ export default function Authenticated({
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
+                                    href={route('daily')}
+                                    active={route().current('daily')}
                                 >
-                                    Dashboard
+                                    Daily
+                                </NavLink>
+                                <NavLink
+                                    href={route('config.edit')}
+                                    active={route().current('config.edit')}
+                                >
+                                    Settings
                                 </NavLink>
                             </div>
                         </div>
@@ -45,7 +51,7 @@ export default function Authenticated({
                                                 type="button"
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
-                                                {user.name}
+                                                {user.first_name}
 
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
@@ -132,17 +138,23 @@ export default function Authenticated({
                 >
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
+                            href={route('daily')}
+                            active={route().current('daily')}
                         >
-                            Dashboard
+                            Daily
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('config.edit')}
+                            active={route().current('config.edit')}
+                        >
+                            Settings
                         </ResponsiveNavLink>
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4">
                         <div className="px-4">
                             <div className="text-base font-medium text-gray-800">
-                                {user.name}
+                                {user.first_name}
                             </div>
                             <div className="text-sm font-medium text-gray-500">
                                 {user.email}

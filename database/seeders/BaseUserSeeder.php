@@ -31,9 +31,11 @@ class BaseUserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => $email],
             [
-                'name'              => "{$firstName} {$lastName}",
+                'first_name'        => $firstName,
+                'last_name'         => $lastName,
                 'email'             => $email,
                 'password'          => bcrypt($password),
+                'role'              => 'super_admin',
                 'email_verified_at' => now(),
             ]
         );
