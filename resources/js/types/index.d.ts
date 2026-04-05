@@ -2,9 +2,11 @@ import { Config } from 'ziggy-js';
 
 export interface User {
     id: number;
-    name: string;
+    first_name: string;
+    last_name: string;
     email: string;
     email_verified_at?: string;
+    role: 'user' | 'admin' | 'super_admin';
 }
 
 export type PageProps<
@@ -14,4 +16,5 @@ export type PageProps<
         user: User;
     };
     ziggy: Config & { location: string };
+    flash?: { success?: string; error?: string };
 };
