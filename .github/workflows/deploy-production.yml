@@ -6,57 +6,25 @@ on:
       - release/production
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install Node dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Build frontend assets (Vite + SSR)
-        run: npm run build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-assets
-          path: public/build/
-          retention-days: 1
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build
-    environment: production
+    environment: production.momentum.joehunter.dev
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Full history for diff calculations
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-assets
-          path: public/build/
-
-      - name: Deploy files via FTP
+      - name: Deploy only changed files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
-          server: ${{ secrets.FTP_HOST }}
+          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           port: ${{ secrets.FTP_PORT }}
           protocol: ftp
           local-dir: ./
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}/
+          server-dir: /public_html/
           state-name: .ftp-deploy-sync-state.json
           exclude: |
             .git/**
@@ -65,6 +33,7 @@ jobs:
             .vscode/**
             .idea/**
             .fleet/**
+            .private/**
             node_modules/**
             vendor/**
             tests/**
@@ -73,23 +42,19 @@ jobs:
             storage/framework/sessions/**
             storage/framework/testing/**
             storage/framework/views/**
-            bootstrap/ssr/**
-            .env*
+            storage/debugbar/**
+            docs/**
+             .env*
             *.log
             npm-debug.log
             yarn-error.log
             .phpunit.cache
             .phpunit.result.cache
             phpunit.xml
+            webpack.mix.js
             package*.json
-            package-lock.json
-            vite.config.*
-            tsconfig.*
-            tailwind.config.*
-            postcss.config.*
-            README.md
 
-      - name: Post-deploy — Composer install & Laravel setup
+      - name: Composer install (no-dev, optimized)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -99,9 +64,3 @@ jobs:
           script: |
             cd ${{ secrets.FTP_SERVER_DIR }}
             composer install --no-dev --no-interaction --optimize-autoloader
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan event:cache
-            php artisan storage:link
