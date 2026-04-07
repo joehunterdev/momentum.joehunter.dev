@@ -5,13 +5,15 @@ interface Props {
     moment: SlotMoment;
     date: string;
     onToggle: (momentId: number, instanceId: number | null, date: string) => void;
+    onSwipeProgress?: (progress: number) => void;
 }
 
-export default function SlotMomentIcon({ moment, date, onToggle }: Props) {
+export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress }: Props) {
     const isCompleted = moment.status === 'completed';
 
     const { dragX, isDragging, isDone, handlers } = useSwipeComplete({
         onComplete: () => onToggle(moment.id, moment.instance_id, date),
+        onProgressChange: onSwipeProgress,
     });
 
     const statusClass = moment.status
@@ -21,8 +23,8 @@ export default function SlotMomentIcon({ moment, date, onToggle }: Props) {
     const swipeClass = isDone
         ? 'slot-icon--done'
         : isDragging || dragX > 0
-        ? 'slot-icon--swiping'
-        : '';
+            ? 'slot-icon--swiping'
+            : '';
 
     return (
         <div

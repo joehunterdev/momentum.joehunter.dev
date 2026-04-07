@@ -303,7 +303,6 @@ $border-light: #f3f4f6;
     position: relative;
     display: inline-flex;
     align-items: center;
-    overflow: hidden;
     border-radius: 0.5rem;
 
     &__check {
@@ -322,10 +321,57 @@ $border-light: #f3f4f6;
     }
 }
 
+// ─── Row-level swipe highlight ────────────────────────────────────────────────
+
+.weekly-slot--swiping {
+    // Green wash that grows with drag progress via --swipe-progress (0–1)
+    background: rgba(16, 185, 129, calc(0.06 + var(--swipe-progress, 0) * 0.18)) !important;
+    transition: background 0.05s linear;
+
+    .weekly-slot__time {
+        color: #10b981;
+        border-right-color: rgba(16, 185, 129, 0.2);
+    }
+}
+
+.weekly-slot--swipe-done {
+    animation: slot-row-flash 0.65s ease forwards;
+
+    .weekly-slot__time {
+        color: #10b981;
+    }
+}
+
+@keyframes slot-row-flash {
+    0% {
+        background: rgba(16, 185, 129, 0.28);
+    }
+
+    50% {
+        background: rgba(16, 185, 129, 0.14);
+    }
+
+    100% {
+        background: transparent;
+    }
+}
+
 @keyframes slot-icon-flash {
-    0%   { background: rgba(16, 185, 129, 0.4); border-color: rgba(16, 185, 129, 0.8); transform: scale(1.15); }
-    60%  { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); transform: scale(1); }
-    100% { transform: scale(1); }
+    0% {
+        background: rgba(16, 185, 129, 0.4);
+        border-color: rgba(16, 185, 129, 0.8);
+        transform: scale(1.15);
+    }
+
+    60% {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.4);
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 // --- Slot Add Popover ---------------------------------------------------------
@@ -362,7 +408,7 @@ $border-light: #f3f4f6;
             color: var(--mm-primary, #6366f1);
         }
 
-        & + & {
+        &+& {
             border-top: 1px solid #f3f4f6;
         }
     }
@@ -381,6 +427,13 @@ $border-light: #f3f4f6;
 }
 
 @keyframes slot-pulse {
-    0%, 100% { background: rgba(99, 102, 241, 0.06); }
-    50%       { background: rgba(99, 102, 241, 0.14); }
+
+    0%,
+    100% {
+        background: rgba(99, 102, 241, 0.06);
+    }
+
+    50% {
+        background: rgba(99, 102, 241, 0.14);
+    }
 }

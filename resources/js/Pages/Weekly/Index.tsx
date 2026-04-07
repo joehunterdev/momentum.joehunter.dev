@@ -41,12 +41,20 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
         });
     }
 
-    function handleToggleMoment(momentId: number, _instanceId: number | null, date: string) {
-        router.post(
-            route('moments.toggle', { moment: momentId }),
-            { date },
-            { preserveScroll: true },
-        );
+    async function handleToggleMoment(momentId: number, _instanceId: number | null, date: string) {
+        const token = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null)?.content ?? '';
+
+        await fetch(route('moments.toggle', { moment: momentId }), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ date }),
+        });
+
+        router.reload({ only: ['days'] });
     }
 
     return (
