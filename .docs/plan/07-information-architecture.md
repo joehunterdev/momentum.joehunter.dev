@@ -28,7 +28,8 @@
             - current implementation is good the categoires need spacing and should be badges
             - the flow should be if icon not fount there should inplace of the text area or below (add as new) and not a text input underneath
             - THe inputs should match the others too no black border
-
+            - Feels similar to a tag bubble add right ?
+    
 ## Config
     - [x] Have a helper when adding start / end of day for 8hrs sleep
     - [x] Office hours define
@@ -41,6 +42,8 @@
     - [] Use nicer icons
     - [] Sleep time should be defined automatically
     - [] Config needs its own moment or category creation area 
+
+## 
 ## Overview
 
 Nice start—you’ve captured the core structure well. Based on the dashboard in your image, here’s a more complete and organized feature breakdown you can build on:

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Mail;
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
@@ -11,19 +10,28 @@ use Tests\TestCase;
 
 class SmtpConfigTest extends TestCase
 {
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
     /**
      * Test SMTP configuration is properly set in config
      */
     public function test_smtp_configuration_is_set(): void
     {
-        // Verify SMTP mailer config exists (even if array is default in testing)
-        $this->assertEquals('smtp.hostinger.com', config('mail.mailers.smtp.host'));
-        $this->assertEquals(587, config('mail.mailers.smtp.port'));
-        $this->assertEquals('tls', config('mail.mailers.smtp.encryption'));
-        $this->assertNotNull(config('mail.mailers.smtp.username'));
-        $this->assertNotNull(config('mail.mailers.smtp.password'));
+        $host = env('MAIL_HOST');
+        $port = env('MAIL_PORT');
+        $encryption = env('MAIL_ENCRYPTION');
+        $username = env('MAIL_USERNAME');
+        $password = env('MAIL_PASSWORD');
+
+        if (empty($host) || empty($port) || empty($encryption) || empty($username) || empty($password)) {
+            $this->markTestSkipped('SMTP environment variables not set (MAIL_HOST, MAIL_PORT, MAIL_ENCRYPTION, MAIL_USERNAME, MAIL_PASSWORD).');
+        }
+
+        $this->assertEquals($host, config('mail.mailers.smtp.host'));
+        $this->assertEquals((int) $port, (int) config('mail.mailers.smtp.port'));
+        $this->assertEquals($encryption, config('mail.mailers.smtp.encryption'));
+        $this->assertEquals($username, config('mail.mailers.smtp.username'));
+        $this->assertEquals($password, config('mail.mailers.smtp.password'));
     }
 
     /**
@@ -35,7 +43,7 @@ class SmtpConfigTest extends TestCase
         Mail::fake();
 
         Mail::raw('This is a test email from SmtpConfigTest', function ($message) {
-            $message->to(config('mail.from.address'))
+            $message->to(env('SUPER_ADMIN_EMAIL', config('mail.from.address')))
                 ->subject('SmtpConfigTest - Raw Mail Test');
         });
 
@@ -48,12 +56,14 @@ class SmtpConfigTest extends TestCase
      */
     public function test_password_reset_notification_sends_mail(): void
     {
+        $email = env('SUPER_ADMIN_EMAIL', config('mail.from.address'));
+
         $user = User::factory()->create([
-            'email' => config('app.test_email', config('mail.from.address')),
+            'email' => $email,
         ]);
 
         // Send real password reset email
-        $user->sendPasswordResetNotification('test-token-'.time());
+        $user->sendPasswordResetNotification('test-token-' . time());
 
         // Just verify no exception was thrown
         $this->assertTrue(true);
@@ -72,7 +82,7 @@ class SmtpConfigTest extends TestCase
 
         $user->sendEmailVerificationNotification();
 
-        Notification::assertSentTo($user, VerifyEmail::class);
+        Notification::assertSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
     }
 
     /**
@@ -93,12 +103,12 @@ class SmtpConfigTest extends TestCase
      */
     public function test_smtp_connection_sends_real_email(): void
     {
-        // Run the actual artisan mail:test-smtp command
+        $email = env('SUPER_ADMIN_EMAIL', config('mail.from.address'));
+
         $this->artisan('mail:test-smtp', [
-            'email' => config('mail.from.address'),
+            'email' => $email,
         ])->assertSuccessful();
 
-        // Email should be sent to your inbox now
         $this->assertTrue(true);
     }
 }

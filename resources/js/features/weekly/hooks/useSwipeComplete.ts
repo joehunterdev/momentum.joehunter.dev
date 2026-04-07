@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
 const DEFAULT_THRESHOLD = 100; // px right to trigger completion
-const MAX_DRAG = 180;           // px cap on visual translation
+const MAX_DRAG = 200;           // px cap on visual translation
 
 interface UseSwipeCompleteOptions {
     onComplete: () => void;

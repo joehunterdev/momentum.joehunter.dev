@@ -257,6 +257,16 @@ is to take the icon and drag it right to considering it done and checkinc it off
 
 On the right currently we could also add a bit of a descrpotion and other usefull stuff to sumarize the current moment
 
+A minor bug is that the moment create from this view neeeds to close the modal and just return to it not redirect to daily view
+
 Lets also make the view almost full width of the cards to utilize full space on mobile theres still a bit of margin to use. essentially the outer card weekly grid can go full width
 
-The timeslot based on current time should be highlighted so we know were currently in that slot
+so additionally the user might want to cross of or drag future icons and passed ones too
+
+potentially have a floating card with rotation
+
+https://reactbits.dev/components/scroll-stack?stackPosition=30%25
+
+so here going back to the drag right its still getting hidden to promptly behind container lets add more space for that
+
+lets also add a bit of moment consistency information in the way of maby a donut to highlight the current consistency score. for now just add the ui and dummy some info integration can happen later to calculate the data

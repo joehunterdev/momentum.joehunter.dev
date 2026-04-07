@@ -69,7 +69,7 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
             <Head title="Weekly" />
 
             <div className="py-6">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl  m:px-6 lg:px-8">
                     <WeeklyGrid days={days} config={config} onAddMoment={handleAddMoment} onToggleMoment={handleToggleMoment} highlightTime={highlightTime ?? undefined} />
                 </div>
             </div>

@@ -369,8 +369,9 @@ $border-light: #f3f4f6;
     }
 
     &--completed {
-        background: rgba(16, 185, 129, 0.12);
-        border-color: rgba(16, 185, 129, 0.4);
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.6);
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
     }
 
     &--missed {
@@ -442,6 +443,16 @@ $border-light: #f3f4f6;
 
     .weekly-slot__time {
         color: #10b981;
+    }
+}
+
+// Persistent green wash once a moment is marked completed
+.weekly-slot--completed {
+    background: rgba(16, 185, 129, 0.05);
+
+    .weekly-slot__time {
+        color: #10b981;
+        font-weight: 700;
     }
 }
 

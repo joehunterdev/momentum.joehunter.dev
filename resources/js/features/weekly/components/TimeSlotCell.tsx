@@ -22,7 +22,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggle
     const [popoverOpen, setPopoverOpen] = useState(false);
     const [swipeProgress, setSwipeProgress] = useState(0);
     const [swipeDone, setSwipeDone] = useState(false);
-    const ooo = isOutOfOffice(slot.time, config);
+    const ooo = !slot.moment && isOutOfOffice(slot.time, config);
     const isHighlighted = slot.time === highlightTime && !slot.moment && !isWeekend;
 
     const cls = [
@@ -31,6 +31,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggle
         isWeekend ? 'weekly-slot--weekend' : '',
         isToday ? 'weekly-slot--today' : '',
         !slot.moment && !ooo ? 'weekly-slot--empty' : '',
+        slot.moment?.status === 'completed' ? 'weekly-slot--completed' : '',
         isHighlighted ? 'weekly-slot--highlight' : '',
         swipeProgress > 0 ? 'weekly-slot--swiping' : '',
         swipeDone ? 'weekly-slot--swipe-done' : '',
