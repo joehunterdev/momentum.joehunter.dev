@@ -35,7 +35,7 @@
     - [] Use tool tips to highlight text
     - [] Use nicer icons
     - [] Sleep time should be defined automatically
-
+    - [] Config needs its own moment or category creation area 
 ## Overview
 
 Nice start—you’ve captured the core structure well. Based on the dashboard in your image, here’s a more complete and organized feature breakdown you can build on:
