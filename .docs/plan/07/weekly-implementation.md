@@ -350,3 +350,39 @@ php artisan make:test WeeklyControllerTest --phpunit --no-interaction
 8. **Page** — create `Pages/Weekly/Index.tsx`
 9. **Nav** — add Weekly link to layout + responsive nav
 10. **Manual QA** — verify grid layout, scrolling, status colours, today highlight
+
+
+## 10. 0  Weekly review
+The calendar view is ok as it is logically, but im thinking we need to pivot 
+or be able to pivot the cos on the calendar. So mobile view really should have hours down the y axis. the day and date that relates tho the whole row should be a header or container so it has maximum space for the row data itself
+
+
+Layout Clarificatoin
+
+Day 6th April
+Slot |  Moment
+08:30 | Icon and desciption maby row ?
+09:00 | Icon and maby row ?
+all the way to end of day
+---
+Day 7th April
+Slot |  Moment
+08:30 | Icon and desciption maby row ?
+09:00 | Icon and maby row ?
+all the way to end of day
+
+
+or the above inverted but just show the current 6 slots 
+
+Daily Row Card:
+
+Mon 6th Of July
+
+<- Slot 1 | Slot 2 | Slot 3 | Slot 4 | Slot 5 | Slot 6 ->
+
+Tue 7th Of July
+
+<- Slot 1 | Slot 2 | Slot 3 | Slot 4 | Slot 5 | Slot 6 ->
+
+Time slot accross the x but derive current time to show just the current hour slot roughly
+With next and back options
