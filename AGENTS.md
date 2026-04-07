@@ -39,6 +39,13 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
 - Check for existing components to reuse before writing a new one.
 
+## Styling Conventions
+
+- **Prefer SCSS for overrides** — custom styles, component overrides, animations, and anything beyond basic layout should live in the SCSS partials (`resources/css/`) as named classes, not as inline `style={}` props or `className` strings baked into React components.
+- **Tailwind for layout and spacing** — utility classes in `className` are fine and preferred for structural concerns (flex, grid, padding, margin, sizing).
+- **No inline style props** — avoid `style={{ ... }}` in React; use a CSS class instead.
+- The pattern is: Tailwind utilities for structure in JSX + semantic SCSS classes for component-specific styling.
+
 ## Verification Scripts
 
 - Do not create verification scripts or tinker when tests cover that functionality and prove they work. Unit and feature tests are more important.
