@@ -10,10 +10,12 @@ interface Props {
 
 export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress }: Props) {
     const isCompleted = moment.status === 'completed';
+    const isPast = moment.status === 'completed' || moment.status === 'missed';
 
     const { dragX, isDragging, isDone, handlers } = useSwipeComplete({
         onComplete: () => onToggle(moment.id, moment.instance_id, date),
         onProgressChange: onSwipeProgress,
+        threshold: isPast ? 130 : 100, // past slots need 30% more drag
     });
 
     const statusClass = moment.status

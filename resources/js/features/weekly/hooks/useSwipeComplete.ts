@@ -1,12 +1,13 @@
 import { useCallback, useRef, useState } from 'react';
 
-const THRESHOLD = 100; // px right to trigger completion
-const MAX_DRAG = 180;  // px cap on visual translation
+const DEFAULT_THRESHOLD = 100; // px right to trigger completion
+const MAX_DRAG = 180;           // px cap on visual translation
 
 interface UseSwipeCompleteOptions {
     onComplete: () => void;
     onProgressChange?: (progress: number) => void; // 0–1, drives row highlight
     disabled?: boolean;
+    threshold?: number; // override default 100px
 }
 
 interface UseSwipeCompleteResult {
@@ -19,7 +20,7 @@ interface UseSwipeCompleteResult {
     };
 }
 
-export function useSwipeComplete({ onComplete, onProgressChange, disabled = false }: UseSwipeCompleteOptions): UseSwipeCompleteResult {
+export function useSwipeComplete({ onComplete, onProgressChange, disabled = false, threshold = DEFAULT_THRESHOLD }: UseSwipeCompleteOptions): UseSwipeCompleteResult {
     const [dragX, setDragX] = useState(0);
     const [dragProgress, setDragProgress] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
@@ -31,12 +32,12 @@ export function useSwipeComplete({ onComplete, onProgressChange, disabled = fals
 
     const onPointerMove = useCallback((e: PointerEvent) => {
         const delta = Math.max(0, Math.min(e.clientX - startX.current, MAX_DRAG));
-        const progress = delta / THRESHOLD;
+        const progress = delta / threshold;
         setDragX(delta);
         setDragProgress(progress);
         onProgressChange?.(progress);
 
-        if (delta >= THRESHOLD && !triggered.current) {
+        if (delta >= threshold && !triggered.current) {
             triggered.current = true;
             setIsDone(true);
             setDragX(0);
@@ -58,7 +59,7 @@ export function useSwipeComplete({ onComplete, onProgressChange, disabled = fals
             setTimeout(() => setIsDone(false), 600);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [onComplete, onProgressChange]);
+    }, [onComplete, onProgressChange, threshold]);
 
     const onPointerUp = useCallback(() => {
         setDragX(0);
