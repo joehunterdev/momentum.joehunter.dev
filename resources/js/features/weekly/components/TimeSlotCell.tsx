@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { TimeSlot, WeeklyConfig } from '../types';
 import AddSlotPopover from './AddSlotPopover';
-import SlotMomentIcon from './SlotMomentIcon';
+import SlotMomentCard from './SlotMomentCard';
 
 interface Props {
     slot: TimeSlot;
@@ -57,7 +57,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggle
             <span className="weekly-slot__time">{slot.time}</span>
             <div className="weekly-slot__content" style={{ position: 'relative' }}>
                 {slot.moment ? (
-                    <SlotMomentIcon
+                    <SlotMomentCard
                         moment={slot.moment}
                         date={date}
                         onToggle={handleToggle}

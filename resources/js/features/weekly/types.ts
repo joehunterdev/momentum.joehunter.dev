@@ -3,8 +3,11 @@ export type SlotStatus = 'completed' | 'missed' | 'pending' | null;
 export interface SlotMoment {
     id: number;
     name: string;
+    description: string | null;
     icon: string | null;
     color: string | null;
+    frequency: string | null;
+    consistency: number | null;
     status: SlotStatus;
     instance_id: number | null;
 }

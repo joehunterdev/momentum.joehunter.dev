@@ -27,14 +27,16 @@ class WeeklyController extends Controller
         $officeStart = $config->office_start ?? '09:00:00';
         $officeEnd = $config->office_end ?? '17:00:00';
 
-        // Load all active moments with schedule + instances for this week
+        $consistencyWindow = $today->copy()->subDays(27); // 28 days inclusive
+
+        // Load all active moments with schedule + instances for this week + 28-day window
         $moments = Moment::query()
             ->where('user_id', $user->id)
             ->where('is_active', true)
             ->with([
                 'schedule',
-                'instances' => fn ($q) => $q->whereBetween('date', [
-                    $weekStart->toDateString(),
+                'instances' => fn($q) => $q->whereBetween('date', [
+                    $consistencyWindow->toDateString(),
                     $weekEnd->toDateString(),
                 ]),
             ])
@@ -56,10 +58,10 @@ class WeeklyController extends Controller
             $isWeekend = $date->isWeekend();
 
             // Moments scheduled for this day
-            $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($date));
+            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($date));
 
             // Map slots → moment or null
-            $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $isFuture) {
+            $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $isFuture, $today, $consistencyWindow) {
                 $match = $dayMoments->first(function (Moment $m) use ($slotTime) {
                     if (! $m->schedule?->preferred_time) {
                         return false;
@@ -72,7 +74,7 @@ class WeeklyController extends Controller
                     return ['time' => $slotTime, 'moment' => null];
                 }
 
-                $instance = $match->instances->first(fn ($i) => $i->date === $dateStr);
+                $instance = $match->instances->first(fn($i) => $i->date === $dateStr);
 
                 $status = match (true) {
                     $isPast && $instance?->completed_at !== null => 'completed',
@@ -82,13 +84,25 @@ class WeeklyController extends Controller
                     default => null,
                 };
 
+                // Consistency: completed instances in 28-day window ÷ scheduled occurrences
+                $windowInstances = $match->instances->filter(
+                    fn($i) => $i->date >= $consistencyWindow->toDateString()
+                        && $i->date <= $today->toDateString()
+                );
+                $scheduled = $windowInstances->count();
+                $completed = $windowInstances->filter(fn($i) => $i->completed_at !== null)->count();
+                $consistency = $scheduled > 0 ? (int) round(($completed / $scheduled) * 100) : null;
+
                 return [
                     'time' => $slotTime,
                     'moment' => [
                         'id' => $match->id,
                         'name' => $match->name,
+                        'description' => $match->description,
                         'icon' => $match->icon,
                         'color' => $match->color,
+                        'frequency' => $match->schedule?->frequency,
+                        'consistency' => $consistency,
                         'status' => $status,
                         'instance_id' => $instance?->id,
                     ],
