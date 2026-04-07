@@ -23,6 +23,11 @@
     - Create moment should be in a modal component
     - Lets add a full pallet of icons to chose from font aweomse maby ?
     - The schedule section can go last
+    - Moment 
+        - icon add fixes
+            - current implementation is good the categoires need spacing and should be badges
+            - the flow should be if icon not fount there should inplace of the text area or below (add as new) and not a text input underneath
+            - THe inputs should match the others too no black border
 
 ## Config
     - [x] Have a helper when adding start / end of day for 8hrs sleep

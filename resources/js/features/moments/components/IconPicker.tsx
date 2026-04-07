@@ -14,7 +14,6 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
     const [open, setOpen] = useState(false);
     const [category, setCategory] = useState<IconCategory>('all');
     const [search, setSearch] = useState('');
-    const [customInput, setCustomInput] = useState('');
     const searchRef = useRef<HTMLInputElement>(null);
 
     const isKnown = MOMENT_ICONS.some((i) => i.emoji === value);
@@ -25,6 +24,8 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
         return matchesCategory && matchesSearch;
     });
 
+    const noResults = filtered.length === 0 && search.trim().length > 0;
+
     function handleOpen() {
         setOpen(true);
         setTimeout(() => searchRef.current?.focus(), 0);
@@ -34,18 +35,11 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
         onChange(emoji);
         setOpen(false);
         setSearch('');
-        setCustomInput('');
-    }
-
-    function handleCustomSubmit() {
-        if (customInput.trim()) {
-            handleSelect(customInput.trim());
-        }
     }
 
     return (
         <div className="icon-picker">
-            {/* Trigger — emoji only, no label */}
+            {/* Trigger */}
             <button
                 type="button"
                 onClick={() => (open ? setOpen(false) : handleOpen())}
@@ -64,7 +58,7 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
                 </svg>
             </button>
 
-            {/* Expandable panel */}
+            {/* Panel */}
             {open && (
                 <div className="icon-picker__panel">
                     {/* Search */}
@@ -77,13 +71,13 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
                         className="icon-picker__search"
                     />
 
-                    {/* Category pills */}
+                    {/* Category badges */}
                     <div className="icon-picker__categories">
                         {ICON_CATEGORIES.map((cat) => (
                             <button
                                 key={cat}
                                 type="button"
-                                onClick={() => setCategory(cat)}
+                                onClick={() => { setCategory(cat); setSearch(''); }}
                                 className={`icon-picker__cat-btn${category === cat ? ' icon-picker__cat-btn--active' : ''}`}
                             >
                                 {cat}
@@ -91,57 +85,49 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
                         ))}
                     </div>
 
-                    {/* Icon grid */}
-                    <div className="icon-picker__grid">
-                        {/* None / clear option */}
-                        <button
-                            type="button"
-                            title="No icon"
-                            onClick={() => handleSelect('')}
-                            className={`icon-picker__item icon-picker__item--none${!value ? ' icon-picker__item--selected' : ''}`}
-                        >
-                            &mdash;
-                        </button>
-
-                        {filtered.map((icon) => (
+                    {/* Icon grid OR no-results + add-as-new */}
+                    {noResults ? (
+                        <div className="icon-picker__no-results">
+                            <p className="icon-picker__no-results-label">
+                                No results for &ldquo;{search}&rdquo;
+                            </p>
                             <button
-                                key={icon.emoji + icon.name}
                                 type="button"
-                                title={icon.name}
-                                onClick={() => handleSelect(icon.emoji)}
-                                className={`icon-picker__item${value === icon.emoji ? ' icon-picker__item--selected' : ''}`}
+                                className="icon-picker__add-new"
+                                onClick={() => handleSelect(search.trim())}
                             >
-                                {icon.emoji}
+                                <span className="icon-picker__add-new-preview">{search.trim()}</span>
+                                Add as custom
                             </button>
-                        ))}
+                        </div>
+                    ) : (
+                        <div className="icon-picker__grid">
+                            {/* Clear / none */}
+                            <button
+                                type="button"
+                                title="No icon"
+                                onClick={() => handleSelect('')}
+                                className={`icon-picker__item icon-picker__item--none${!value ? ' icon-picker__item--selected' : ''}`}
+                            >
+                                &mdash;
+                            </button>
 
-                        {filtered.length === 0 && search && (
-                            <p className="icon-picker__empty">No results for &ldquo;{search}&rdquo;</p>
-                        )}
-                    </div>
-
-                    {/* Custom text/emoji input */}
-                    <div className="icon-picker__custom">
-                        <input
-                            type="text"
-                            placeholder="Or type any emoji…"
-                            value={customInput}
-                            onChange={(e) => setCustomInput(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
-                            className="icon-picker__custom-input"
-                            maxLength={4}
-                        />
-                        <button
-                            type="button"
-                            onClick={handleCustomSubmit}
-                            disabled={!customInput.trim()}
-                            className="icon-picker__custom-submit"
-                        >
-                            Use
-                        </button>
-                    </div>
+                            {filtered.map((icon) => (
+                                <button
+                                    key={icon.emoji + icon.name}
+                                    type="button"
+                                    title={icon.name}
+                                    onClick={() => handleSelect(icon.emoji)}
+                                    className={`icon-picker__item${value === icon.emoji ? ' icon-picker__item--selected' : ''}`}
+                                >
+                                    {icon.emoji}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
     );
 }
+
