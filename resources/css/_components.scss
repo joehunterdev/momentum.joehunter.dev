@@ -258,3 +258,50 @@
   border-bottom: 1px solid var(--mm-surface-border);
   backdrop-filter: blur(12px);
 }
+
+// ─── Config form ───
+.config-section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mm-text-muted, #6b7280);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--mm-surface-border, #e5e7eb);
+  margin-bottom: 1rem;
+}
+
+.config-section-hint {
+  font-size: 0.8125rem;
+  color: var(--mm-text-muted, #9ca3af);
+  margin-top: 0.25rem;
+}
+
+.config-char-count {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--mm-text-muted, #9ca3af);
+  pointer-events: none;
+}
+
+.sleep-helper {
+  margin-top: 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--mm-text-muted, #6b7280);
+
+  &__cta {
+    color: var(--mm-primary, #6366f1);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+
+    &:hover {
+      color: var(--mm-primary-hover, #4f46e5);
+    }
+  }
+}

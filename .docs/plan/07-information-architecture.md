@@ -28,10 +28,22 @@
     - [] Have a helper when adding start / end of day for 8hrs sleep
     - [] Office hours define
     - [] Needs an identity statement area
-    - [] Config
     - [] Define healthy schedule 8hrs sleep
     - [] Rather than m,t. Use proper days of the week
     - [] What is an identity statement
+    V2
+    - [] Use tool tips to highlight text
+    - [] Use nicer icons
+    - [] Sleep time should be defined automatically
 
 ## Dashboard view
+    - Range card
+        - Shows month on click change change the year or month changes whole stats data
+    - Progress over time, full widch shows achivement overtime, the velocity of moment 
+    - Daily habits:
+        - Donut chart shows the success on a weekly basis average
+    
+
+    - Feels like a dasboard with cards
+    - Progress line curve view
     - 

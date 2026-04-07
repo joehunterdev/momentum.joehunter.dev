@@ -55,9 +55,18 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Stick to existing directory structure; don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
 
+## Migrations
+
+- **Never create incremental migrations** to add columns to existing tables. Instead, edit the original migration file directly and run `php artisan migrate:fresh` to rebuild the schema from scratch.
+- This keeps the migration history clean and avoids accumulating one-off `add_column_to_table` files during development.
+
 ## Frontend Bundling
 
 - If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+
+## Beta Testing Policy
+
+- **No PHPUnit tests during beta.** Do not write or suggest feature/unit tests while the application is in active beta development. Tests will be added once the feature set stabilises.
 
 ## Documentation Files
 

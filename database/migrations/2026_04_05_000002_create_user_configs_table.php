@@ -14,6 +14,9 @@ return new class extends Migration
             $table->time('wake_time')->default('07:00');
             $table->time('sleep_time')->default('23:00');
             $table->tinyInteger('week_starts_on')->default(1); // 1=Monday, 0=Sunday
+            $table->time('office_start')->default('09:00');
+            $table->time('office_end')->default('17:00');
+            $table->string('identity_statement', 500)->nullable();
             $table->timestamps();
         });
     }

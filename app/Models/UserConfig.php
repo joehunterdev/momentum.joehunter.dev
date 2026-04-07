@@ -12,12 +12,18 @@ class UserConfig extends Model
         'wake_time',
         'sleep_time',
         'week_starts_on',
+        'office_start',
+        'office_end',
+        'identity_statement',
     ];
 
     protected $casts = [
-        'wake_time'      => 'string',
-        'sleep_time'     => 'string',
+        'wake_time' => 'string',
+        'sleep_time' => 'string',
         'week_starts_on' => 'integer',
+        'office_start' => 'string',
+        'office_end' => 'string',
+        'identity_statement' => 'string',
     ];
 
     public function user(): BelongsTo
