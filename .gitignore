@@ -28,3 +28,6 @@ Thumbs.db
 .docs/.private/
 .github/workflows/.private/
 
+# Playwright MCP output
+.playwright-mcp/
+
