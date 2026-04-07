@@ -1,0 +1,52 @@
+// ─── Drop Border — Momentum design token ──────────────────────────────────────
+//
+// Replicates the hard offset cube shadow from the Momentum logo.
+// The logo has a solid teal drop-shadow offset 4px right + 4px down at 40px
+// rendered size. We expose this as a token and two utility modifier classes.
+//
+// Usage:
+//   <div class="mm-drop mm-drop--green">...</div>
+//   <div class="mm-drop mm-drop--purple">...</div>
+//   Or apply the mixin directly in a component partial:
+//   @include mm-drop-border(var(--mm-drop-green));
+
+// ─── Tokens ───────────────────────────────────────────────────────────────────
+
+:root {
+    --mm-drop-offset: 4px; // horizontal AND vertical offset — matches logo shadow
+    --mm-drop-green: #00E5AA; // logo teal/green
+    --mm-drop-purple: #604C81; // brand purple
+}
+
+// ─── Mixin ────────────────────────────────────────────────────────────────────
+
+@mixin mm-drop-border($color: var(--mm-drop-green), $offset: var(--mm-drop-offset)) {
+    // box-shadow with no blur = hard pixel-perfect offset border, cubed look
+    box-shadow: #{$offset} #{$offset} 0 0 #{$color};
+    transition: box-shadow 0.12s ease, transform 0.12s ease;
+
+    &:hover {
+        // pull back slightly on hover for a "press" feel
+        box-shadow: calc(#{$offset} / 2) calc(#{$offset} / 2) 0 0 #{$color};
+        transform: translate(calc(#{$offset} / 2), calc(#{$offset} / 2));
+    }
+
+    &:active {
+        box-shadow: none;
+        transform: translate(#{$offset}, #{$offset});
+    }
+}
+
+// ─── Utility classes ──────────────────────────────────────────────────────────
+
+.mm-drop {
+    @include mm-drop-border();
+
+    &--green {
+        @include mm-drop-border(var(--mm-drop-green));
+    }
+
+    &--purple {
+        @include mm-drop-border(var(--mm-drop-purple));
+    }
+}

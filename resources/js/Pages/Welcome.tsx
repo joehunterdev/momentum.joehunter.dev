@@ -3,31 +3,31 @@ import { Head, Link } from '@inertiajs/react';
 
 const features = [
     {
-        icon: '??',
+        icon: '\uD83D\uDCC5',
         title: 'Weekly View',
         description: 'See your entire week at a glance. Every moment, every slot, colour-coded by status.',
     },
     {
-        icon: '?',
+        icon: '\u26A1',
         title: 'Daily Schedule',
         description: "Your day laid out in 30-minute slots from wake to sleep. Know exactly what's next.",
     },
     {
-        icon: '??',
+        icon: '\uD83D\uDCC8',
         title: 'Dashboard',
         description: 'Track completion rates, streaks, and consistency across all your moments over time.',
     },
     {
-        icon: '??',
+        icon: '\uD83C\uDFAF',
         title: 'Moment Builder',
-        description: 'Define habits with cues, stacks, environment prompts and rewards — the full system.',
+        description: 'Define habits with cues, stacks, environment prompts and rewards \u2014 the full system.',
     },
 ];
 
 export default function Welcome({ auth }: PageProps) {
     return (
         <>
-            <Head title="Momentum — Build better habits" />
+            <Head title="Momentum â€” Build better habits" />
 
             <div className="welcome-page">
                 <div className="welcome-page__glow" aria-hidden />
@@ -58,7 +58,7 @@ export default function Welcome({ auth }: PageProps) {
                             Build momentum,<br />one habit at a time.
                         </h1>
                         <p className="welcome-page__subline">
-                            Momentum helps you design, schedule and stick to the habits that matter — backed by proven behaviour science.
+                            Momentum helps you design, schedule and stick to the habits that matter â€” backed by proven behaviour science.
                         </p>
                         {!auth.user && (
                             <Link href={route('register')} className="welcome-page__cta">

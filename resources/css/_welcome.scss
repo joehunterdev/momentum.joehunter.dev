@@ -7,23 +7,8 @@
     overflow: hidden;
     font-family: var(--mm-font, inherit);
 
-    // Conic radial glow — brand purple, blurred, centred top
     &__glow {
-        position: absolute;
-        top: -20vh;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 140vw;
-        height: 80vh;
-        background: conic-gradient(from 200deg at 50% 0%,
-                transparent 0deg,
-                rgba(99, 102, 241, 0.18) 60deg,
-                rgba(129, 140, 248, 0.28) 120deg,
-                rgba(99, 102, 241, 0.18) 180deg,
-                transparent 240deg);
-        filter: blur(60px);
-        pointer-events: none;
-        z-index: 0;
+        display: none;
     }
 
     &__inner {
@@ -59,7 +44,7 @@
         font-weight: 500;
         color: #374151;
         padding: 0.4rem 0.875rem;
-        border-radius: 6px;
+        border-radius: 0;
         text-decoration: none;
         transition: background 0.15s, color 0.15s;
 
@@ -69,12 +54,12 @@
         }
 
         &--primary {
-            background: var(--mm-primary, #6366f1);
-            color: #fff;
+            background: #00E5AA;
+            color: #111827;
 
             &:hover {
-                background: var(--mm-primary-dark, #4f46e5);
-                color: #fff;
+                background: #00cfa0;
+                color: #111827;
             }
         }
     }
@@ -105,18 +90,17 @@
 
     &__cta {
         display: inline-block;
-        background: var(--mm-primary, #6366f1);
-        color: #fff;
+        background: #00E5AA;
+        color: #111827;
         font-size: 0.9375rem;
         font-weight: 600;
         padding: 0.75rem 2rem;
-        border-radius: 8px;
+        border-radius: 0;
         text-decoration: none;
-        transition: background 0.15s, transform 0.1s;
+        @include mm-drop-border(var(--mm-drop-purple));
 
         &:hover {
-            background: var(--mm-primary-dark, #4f46e5);
-            transform: translateY(-1px);
+            background: #00cfa0;
         }
     }
 
@@ -136,15 +120,9 @@
     &__card {
         background: #fff;
         border: 1px solid #e5e7eb;
-        border-radius: 12px;
+        border-radius: 0;
         padding: 1.5rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 16px rgba(99, 102, 241, 0.06);
-        transition: box-shadow 0.15s, transform 0.15s;
-
-        &:hover {
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
-            transform: translateY(-2px);
-        }
+        @include mm-drop-border(var(--mm-drop-green));
     }
 
     &__card-icon {
