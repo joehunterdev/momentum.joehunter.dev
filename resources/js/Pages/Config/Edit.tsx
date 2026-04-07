@@ -13,10 +13,10 @@ export default function Edit({ config }: Props) {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold text-gray-800">Settings</h2>
+                <h2 className="text-xl font-semibold text-gray-800">Config</h2>
             }
         >
-            <Head title="Settings" />
+            <Head title="Config" />
             <FlashMessage />
 
             <div className="py-8">

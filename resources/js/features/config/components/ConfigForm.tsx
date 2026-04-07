@@ -144,7 +144,7 @@ export default function ConfigForm({ config }: ConfigFormProps) {
             </section>
 
             <div className="flex justify-end">
-                <PrimaryButton disabled={form.processing}>Save Settings</PrimaryButton>
+                <PrimaryButton disabled={form.processing}>Save Config</PrimaryButton>
             </div>
         </form>
     );

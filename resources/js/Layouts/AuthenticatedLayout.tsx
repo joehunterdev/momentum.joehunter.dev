@@ -37,7 +37,7 @@ export default function Authenticated({
                                     href={route('config.edit')}
                                     active={route().current('config.edit')}
                                 >
-                                    Settings
+                                    Config
                                 </NavLink>
                             </div>
                         </div>
@@ -147,7 +147,7 @@ export default function Authenticated({
                             href={route('config.edit')}
                             active={route().current('config.edit')}
                         >
-                            Settings
+                            Config
                         </ResponsiveNavLink>
                     </div>
 
