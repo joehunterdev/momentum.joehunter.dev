@@ -1,8 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import { format, parseISO } from 'date-fns';
 import { useState } from 'react';
-import { WeeklyGrid } from '@/features/weekly';
+import { WeeklyGrid, WeekSelectorBar } from '@/features/weekly';
 import type { WeeklyPageProps } from '@/features/weekly';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
@@ -11,8 +10,6 @@ import type { PageProps } from '@/types';
 interface Props extends PageProps, WeeklyPageProps { }
 
 export default function Index({ weekStart, weekEnd, config, days }: Props) {
-    const startLabel = format(parseISO(weekStart), 'd MMM');
-    const endLabel = format(parseISO(weekEnd), 'd MMM yyyy');
 
     const [showingModal, setShowingModal] = useState(false);
     const [highlightTime, setHighlightTime] = useState<string | null>(null);
@@ -60,11 +57,7 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
 
     return (
         <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold text-gray-800">
-                    {startLabel} – {endLabel}
-                </h2>
-            }
+            header={<WeekSelectorBar weekStart={weekStart} />}
         >
             <Head title="Weekly" />
 

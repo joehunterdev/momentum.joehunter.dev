@@ -16,9 +16,17 @@ class WeeklyController extends Controller
         $user = $request->user();
         $today = Carbon::today();
 
-        // Always Monday → Sunday (ISO week) — copy() to avoid mutating $today
-        $weekStart = $today->copy()->startOfWeek(Carbon::MONDAY);
-        $weekEnd = $today->copy()->endOfWeek(Carbon::SUNDAY);
+        // Allow jumping to a specific week via ?week=YYYY-MM-DD (any day within that week works)
+        // Default (no param): start from today so the grid opens on the current day forward.
+        // When a week param is given, show the full Mon–Sun of that week.
+        if ($request->filled('week')) {
+            $weekAnchor = Carbon::parse($request->input('week'));
+            $weekStart = $weekAnchor->copy()->startOfWeek(Carbon::MONDAY);
+        } else {
+            $weekStart = $today->copy();
+        }
+
+        $weekEnd = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
 
         // User config — fall back to sensible defaults if not set
         $config = UserConfig::firstOrNew(['user_id' => $user->id]);
@@ -36,7 +44,7 @@ class WeeklyController extends Controller
             ->with([
                 'schedule',
                 'cue',
-                'instances' => fn ($q) => $q->whereBetween('date', [
+                'instances' => fn($q) => $q->whereBetween('date', [
                     $consistencyWindow->toDateString(),
                     $weekEnd->toDateString(),
                 ]),
@@ -47,11 +55,12 @@ class WeeklyController extends Controller
         // Build 30-min time slots between wake and sleep
         $slots = $this->buildTimeSlots($wakeTime, $sleepTime);
 
-        // Build each day row
+        // Build each day row — today through Sunday (or full Mon–Sun when navigating)
         $days = [];
         $date = $weekStart->copy();
+        $dayCount = $date->diffInDays($weekEnd) + 1;
 
-        for ($i = 0; $i < 7; $i++) {
+        for ($i = 0; $i < $dayCount; $i++) {
             $dateStr = $date->toDateString();
             $isPast = $date->lt($today);
             $isToday = $date->equalTo($today);
@@ -59,7 +68,7 @@ class WeeklyController extends Controller
             $isWeekend = $date->isWeekend();
 
             // Moments scheduled for this day
-            $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($date));
+            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($date));
 
             // Map slots → moment or null
             $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $today, $consistencyWindow) {
@@ -75,7 +84,7 @@ class WeeklyController extends Controller
                     return ['time' => $slotTime, 'moment' => null];
                 }
 
-                $instance = $match->instances->first(fn ($i) => $i->date->toDateString() === $dateStr);
+                $instance = $match->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
 
                 $status = match (true) {
                     $instance?->completed_at !== null => 'completed',
@@ -107,7 +116,7 @@ class WeeklyController extends Controller
                 }
 
                 $completed = $match->instances->filter(
-                    fn ($i) => $i->date->toDateString() >= $consistencyWindow->toDateString()
+                    fn($i) => $i->date->toDateString() >= $consistencyWindow->toDateString()
                         && $i->date->toDateString() <= $today->toDateString()
                         && $i->completed_at !== null
                 )->count();
