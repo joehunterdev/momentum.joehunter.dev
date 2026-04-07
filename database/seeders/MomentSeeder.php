@@ -4,109 +4,139 @@ namespace Database\Seeders;
 
 use App\Models\Cue;
 use App\Models\Moment;
+use App\Models\MomentInstance;
 use App\Models\MomentSchedule;
 use App\Models\Reward;
 use App\Models\User;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Seeder;
 
 class MomentSeeder extends Seeder
 {
+    /**
+     * Seed moments from database/data/moments-data.json and generate
+     * 6 months of realistic instances with a gradual improvement arc.
+     *
+     * Each moment has:
+     *   completion_rate_start — probability of completion at the start (6 months ago)
+     *   completion_rate_end   — probability at today (growth over time)
+     */
     public function run(): void
     {
         $user = User::where('email', env('SUPER_ADMIN_EMAIL'))->firstOrFail();
 
-        $moments = [
-            [
-                'name'               => 'Drink water',
-                'description'        => 'Start the day hydrated',
-                'color'              => '#3B82F6',
-                'icon'               => '💧',
-                'identity_statement' => 'I am someone who takes care of my body',
-                'frequency'          => 'daily',
-                'days_of_week'       => null,
-                'preferred_time'     => '07:30',
-                'cue'                => 'When I wake up, I drink a full glass of water before checking my phone',
-                'reward'             => 'Feel energised and clear-headed',
-            ],
-            [
-                'name'               => 'Read a book',
-                'description'        => '30 minutes of non-fiction reading',
-                'color'              => '#8B5CF6',
-                'icon'               => '📚',
-                'identity_statement' => 'I am a lifelong learner',
-                'frequency'          => 'daily',
-                'days_of_week'       => null,
-                'preferred_time'     => '21:00',
-                'cue'                => 'After dinner, I sit in my reading chair and open my book',
-                'reward'             => 'Track one insight in my journal',
-            ],
-            [
-                'name'               => 'Meditate 5 mins',
-                'description'        => 'Mindfulness meditation',
-                'color'              => '#10B981',
-                'icon'               => '🧘',
-                'identity_statement' => 'I am someone who is present and calm',
-                'frequency'          => 'daily',
-                'days_of_week'       => null,
-                'preferred_time'     => '07:00',
-                'cue'                => 'When I sit at my desk, I close my eyes for 5 minutes first',
-                'reward'             => 'Enjoy a coffee mindfully after',
-            ],
-            [
-                'name'               => 'Go to the gym',
-                'description'        => 'Strength training session',
-                'color'              => '#EF4444',
-                'icon'               => '🏋️',
-                'identity_statement' => 'I am an athlete',
-                'frequency'          => 'weekly',
-                'days_of_week'       => [1, 3, 5], // Mon, Wed, Fri
-                'preferred_time'     => '08:00',
-                'cue'                => 'On gym days, my kit is packed the night before by the door',
-                'reward'             => 'Post-workout protein shake',
-            ],
-            [
-                'name'               => 'Journal',
-                'description'        => 'Daily reflection — 3 gratitudes + 1 intention',
-                'color'              => '#F59E0B',
-                'icon'               => '✍️',
-                'identity_statement' => 'I am someone who reflects and grows',
-                'frequency'          => 'daily',
-                'days_of_week'       => null,
-                'preferred_time'     => '22:00',
-                'cue'                => 'After brushing my teeth, I write in my journal',
-                'reward'             => 'Reading time as a wind-down',
-            ],
-        ];
+        $dataPath = database_path('data/moments-data.json');
+        $moments = json_decode(file_get_contents($dataPath), true);
+
+        $today = Carbon::today();
+        $periodStart = $today->copy()->subMonths(6)->startOfDay();
 
         foreach ($moments as $i => $data) {
             /** @var Moment $moment */
             $moment = Moment::create([
-                'user_id'            => $user->id,
-                'name'               => $data['name'],
-                'description'        => $data['description'],
-                'color'              => $data['color'],
-                'icon'               => $data['icon'],
-                'identity_statement' => $data['identity_statement'],
-                'is_active'          => true,
-                'sort_order'         => $i,
+                'user_id' => $user->id,
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'color' => $data['color'],
+                'icon' => $data['icon'],
+                'is_active' => true,
+                'sort_order' => $i,
             ]);
 
             MomentSchedule::create([
-                'moment_id'      => $moment->id,
-                'frequency'      => $data['frequency'],
-                'days_of_week'   => $data['days_of_week'],
+                'moment_id' => $moment->id,
+                'frequency' => $data['frequency'],
+                'days_of_week' => $data['days_of_week'] ?? null,
                 'preferred_time' => $data['preferred_time'],
             ]);
 
             Cue::create([
-                'moment_id'                => $moment->id,
-                'implementation_intention' => $data['cue'],
+                'moment_id' => $moment->id,
+                'implementation_intention' => $data['implementation_intention'],
+                'habit_stack_after' => $data['habit_stack_after'],
+                'environment_prompt' => $data['environment_prompt'],
             ]);
 
             Reward::create([
-                'moment_id'   => $moment->id,
-                'description' => $data['reward'],
+                'moment_id' => $moment->id,
+                'description' => $data['reward_description'],
+                'temptation_bundle' => $data['temptation_bundle'],
             ]);
+
+            // Generate instances over the 6-month window for past dates only
+            $this->generateInstances(
+                moment: $moment,
+                data: $data,
+                periodStart: $periodStart,
+                today: $today,
+            );
         }
+    }
+
+    /**
+     * Walk every scheduled date between $periodStart and yesterday,
+     * and probabilistically mark instances as completed to simulate
+     * a realistic growth arc from start → end completion rate.
+     */
+    private function generateInstances(Moment $moment, array $data, Carbon $periodStart, Carbon $today): void
+    {
+        $yesterday = $today->copy()->subDay();
+        $rateStart = $data['completion_rate_start'] ?? 0.4;
+        $rateEnd = $data['completion_rate_end'] ?? 0.8;
+        $frequency = $data['frequency'];
+        $daysOfWeek = $data['days_of_week'] ?? null; // 0=Sun … 6=Sat
+        $preferredTime = $data['preferred_time'];
+
+        $totalDays = (int) $periodStart->diffInDays($yesterday);
+
+        /** @var CarbonPeriod $period */
+        $period = CarbonPeriod::create($periodStart, '1 day', $yesterday);
+
+        foreach ($period as $date) {
+            $isScheduled = $this->isScheduledOn($date, $frequency, $daysOfWeek);
+
+            if (! $isScheduled) {
+                continue;
+            }
+
+            // Linear interpolation of completion probability over the period
+            $daysIn = (int) $periodStart->diffInDays($date);
+            $progress = $totalDays > 0 ? $daysIn / $totalDays : 1;
+            $probability = $rateStart + ($rateEnd - $rateStart) * $progress;
+
+            // Simulate natural variance — some weeks are better than others
+            $weekJitter = (sin($daysIn / 7 * M_PI) * 0.08); // ±8 % weekly wave
+            $probability = max(0, min(1, $probability + $weekJitter));
+
+            $isCompleted = (mt_rand() / mt_getrandmax()) < $probability;
+
+            if ($isCompleted) {
+                // Mark completed a few minutes after the preferred time
+                [$hour, $minute] = explode(':', $preferredTime);
+                $completedAt = $date->copy()->setTime((int) $hour, (int) $minute)->addMinutes(mt_rand(5, 45));
+
+                MomentInstance::create([
+                    'moment_id' => $moment->id,
+                    'date' => $date->toDateString(),
+                    'completed_at' => $completedAt,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Returns true if $date falls on a scheduled occurrence for the given frequency.
+     *
+     * @param  int[]|null  $daysOfWeek  0=Sun, 1=Mon … 6=Sat
+     */
+    private function isScheduledOn(Carbon $date, string $frequency, ?array $daysOfWeek): bool
+    {
+        return match ($frequency) {
+            'daily' => true,
+            'weekly' => $daysOfWeek !== null && in_array($date->dayOfWeek, $daysOfWeek, strict: true),
+            'custom' => $daysOfWeek !== null && in_array($date->dayOfWeek, $daysOfWeek, strict: true),
+            default => false,
+        };
     }
 }
