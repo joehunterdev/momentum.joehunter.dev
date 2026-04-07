@@ -35,6 +35,7 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
     }
 
     function handleModalSubmit(_data: MomentFormData, form: ReturnType<typeof useMomentForm>) {
+        form.transform((d) => ({ ...d, _redirect: route('weekly') }));
         form.post(route('moments.store'), {
             onSuccess: () => handleModalClose(),
             onError: () => { },
