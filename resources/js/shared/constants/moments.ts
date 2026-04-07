@@ -40,7 +40,7 @@ export interface MomentFormSection {
 
 export const MOMENT_FORM_SECTIONS: MomentFormSection[] = [
     { id: 'basics', label: 'Basics', emoji: '✏️' },
-    { id: 'schedule', label: 'Schedule', emoji: '📅' },
     { id: 'cue', label: 'Cue', emoji: '🔔' },
     { id: 'reward', label: 'Reward', emoji: '🏆' },
+    { id: 'schedule', label: 'Schedule', emoji: '📅' },
 ];

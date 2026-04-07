@@ -3,7 +3,7 @@ import DangerButton from '@/Components/DangerButton';
 import Modal from '@/Components/Modal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import FlashMessage from '@/shared/components/FlashMessage';
-import { MomentForm } from '@/features/moments';
+import { MomentModal } from '@/features/moments';
 import type { Moment, MomentFormData } from '@/features/moments';
 import { useMomentForm } from '@/features/moments';
 import { Head, router } from '@inertiajs/react';
@@ -47,15 +47,12 @@ export default function Edit({ moment }: Props) {
             <Head title={`Edit: ${moment.name}`} />
             <FlashMessage />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-                    <MomentForm
-                        moment={moment}
-                        onSubmit={handleSubmit}
-                        submitLabel="Save Changes"
-                    />
-                </div>
-            </div>
+            <MomentModal
+                show={true}
+                onClose={() => router.visit(route('daily'))}
+                moment={moment}
+                onSubmit={handleSubmit}
+            />
 
             <Modal show={confirmingDelete} onClose={() => setConfirmingDelete(false)}>
                 <div className="p-6">

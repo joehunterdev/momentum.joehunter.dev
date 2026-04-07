@@ -1,12 +1,14 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { FormEvent, useState } from 'react';
 import type { Moment, MomentFormData } from '../types';
 import { useMomentForm } from '../hooks/useMomentForm';
 import ColorPicker from './ColorPicker';
 import CueFields from './CueFields';
+import IconPicker from './IconPicker';
 import RewardFields from './RewardFields';
 import ScheduleFields from './ScheduleFields';
 
@@ -16,9 +18,10 @@ interface MomentFormProps {
     moment?: Moment;
     onSubmit: (data: MomentFormData, form: ReturnType<typeof useMomentForm>) => void;
     submitLabel?: string;
+    onCancel?: () => void;
 }
 
-export default function MomentForm({ moment, onSubmit, submitLabel = 'Save' }: MomentFormProps) {
+export default function MomentForm({ moment, onSubmit, submitLabel = 'Save', onCancel }: MomentFormProps) {
     const form = useMomentForm(moment);
     const [openSection, setOpenSection] = useState<string>('basics');
 
@@ -93,14 +96,13 @@ export default function MomentForm({ moment, onSubmit, submitLabel = 'Save' }: M
                                         </div>
 
                                         <div>
-                                            <InputLabel htmlFor="icon" value="Icon (emoji)" />
-                                            <TextInput
-                                                id="icon"
-                                                value={form.data.icon}
-                                                onChange={(e) => setField('icon', e.target.value)}
-                                                placeholder="💧"
-                                                className="mt-1 block w-24"
-                                            />
+                                            <InputLabel htmlFor="icon" value="Icon" />
+                                            <div className="mt-2">
+                                                <IconPicker
+                                                    value={form.data.icon}
+                                                    onChange={(emoji) => setField('icon', emoji)}
+                                                />
+                                            </div>
                                             <InputError message={form.errors.icon} className="mt-1" />
                                         </div>
 
@@ -151,7 +153,12 @@ export default function MomentForm({ moment, onSubmit, submitLabel = 'Save' }: M
                 );
             })}
 
-            <div className="flex justify-end pt-2">
+            <div className="flex justify-end gap-3 pt-2">
+                {onCancel && (
+                    <SecondaryButton type="button" onClick={onCancel}>
+                        Cancel
+                    </SecondaryButton>
+                )}
                 <PrimaryButton disabled={form.processing}>{submitLabel}</PrimaryButton>
             </div>
         </form>
