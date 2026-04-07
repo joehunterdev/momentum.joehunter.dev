@@ -19,7 +19,35 @@ A full **Monday → Sunday** weekly calendar grid.
 
 ---
 
-## 2. Data Requirements
+## 2. Frontend Dependency — `date-fns`
+
+Install [`date-fns`](https://date-fns.org/) for all client-side date logic:
+
+```
+npm install date-fns
+```
+
+**Why:** tree-shakeable (only imports what's used, ~3–5 KB gzipped), zero sub-dependencies, mirrors Carbon patterns already used on the backend.
+
+**Functions needed across the app:**
+
+| Function             | Used in                          | Purpose                                  |
+|----------------------|----------------------------------|------------------------------------------|
+| `startOfISOWeek`     | `WeeklyGrid`                     | Get Monday of current week               |
+| `endOfISOWeek`       | `WeeklyGrid`                     | Get Sunday of current week               |
+| `eachDayOfInterval`  | `WeeklyGrid`                     | Generate Mon–Sun array                   |
+| `format`             | `WeeklyGrid`, `DayRow`, header   | Format dates for display                 |
+| `isSameDay`          | `DayRow`                         | Highlight today's row                    |
+| `isWeekend`          | `DayRow`                         | Apply weekend tint                       |
+| `isAfter` / `isBefore` | `TimeSlotCell`                | Determine past/future status             |
+| `parse` / `set`      | `SleepHelper` (config)           | 8-hour sleep time calculation            |
+| `addMinutes`         | Slot generation                  | Build 30-min time slot array             |
+
+> **Convention:** import individually — `import { format, isSameDay } from 'date-fns'` — never import the whole library.
+
+---
+
+## 3. Data Requirements
 
 ### Already exists
 
@@ -66,7 +94,7 @@ For the current week (Mon–Sun):
 
 ---
 
-## 3. Backend
+## 4. Backend
 
 ### 3.1 Route
 
@@ -130,7 +158,7 @@ export interface WeeklyPageProps {
 
 ---
 
-## 4. Frontend
+## 5. Frontend
 
 ### 4.1 File structure
 
@@ -204,7 +232,7 @@ resources/js/
 
 ---
 
-## 5. SCSS
+## 6. SCSS
 
 All component-specific styling in `resources/css/` partials per the project convention (Tailwind for layout, SCSS for component styling).
 
@@ -273,7 +301,7 @@ Import in `app.scss`:
 
 ---
 
-## 6. Nav update
+## 7. Nav update
 
 Add "Weekly" link to `AuthenticatedLayout.tsx` nav (between Daily and Settings):
 
@@ -285,7 +313,7 @@ Add "Weekly" link to `AuthenticatedLayout.tsx` nav (between Daily and Settings):
 
 ---
 
-## 7. Testing
+## 8. Testing
 
 ### Feature tests — `tests/Feature/WeeklyControllerTest.php`
 
@@ -310,14 +338,15 @@ php artisan make:test WeeklyControllerTest --phpunit --no-interaction
 
 ---
 
-## 8. Implementation order
+## 9. Implementation order
 
-1. **Types** — create `features/weekly/types.ts`
-2. **Controller** — `WeeklyController` with full slot-building logic
-3. **Route** — add `GET /weekly` to `web.php`
-4. **Tests** — write all feature tests, run green
-5. **SCSS** — create `_weekly.scss`, import in `app.scss`
-6. **Components** — build `WeeklyGrid`, `DayRow`, `TimeSlotCell`, `SlotMomentIcon`
-7. **Page** — create `Pages/Weekly/Index.tsx`
-8. **Nav** — add Weekly link to layout + responsive nav
-9. **Manual QA** — verify grid layout, scrolling, status colours, today highlight
+1. **Dependency** — `npm install date-fns`
+2. **Types** — create `features/weekly/types.ts`
+3. **Controller** — `WeeklyController` with full slot-building logic
+4. **Route** — add `GET /weekly` to `web.php`
+5. **Tests** — write all feature tests, run green
+6. **SCSS** — create `_weekly.scss`, import in `app.scss`
+7. **Components** — build `WeeklyGrid`, `DayRow`, `TimeSlotCell`, `SlotMomentIcon` (using `date-fns`)
+8. **Page** — create `Pages/Weekly/Index.tsx`
+9. **Nav** — add Weekly link to layout + responsive nav
+10. **Manual QA** — verify grid layout, scrolling, status colours, today highlight
