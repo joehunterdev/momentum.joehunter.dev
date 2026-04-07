@@ -20,7 +20,9 @@
     - Weekends a 1/2 grey bkg 50
 
 ## Create Moment
-    - Create moment
+    - Create moment should be in a modal component
+    - Lets add a full pallet of icons to chose from font aweomse maby ?
+    - The schedule section can go last
 
 ## Config
     - [] Have a helper when adding start / end of day for 8hrs sleep
@@ -30,3 +32,6 @@
     - [] Define healthy schedule 8hrs sleep
     - [] Rather than m,t. Use proper days of the week
     - [] What is an identity statement
+
+## Dashboard view
+    - 
