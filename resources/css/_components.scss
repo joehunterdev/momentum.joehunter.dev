@@ -1,0 +1,260 @@
+// _components.scss — reusable component patterns
+
+// ─── Glass card ───
+.mm-card {
+  background: var(--mm-glass);
+  border: 1px solid var(--mm-surface-border);
+  border-radius: var(--mm-radius-lg);
+  backdrop-filter: blur(12px);
+  transition: all var(--mm-duration) var(--mm-ease);
+
+  &:hover {
+    border-color: var(--mm-primary);
+    box-shadow: var(--mm-shadow-md);
+  }
+}
+
+// ─── Moment card ───
+.mm-moment-card {
+  position: relative;
+  border-left: 4px solid transparent;
+  transition: all var(--mm-duration) var(--mm-ease);
+
+  &--completed {
+    opacity: 0.7;
+
+    .mm-moment-card__name {
+      text-decoration: line-through;
+      color: var(--mm-text-dimmed);
+    }
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--mm-shadow-sm);
+  }
+}
+
+// ─── Toggle checkbox circle ───
+.mm-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--mm-text-dimmed);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--mm-duration) var(--mm-ease);
+
+  &:hover {
+    border-color: var(--mm-primary-light);
+    background: rgba(99, 102, 241, 0.1);
+  }
+
+  &--active {
+    border-color: var(--mm-primary);
+    background: var(--mm-primary);
+    color: white;
+    animation: mm-check-pop var(--mm-duration) var(--mm-ease);
+  }
+}
+
+// ─── Day-of-week toggle pills ───
+.mm-day-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--mm-duration) var(--mm-ease);
+  background: var(--mm-surface);
+  color: var(--mm-text-muted);
+  border: 1px solid var(--mm-surface-border);
+
+  &:hover {
+    background: var(--mm-surface-hover);
+    color: var(--mm-text);
+  }
+
+  &--active {
+    background: var(--mm-primary);
+    color: white;
+    border-color: var(--mm-primary);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  }
+}
+
+// ─── Color picker swatch ───
+.mm-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--mm-duration) var(--mm-ease);
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &--selected {
+    border-color: white;
+    box-shadow: 0 0 0 3px var(--mm-primary), var(--mm-shadow-sm);
+    transform: scale(1.15);
+  }
+}
+
+// ─── Accordion section ───
+.mm-accordion {
+  background: var(--mm-glass);
+  border: 1px solid var(--mm-surface-border);
+  border-radius: var(--mm-radius-lg);
+  overflow: hidden;
+
+  &__trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: transparent;
+    border: none;
+    color: var(--mm-text);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--mm-duration) ease;
+
+    &:hover {
+      background: var(--mm-surface-hover);
+    }
+  }
+
+  &__content {
+    border-top: 1px solid var(--mm-surface-border);
+    padding: 20px;
+    animation: mm-slide-down var(--mm-duration-slow) ease-out;
+  }
+}
+
+// ─── Form inputs (dark override for Tailwind forms plugin) ───
+.mm-input {
+  background: var(--mm-surface) !important;
+  border-color: var(--mm-surface-border) !important;
+  color: var(--mm-text) !important;
+  border-radius: var(--mm-radius-sm);
+  transition: border-color var(--mm-duration) ease, box-shadow var(--mm-duration) ease;
+
+  &::placeholder {
+    color: var(--mm-text-dimmed);
+  }
+
+  &:focus {
+    border-color: var(--mm-primary) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+  }
+}
+
+// ─── Primary button (gradient) ───
+.mm-btn-primary {
+  background: linear-gradient(135deg, var(--mm-primary) 0%, var(--mm-primary-light) 100%);
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--mm-radius-sm);
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: all var(--mm-duration) var(--mm-ease);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// ─── Streak badge ───
+.mm-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: var(--mm-streak-color);
+  font-size: 0.875rem;
+
+  &--hot {
+    text-shadow: 0 0 8px var(--mm-streak-glow);
+  }
+}
+
+// ─── Empty state ───
+.mm-empty {
+  text-align: center;
+  padding: 64px 24px;
+  border: 2px dashed var(--mm-surface-border);
+  border-radius: var(--mm-radius-xl);
+  background: var(--mm-glass);
+
+  &__icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--mm-text);
+    margin-bottom: 8px;
+  }
+
+  &__description {
+    color: var(--mm-text-muted);
+    font-size: 0.875rem;
+    max-width: 320px;
+    margin: 0 auto 24px;
+  }
+}
+
+// ─── Flash message toast ───
+.mm-flash {
+  animation: mm-flash-in 300ms var(--mm-ease) forwards;
+  backdrop-filter: blur(12px);
+  border-radius: var(--mm-radius-md);
+  box-shadow: var(--mm-shadow-md);
+
+  &--success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--mm-accent);
+  }
+
+  &--error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--mm-danger);
+  }
+}
+
+// ─── Nav shell ───
+.mm-nav {
+  background: var(--mm-glass);
+  border-bottom: 1px solid var(--mm-surface-border);
+  backdrop-filter: blur(12px);
+}

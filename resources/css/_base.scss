@@ -1,0 +1,52 @@
+// _base.scss — global resets, body, typography
+
+body {
+  font-family: var(--mm-font-sans);
+  background: var(--mm-bg-gradient);
+  color: var(--mm-text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Subtle pattern overlay
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%236366F1' fill-opacity='0.03'%3E%3Cpath d='M20 20h-4v-4h4v4zm0-20h-4v4h4V0zM0 20h4v-4H0v4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+// App content above pattern
+#app {
+  position: relative;
+  z-index: 1;
+}
+
+// Custom scrollbar (Webkit)
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mm-text-dimmed);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--mm-text-muted);
+  }
+}
+
+// Consistent focus ring
+*:focus-visible {
+  outline: 2px solid var(--mm-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

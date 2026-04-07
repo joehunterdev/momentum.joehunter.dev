@@ -2,8 +2,21 @@
 - [] Configure base user
 - [] Verify hot reload
 - [] Test build and env
+- [] Config
+    - [] Define healthy schedule 8hrs sleep
+    - [] Rather than m,t. Use proper days of the week
+    - [] What is an identity statement
+- [] Moments 
+    - [] Moments should really just be a modal popup or similar
+    - [] Create
+        - [] Icon needs a selection of emojis
+- [] Weekley
+    - [] Weekly needs to be        
+- [] Theme 
+    - [] Needs logo top
+    - [] Dark tailwind theme
 - [] Define components 
 - [] Define controllers migrations models
 - [] Define data types
-- [] Test remote:cmd get that working
+- [x] Test remote:cmd get that working
 - [] SSH Deploy in git actions
