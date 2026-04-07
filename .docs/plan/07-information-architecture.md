@@ -5,6 +5,10 @@
 - **/config** — user schedule
 - **/create-moment** — moment builder
 
+## Home
+Take the laravel current home page see E:\www\momentum.joehunter.dev\.docs\.private\screens\home-reference.png lets remove anny laravel related code so long as its tailwind, then put my logo top to replace laravel logo, make it white mode to suite my design of logged in user
+and add conic type radial blur in purple based on my logos purple color. the cards can be just brief information about the core features
+
 ## Weekly View
     - Is a full weekly view
     - Starting with monday to sunday always in this format monday top sunday bottom

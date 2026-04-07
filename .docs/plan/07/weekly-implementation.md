@@ -386,3 +386,6 @@ Tue 7th Of July
 
 Time slot accross the x but derive current time to show just the current hour slot roughly
 With next and back options
+
+
+dates across the top should allow for jumping one week to the next, consider it like the current calendar type ui but just cols maby 3 going across the top, with the current week centererd 6apr - 12 then left the pregious week then right next week, changing the week start will change the inner calendar data

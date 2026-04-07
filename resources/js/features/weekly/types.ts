@@ -10,6 +10,9 @@ export interface SlotMoment {
     consistency: number | null;
     status: SlotStatus;
     instance_id: number | null;
+    implementation_intention: string | null;
+    habit_stack_after: string | null;
+    environment_prompt: string | null;
 }
 
 export interface TimeSlot {

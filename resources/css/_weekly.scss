@@ -265,6 +265,7 @@ $border-light: #f3f4f6;
     flex-direction: column;
     width: 100%;
     min-width: 0;
+    overflow: hidden;
 
     // Top strip: bar (5/6) + score label (1/6)
     &__top {
@@ -298,6 +299,8 @@ $border-light: #f3f4f6;
         align-items: center;
         gap: 0.625rem;
         padding: 0.375rem 0.875rem 0.5rem;
+        min-height: 2.75rem; // locks all cards to the same height (name + desc/track line)
+        box-sizing: border-box;
     }
 
     &__body {
@@ -308,7 +311,16 @@ $border-light: #f3f4f6;
         flex: 1;
     }
 
+    &__name-row {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        min-width: 0;
+    }
+
     &__name {
+        flex: 1;
+        min-width: 0;
         font-size: 0.8125rem;
         font-weight: 600;
         color: #111827;
@@ -332,6 +344,87 @@ $border-light: #f3f4f6;
         &__body {
             display: none;
         }
+    }
+
+    // Next upcoming moment gets a subtle left accent
+    &--next {
+        .slot-moment-card__name {
+            color: var(--mm-primary, #6366f1);
+        }
+    }
+}
+
+// ─── Moment Detail Ticker ─────────────────────────────────────────────────────
+
+.moment-detail-ticker {
+
+    // badge sits inline — rendered as flex children of __name-row
+    &__badge {
+        flex-shrink: 0;
+        font-size: 0.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #fff;
+        background: var(--mm-primary, #6366f1);
+        border-radius: 3px;
+        padding: 0.1em 0.35em;
+        line-height: 1.4;
+        align-self: center;
+    }
+
+    // full-width scrolling track on second line
+    &__track {
+        position: relative;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: 1.1em; // lock height to one text line — prevents layout shift
+        overflow: hidden;
+        font-size: 0.6875rem;
+        line-height: 1.4;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+
+        &--out {
+            opacity: 0;
+            transform: translateY(-3px);
+        }
+    }
+
+    &__text {
+        display: inline-block;
+        font-size: inherit;
+        color: #6b7280;
+        white-space: nowrap;
+        line-height: inherit;
+
+        &--scroll {
+            animation: ticker-scroll var(--ticker-duration, 12s) linear 1.5s infinite;
+        }
+    }
+
+    // right-edge fade-out mask
+    &__fade {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 3rem;
+        height: 100%;
+        background: linear-gradient(to right, transparent, #fff 70%);
+        pointer-events: none;
+    }
+}
+
+@keyframes ticker-scroll {
+
+    0%,
+    15% {
+        transform: translateX(0);
+    }
+
+    80%,
+    100% {
+        transform: translateX(calc(-100% + var(--ticker-track-width, 120px)));
     }
 }
 

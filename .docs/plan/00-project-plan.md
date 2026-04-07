@@ -55,6 +55,14 @@
 - Identity streaks (e.g., "I am a runner")
 - Friction slider (easy ↔ hard)
 
+### UI Features
+- Cue checklist shown in calendar slot
+- If–Then plan per moment
+- Environment prompts (e.g., "Book on table")
+- Reward marker after completion
+- Identity streaks (e.g., "I am a runner")
+- Friction slider (easy ↔ hard)
+
 ## 7) Information Architecture
 - **/daily** — schedule view
 - **/weekly** — planning & moment setup

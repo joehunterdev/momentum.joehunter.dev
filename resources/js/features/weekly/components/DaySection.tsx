@@ -8,6 +8,7 @@ interface Props {
     onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
     onToggleMoment: (momentId: number, instanceId: number | null, date: string) => void;
     highlightTime?: string;
+    nextMomentKey?: string | null;
 }
 
 const VISIBLE_SLOTS = 6;
@@ -46,7 +47,7 @@ function getWindowedSlots(slots: TimeSlot[], isToday: boolean): TimeSlot[] {
     return hourly.slice(start, start + VISIBLE_SLOTS);
 }
 
-export default function DaySection({ day, config, onAddMoment, onToggleMoment, highlightTime }: Props) {
+export default function DaySection({ day, config, onAddMoment, onToggleMoment, highlightTime, nextMomentKey }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getWindowedSlots(day.slots, day.isToday);
 
@@ -78,6 +79,10 @@ export default function DaySection({ day, config, onAddMoment, onToggleMoment, h
                         highlightTime={highlightTime}
                         isWeekend={day.isWeekend}
                         isToday={day.isToday}
+                        isNext={
+                            !!slot.moment &&
+                            nextMomentKey === `${day.date}:${slot.time}:${slot.moment.id}`
+                        }
                     />
                 ))}
             </div>

@@ -12,13 +12,14 @@ interface Props {
     highlightTime?: string;
     isWeekend?: boolean;
     isToday?: boolean;
+    isNext?: boolean;
 }
 
 function isOutOfOffice(time: string, config: WeeklyConfig): boolean {
     return time < config.office_start || time >= config.office_end;
 }
 
-export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggleMoment, highlightTime, isWeekend, isToday }: Props) {
+export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggleMoment, highlightTime, isWeekend, isToday, isNext }: Props) {
     const [popoverOpen, setPopoverOpen] = useState(false);
     const [swipeProgress, setSwipeProgress] = useState(0);
     const [swipeDone, setSwipeDone] = useState(false);
@@ -61,6 +62,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggle
                     <SlotMomentCard
                         moment={slot.moment}
                         date={date}
+                        isNext={isNext}
                         onToggle={handleToggle}
                         onSwipeProgress={handleSwipeProgress}
                     />

@@ -35,6 +35,7 @@ class WeeklyController extends Controller
             ->where('is_active', true)
             ->with([
                 'schedule',
+                'cue',
                 'instances' => fn ($q) => $q->whereBetween('date', [
                     $consistencyWindow->toDateString(),
                     $weekEnd->toDateString(),
@@ -125,6 +126,9 @@ class WeeklyController extends Controller
                         'consistency' => $consistency,
                         'status' => $status,
                         'instance_id' => $instance?->id,
+                        'implementation_intention' => $match->cue?->implementation_intention,
+                        'habit_stack_after' => $match->cue?->habit_stack_after,
+                        'environment_prompt' => $match->cue?->environment_prompt,
                     ],
                 ];
             }, $slots);
