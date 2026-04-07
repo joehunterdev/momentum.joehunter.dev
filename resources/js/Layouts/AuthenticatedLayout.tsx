@@ -34,6 +34,12 @@ export default function Authenticated({
                                     Daily
                                 </NavLink>
                                 <NavLink
+                                    href={route('weekly')}
+                                    active={route().current('weekly')}
+                                >
+                                    Weekly
+                                </NavLink>
+                                <NavLink
                                     href={route('config.edit')}
                                     active={route().current('config.edit')}
                                 >
@@ -142,6 +148,12 @@ export default function Authenticated({
                             active={route().current('daily')}
                         >
                             Daily
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('weekly')}
+                            active={route().current('weekly')}
+                        >
+                            Weekly
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('config.edit')}

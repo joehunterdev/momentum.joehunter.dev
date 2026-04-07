@@ -5,16 +5,17 @@ use App\Http\Controllers\DailyController;
 use App\Http\Controllers\MomentController;
 use App\Http\Controllers\MomentInstanceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WeeklyController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
-        'canLogin'       => Route::has('login'),
-        'canRegister'    => Route::has('register'),
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
-        'phpVersion'     => PHP_VERSION,
+        'phpVersion' => PHP_VERSION,
     ]);
 });
 
@@ -22,6 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ─── App ─────────────────────────────────────────────────────────────────
     Route::get('/daily', [DailyController::class, 'index'])->name('daily');
+    Route::get('/weekly', [WeeklyController::class, 'index'])->name('weekly');
 
     Route::resource('moments', MomentController::class)
         ->only(['create', 'store', 'edit', 'update', 'destroy']);
@@ -38,4 +40,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
