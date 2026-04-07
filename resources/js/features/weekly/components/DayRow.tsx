@@ -5,9 +5,10 @@ import TimeSlotCell from './TimeSlotCell';
 interface Props {
     day: WeekDay;
     config: WeeklyConfig;
+    onAddMoment: (date: string, time: string) => void;
 }
 
-export default function DayRow({ day, config }: Props) {
+export default function DayRow({ day, config, onAddMoment }: Props) {
     const rowClass = [
         'weekly-day-row',
         day.isToday ? 'weekly-day-row--today' : '',
@@ -38,6 +39,7 @@ export default function DayRow({ day, config }: Props) {
                         slot={slot}
                         date={day.date}
                         config={config}
+                        onAddMoment={onAddMoment}
                     />
                 ))}
             </div>

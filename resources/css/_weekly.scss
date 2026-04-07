@@ -1,111 +1,199 @@
 // ─── Weekly Grid ──────────────────────────────────────────────────────────────
+//
+// LAYOUT PIVOT
+// ┌─────────────────────────────────────────────────────────────────────────┐
+// │  Mobile  (< md)              Desktop  (≥ md)                            │
+// │  ─────────────────────       ─────────────────────────────────────────  │
+// │  col 1   = time labels       col 1   = day headers  (sticky left)       │
+// │  col 2+  = days (7 cols)     col 2+  = time slots                       │
+// │  row 1   = day headers       row 1   = time labels  (sticky top)        │
+// │  row 2+  = time slot rows    row 2+  = day rows                         │
+// └─────────────────────────────────────────────────────────────────────────┘
+//
+// Every child carries:
+//   --di  day index  (1 = first, i.e. grid col/row offset of 2)
+//   --ti  time index (1 = first, i.e. grid col/row offset of 2)
+//
+// Mobile  → slot  sits at  grid-column: --di,  grid-row: --ti
+// Desktop → slot  sits at  grid-column: --ti,  grid-row: --di
+
+$slot-mobile: 3rem; // slot row height on mobile
+$slot-desktop: 5rem; // slot column width on desktop
+$day-label-w: 5.5rem; // sticky day-header width (desktop)
+$day-label-h: 4rem; // sticky day-header height (mobile)
+$time-label-w: 3.25rem; // time label width (mobile col 1)
+$time-label-h: 2rem; // time label height (desktop row 1)
+$header-bg: #fff;
+
+// ─── Container ────────────────────────────────────────────────────────────────
 
 .weekly-grid {
-    display: flex;
-    flex-direction: column;
-    overflow-x: auto;
+    display: grid;
+    overflow: auto;
     -webkit-overflow-scrolling: touch;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
 
-    &__header-row {
-        display: flex;
+    // ── Mobile: time labels in col 1, days as columns ─────────────────────
+    grid-template-columns: $time-label-w repeat(var(--wg-days), $slot-mobile);
+    grid-template-rows: $day-label-h repeat(var(--wg-times), $slot-mobile);
+
+    // ── Corner spacer (top-left) ───────────────────────────────────────────
+    &__corner {
+        grid-column: 1;
+        grid-row: 1;
         position: sticky;
         top: 0;
-        z-index: 10;
-        background: #fff;
+        left: 0;
+        z-index: 20;
+        background: $header-bg;
+        border-right: 1px solid #e5e7eb;
         border-bottom: 1px solid #e5e7eb;
     }
 
-    &__day-label-spacer {
-        flex-shrink: 0;
-        width: 6rem;
-        min-width: 6rem;
-    }
-
-    &__time-label {
-        flex-shrink: 0;
-        width: 5rem;
-        min-width: 5rem;
+    // ── Day headers ────────────────────────────────────────────────────────
+    // Mobile: sticky top row, each at col = --di
+    &__day-header {
+        grid-row: 1;
+        grid-column: var(--di);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: $header-bg;
+        border-bottom: 2px solid #e5e7eb;
+        border-right: 1px solid #f3f4f6;
         padding: 0.375rem 0.25rem;
-        font-size: 0.6875rem;
-        color: #9ca3af;
-        font-weight: 500;
-        text-align: center;
-        border-left: 1px solid #f3f4f6;
-    }
-}
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.1rem;
 
-// ─── Day Row ──────────────────────────────────────────────────────────────────
+        &--today {
+            background: rgba(99, 102, 241, 0.06);
+            border-bottom-color: var(--mm-primary, #6366f1);
 
-.weekly-day-row {
-    display: flex;
-    align-items: stretch;
-    border-bottom: 1px solid #f3f4f6;
-    min-height: 3.5rem;
+            .weekly-grid__day-name {
+                color: var(--mm-primary, #6366f1);
+            }
+        }
 
-    &--today {
-        background: rgba(99, 102, 241, 0.05);
-        border-left: 3px solid var(--mm-primary, #6366f1);
-
-        .weekly-day-row__label {
-            color: var(--mm-primary, #6366f1);
-            font-weight: 700;
+        &--weekend {
+            background: rgba(100, 116, 139, 0.04);
         }
     }
 
-    &--weekend {
-        background: rgba(100, 116, 139, 0.04);
-    }
-
-    &__label {
-        flex-shrink: 0;
-        width: 6rem;
-        min-width: 6rem;
-        padding: 0.5rem 0.75rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        position: sticky;
-        left: 0;
-        background: inherit;
-        z-index: 1;
-        border-right: 1px solid #e5e7eb;
-    }
-
     &__day-name {
-        font-size: 0.75rem;
-        font-weight: 600;
+        font-size: 0.6rem;
+        font-weight: 700;
         color: #374151;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
+        line-height: 1;
     }
 
-    &__date {
-        font-size: 0.6875rem;
+    &__day-date {
+        font-size: 0.5625rem;
         color: #9ca3af;
-        margin-top: 0.125rem;
+        white-space: nowrap;
+        line-height: 1;
     }
 
-    &__slots {
+    // ── Time labels ────────────────────────────────────────────────────────
+    // Mobile: sticky left col, each at row = --ti
+    &__time-label {
+        grid-column: 1;
+        grid-row: var(--ti);
+        position: sticky;
+        left: 0;
+        z-index: 5;
+        background: $header-bg;
+        border-right: 1px solid #e5e7eb;
+        border-bottom: 1px solid #f3f4f6;
+        padding: 0 0.25rem;
         display: flex;
-        flex: 1;
+        align-items: center;
+        justify-content: flex-end;
+        font-size: 0.5625rem;
+        color: #9ca3af;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    // ── Desktop pivot ──────────────────────────────────────────────────────
+    @media (min-width: 768px) {
+        // Day headers become sticky left col; time labels become sticky top row
+        grid-template-columns: $day-label-w repeat(var(--wg-times), $slot-desktop);
+        grid-template-rows: $time-label-h repeat(var(--wg-days), auto);
+
+        &__day-header {
+            // row = --di, col 1
+            grid-column: 1;
+            grid-row: var(--di);
+            top: auto;
+            left: 0;
+            border-bottom: 1px solid #f3f4f6;
+            border-right: 1px solid #e5e7eb;
+            border-top: none;
+            padding: 0.5rem 0.75rem;
+            align-items: flex-start;
+            min-height: 3.5rem;
+
+            &--today {
+                border-left: 3px solid var(--mm-primary, #6366f1);
+                border-bottom: 1px solid #f3f4f6;
+                padding-left: calc(0.75rem - 3px);
+            }
+        }
+
+        &__day-name {
+            font-size: 0.75rem;
+            letter-spacing: 0.04em;
+        }
+
+        &__day-date {
+            font-size: 0.6875rem;
+            margin-top: 0.125rem;
+        }
+
+        &__time-label {
+            // col = --ti, row 1
+            grid-row: 1;
+            grid-column: var(--ti);
+            top: 0;
+            left: auto;
+            border-right: 1px solid #f3f4f6;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.375rem 0.25rem;
+            justify-content: center;
+            font-size: 0.6875rem;
+        }
     }
 }
 
-// ─── Time Slot Cell ───────────────────────────────────────────────────────────
+// ─── Slot Cells ───────────────────────────────────────────────────────────────
 
 .weekly-slot {
-    flex-shrink: 0;
-    width: 5rem;
-    min-width: 5rem;
-    border-left: 1px solid #f3f4f6;
+    // Mobile: col = --di, row = --ti
+    grid-column: var(--di);
+    grid-row: var(--ti);
+
+    border-bottom: 1px solid #f3f4f6;
+    border-right: 1px solid #f3f4f6;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     transition: background 0.1s;
 
+    // Desktop: axes swapped
+    @media (min-width: 768px) {
+        grid-column: var(--ti);
+        grid-row: var(--di);
+    }
+
     &--ooo {
-        background: rgba(100, 116, 139, 0.08);
+        background: rgba(100, 116, 139, 0.06);
         pointer-events: none;
 
         &::after {
@@ -115,9 +203,17 @@
             background: repeating-linear-gradient(45deg,
                     transparent,
                     transparent 4px,
-                    rgba(100, 116, 139, 0.08) 4px,
-                    rgba(100, 116, 139, 0.08) 8px);
+                    rgba(100, 116, 139, 0.07) 4px,
+                    rgba(100, 116, 139, 0.07) 8px);
         }
+    }
+
+    &--weekend {
+        background: rgba(100, 116, 139, 0.025);
+    }
+
+    &--today {
+        background: rgba(99, 102, 241, 0.03);
     }
 
     &--empty {
@@ -160,10 +256,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2rem;
+    height: 2rem;
     border-radius: 0.5rem;
-    font-size: 1.125rem;
+    font-size: 1rem;
     border: 2px solid transparent;
     transition: transform 0.1s;
 
