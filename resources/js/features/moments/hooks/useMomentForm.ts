@@ -7,7 +7,6 @@ const defaults: MomentFormData = {
     description: '',
     color: '#3B82F6',
     icon: '',
-    identity_statement: '',
     sort_order: 0,
     is_active: true,
     frequency: 'daily',
@@ -29,7 +28,7 @@ export function useMomentForm(moment?: Moment, overrides?: Partial<MomentFormDat
                 description: moment.description ?? '',
                 color: moment.color ?? '#3B82F6',
                 icon: moment.icon ?? '',
-                identity_statement: moment.identity_statement ?? '',
+
                 sort_order: moment.sort_order,
                 is_active: moment.is_active,
                 frequency: moment.schedule?.frequency ?? 'daily',

@@ -22,7 +22,6 @@ class MomentController extends Controller
             'description' => ['nullable', 'string'],
             'color' => ['nullable', 'string', 'max:7'],
             'icon' => ['nullable', 'string', 'max:10'],
-            'identity_statement' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             // Schedule
             'frequency' => ['nullable', 'in:daily,weekly,custom'],
@@ -43,7 +42,6 @@ class MomentController extends Controller
             'description' => $data['description'] ?? null,
             'color' => $data['color'] ?? null,
             'icon' => $data['icon'] ?? null,
-            'identity_statement' => $data['identity_statement'] ?? null,
             'sort_order' => $data['sort_order'] ?? 0,
         ]);
 
@@ -87,7 +85,6 @@ class MomentController extends Controller
             'description' => ['nullable', 'string'],
             'color' => ['nullable', 'string', 'max:7'],
             'icon' => ['nullable', 'string', 'max:10'],
-            'identity_statement' => ['nullable', 'string', 'max:255'],
             'is_active' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             // Schedule
@@ -109,7 +106,6 @@ class MomentController extends Controller
             'description' => $data['description'] ?? null,
             'color' => $data['color'] ?? null,
             'icon' => $data['icon'] ?? null,
-            'identity_statement' => $data['identity_statement'] ?? null,
             'is_active' => $data['is_active'] ?? true,
             'sort_order' => $data['sort_order'] ?? $moment->sort_order,
         ]);

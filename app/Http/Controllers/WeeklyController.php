@@ -35,7 +35,7 @@ class WeeklyController extends Controller
             ->where('is_active', true)
             ->with([
                 'schedule',
-                'instances' => fn ($q) => $q->whereBetween('date', [
+                'instances' => fn($q) => $q->whereBetween('date', [
                     $consistencyWindow->toDateString(),
                     $weekEnd->toDateString(),
                 ]),
@@ -58,7 +58,7 @@ class WeeklyController extends Controller
             $isWeekend = $date->isWeekend();
 
             // Moments scheduled for this day
-            $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($date));
+            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($date));
 
             // Map slots → moment or null
             $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $today, $consistencyWindow) {
@@ -74,7 +74,7 @@ class WeeklyController extends Controller
                     return ['time' => $slotTime, 'moment' => null];
                 }
 
-                $instance = $match->instances->first(fn ($i) => $i->date->toDateString() === $dateStr);
+                $instance = $match->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
 
                 $status = match (true) {
                     $instance?->completed_at !== null => 'completed',
@@ -85,11 +85,11 @@ class WeeklyController extends Controller
 
                 // Consistency: completed instances in 28-day window ÷ scheduled occurrences
                 $windowInstances = $match->instances->filter(
-                    fn ($i) => $i->date->toDateString() >= $consistencyWindow->toDateString()
+                    fn($i) => $i->date->toDateString() >= $consistencyWindow->toDateString()
                         && $i->date->toDateString() <= $today->toDateString()
                 );
                 $scheduled = $windowInstances->count();
-                $completed = $windowInstances->filter(fn ($i) => $i->completed_at !== null)->count();
+                $completed = $windowInstances->filter(fn($i) => $i->completed_at !== null)->count();
                 $consistency = $scheduled > 0 ? (int) round(($completed / $scheduled) * 100) : null;
 
                 return [

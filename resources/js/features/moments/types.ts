@@ -26,7 +26,6 @@ export interface Moment {
     description: string | null;
     color: string | null;
     icon: string | null;
-    identity_statement: string | null;
     is_active: boolean;
     sort_order: number;
     schedule: MomentSchedule | null;
@@ -40,7 +39,6 @@ export interface MomentFormData {
     description: string;
     color: string;
     icon: string;
-    identity_statement: string;
     sort_order: number;
     is_active: boolean;
     // Schedule

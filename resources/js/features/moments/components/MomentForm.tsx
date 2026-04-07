@@ -86,18 +86,6 @@ export default function MomentForm({ moment, defaultValues, onSubmit, submitLabe
                                         </div>
 
                                         <div>
-                                            <InputLabel htmlFor="identity_statement" value="Identity statement" />
-                                            <TextInput
-                                                id="identity_statement"
-                                                value={form.data.identity_statement}
-                                                onChange={(e) => setField('identity_statement', e.target.value)}
-                                                placeholder="e.g. I am someone who stays hydrated"
-                                                className="mt-1 block w-full"
-                                            />
-                                            <InputError message={form.errors.identity_statement} className="mt-1" />
-                                        </div>
-
-                                        <div>
                                             <InputLabel htmlFor="icon" value="Icon" />
                                             <div className="mt-2">
                                                 <IconPicker
