@@ -6,6 +6,7 @@ interface Props {
     day: WeekDay;
     config: WeeklyConfig;
     onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
+    onToggleMoment: (momentId: number, instanceId: number | null, date: string) => void;
     highlightTime?: string;
 }
 
@@ -45,7 +46,7 @@ function getWindowedSlots(slots: TimeSlot[], isToday: boolean): TimeSlot[] {
     return hourly.slice(start, start + VISIBLE_SLOTS);
 }
 
-export default function DaySection({ day, config, onAddMoment, highlightTime }: Props) {
+export default function DaySection({ day, config, onAddMoment, onToggleMoment, highlightTime }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getWindowedSlots(day.slots, day.isToday);
 
@@ -73,6 +74,7 @@ export default function DaySection({ day, config, onAddMoment, highlightTime }: 
                         date={day.date}
                         config={config}
                         onAddMoment={onAddMoment}
+                        onToggleMoment={onToggleMoment}
                         highlightTime={highlightTime}
                         isWeekend={day.isWeekend}
                         isToday={day.isToday}

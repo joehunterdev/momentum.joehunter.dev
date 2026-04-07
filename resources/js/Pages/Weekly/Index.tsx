@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { format, parseISO } from 'date-fns';
 import { useState } from 'react';
 import { WeeklyGrid } from '@/features/weekly';
@@ -41,6 +41,14 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
         });
     }
 
+    function handleToggleMoment(momentId: number, _instanceId: number | null, date: string) {
+        router.post(
+            route('moments.toggle', { moment: momentId }),
+            { date },
+            { preserveScroll: true },
+        );
+    }
+
     return (
         <AuthenticatedLayout
             header={
@@ -53,7 +61,7 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
 
             <div className="py-6">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <WeeklyGrid days={days} config={config} onAddMoment={handleAddMoment} highlightTime={highlightTime ?? undefined} />
+                    <WeeklyGrid days={days} config={config} onAddMoment={handleAddMoment} onToggleMoment={handleToggleMoment} highlightTime={highlightTime ?? undefined} />
                 </div>
             </div>
 

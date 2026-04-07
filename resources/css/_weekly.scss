@@ -256,10 +256,14 @@ $border-light: #f3f4f6;
     border-radius: 0.5rem;
     font-size: 1.125rem;
     border: 2px solid transparent;
-    transition: transform 0.1s;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    z-index: 1;
+    touch-action: pan-y; // allow vertical scroll, intercept horizontal drag
+    user-select: none;
 
     &:hover {
-        transform: scale(1.1);
+        transform: scale(1.05);
     }
 
     &--completed {
@@ -282,7 +286,48 @@ $border-light: #f3f4f6;
         background: rgba(99, 102, 241, 0.06);
         border-color: #e5e7eb;
     }
+
+    &--swiping {
+        box-shadow: 2px 0 8px rgba(16, 185, 129, 0.25);
+        border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    &--done {
+        animation: slot-icon-flash 0.5s ease forwards;
+    }
 }
+
+// ─── Swipe-to-complete track ──────────────────────────────────────────────────
+
+.slot-icon-track {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 0.5rem;
+
+    &__check {
+        position: absolute;
+        left: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #10b981;
+        opacity: 0;
+        transition: opacity 0.1s;
+        pointer-events: none;
+    }
+
+    &:has(.slot-icon--swiping) .slot-icon-track__check {
+        opacity: 1;
+    }
+}
+
+@keyframes slot-icon-flash {
+    0%   { background: rgba(16, 185, 129, 0.4); border-color: rgba(16, 185, 129, 0.8); transform: scale(1.15); }
+    60%  { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); transform: scale(1); }
+    100% { transform: scale(1); }
+}
+
 // --- Slot Add Popover ---------------------------------------------------------
 
 .slot-popover {

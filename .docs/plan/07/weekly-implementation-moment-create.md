@@ -249,3 +249,14 @@ defaultValues = {
 - **Live day-toggle sync:** as user toggles days in the modal, highlights update in the grid behind it (requires lifting form state or using a portal + callback)
 - **Conflict indicator:** if a slot already has a moment, show a warning icon instead of highlight
 - **"Every day" option:** third popover pill for daily recurrence (all 7 days)
+
+
+## Quick Action Moment
+- So some of the logic i would like to immplement now on the weekley view
+is to take the icon and drag it right to considering it done and checkinc it off
+
+On the right currently we could also add a bit of a descrpotion and other usefull stuff to sumarize the current moment
+
+Lets also make the view almost full width of the cards to utilize full space on mobile theres still a bit of margin to use. essentially the outer card weekly grid can go full width
+
+The timeslot based on current time should be highlighted so we know were currently in that slot

@@ -8,6 +8,7 @@ interface Props {
     date: string;
     config: WeeklyConfig;
     onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
+    onToggleMoment: (momentId: number, instanceId: number | null, date: string) => void;
     highlightTime?: string;
     isWeekend?: boolean;
     isToday?: boolean;
@@ -17,7 +18,7 @@ function isOutOfOffice(time: string, config: WeeklyConfig): boolean {
     return time < config.office_start || time >= config.office_end;
 }
 
-export default function TimeSlotCell({ slot, date, config, onAddMoment, highlightTime, isWeekend, isToday }: Props) {
+export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggleMoment, highlightTime, isWeekend, isToday }: Props) {
     const [popoverOpen, setPopoverOpen] = useState(false);
     const ooo = isOutOfOffice(slot.time, config);
     const isHighlighted = slot.time === highlightTime && !slot.moment && !isWeekend;
@@ -38,7 +39,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, highligh
             <span className="weekly-slot__time">{slot.time}</span>
             <div className="weekly-slot__content" style={{ position: 'relative' }}>
                 {slot.moment ? (
-                    <SlotMomentIcon moment={slot.moment} />
+                    <SlotMomentIcon moment={slot.moment} date={date} onToggle={onToggleMoment} />
                 ) : ooo ? (
                     <span className="weekly-slot__ooo-dot" aria-hidden />
                 ) : (
