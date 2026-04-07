@@ -283,3 +283,59 @@ $border-light: #f3f4f6;
         border-color: #e5e7eb;
     }
 }
+// --- Slot Add Popover ---------------------------------------------------------
+
+.slot-popover {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    min-width: 10rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    &__option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.8125rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        color: #374151;
+        transition: background 0.1s;
+
+        &:hover {
+            background: rgba(99, 102, 241, 0.06);
+            color: var(--mm-primary, #6366f1);
+        }
+
+        & + & {
+            border-top: 1px solid #f3f4f6;
+        }
+    }
+}
+
+// --- Slot Highlight (recurring preview) --------------------------------------
+
+.weekly-slot--highlight {
+    animation: slot-pulse 1.5s ease-in-out infinite;
+
+    .weekly-slot__add-btn {
+        opacity: 1;
+        border-color: var(--mm-primary, #6366f1);
+        color: var(--mm-primary, #6366f1);
+    }
+}
+
+@keyframes slot-pulse {
+    0%, 100% { background: rgba(99, 102, 241, 0.06); }
+    50%       { background: rgba(99, 102, 241, 0.14); }
+}

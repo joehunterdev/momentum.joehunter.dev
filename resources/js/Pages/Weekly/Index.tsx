@@ -15,14 +15,28 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
     const endLabel = format(parseISO(weekEnd), 'd MMM yyyy');
 
     const [showingModal, setShowingModal] = useState(false);
+    const [highlightTime, setHighlightTime] = useState<string | null>(null);
+    const [modalDefaults, setModalDefaults] = useState<Partial<MomentFormData> | undefined>();
 
-    function handleAddMoment(_date: string, _time: string) {
+    function handleAddMoment(_date: string, time: string, mode: 'once' | 'recurring') {
+        if (mode === 'recurring') {
+            setHighlightTime(time);
+            setModalDefaults({ frequency: 'weekly', days_of_week: [1, 2, 3, 4, 5], preferred_time: time });
+        } else {
+            setModalDefaults({ preferred_time: time });
+        }
         setShowingModal(true);
+    }
+
+    function handleModalClose() {
+        setShowingModal(false);
+        setHighlightTime(null);
+        setModalDefaults(undefined);
     }
 
     function handleModalSubmit(_data: MomentFormData, form: ReturnType<typeof useMomentForm>) {
         form.post(route('moments.store'), {
-            onSuccess: () => setShowingModal(false),
+            onSuccess: () => handleModalClose(),
             onError: () => { },
         });
     }
@@ -39,13 +53,14 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
 
             <div className="py-6">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <WeeklyGrid days={days} config={config} onAddMoment={handleAddMoment} />
+                    <WeeklyGrid days={days} config={config} onAddMoment={handleAddMoment} highlightTime={highlightTime ?? undefined} />
                 </div>
             </div>
 
             <MomentModal
                 show={showingModal}
-                onClose={() => setShowingModal(false)}
+                onClose={handleModalClose}
+                defaultValues={modalDefaults}
                 onSubmit={handleModalSubmit}
             />
         </AuthenticatedLayout>

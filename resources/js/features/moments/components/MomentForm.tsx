@@ -16,14 +16,16 @@ import { MOMENT_FORM_SECTIONS } from '@/shared/constants/moments';
 
 interface MomentFormProps {
     moment?: Moment;
+    defaultValues?: Partial<MomentFormData>;
     onSubmit: (data: MomentFormData, form: ReturnType<typeof useMomentForm>) => void;
     submitLabel?: string;
     onCancel?: () => void;
 }
 
-export default function MomentForm({ moment, onSubmit, submitLabel = 'Save', onCancel }: MomentFormProps) {
-    const form = useMomentForm(moment);
-    const [openSection, setOpenSection] = useState<string>('basics');
+export default function MomentForm({ moment, defaultValues, onSubmit, submitLabel = 'Save', onCancel }: MomentFormProps) {
+    const form = useMomentForm(moment, defaultValues);
+    const initialSection = !moment && defaultValues?.frequency ? 'schedule' : 'basics';
+    const [openSection, setOpenSection] = useState<string>(initialSection);
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();

@@ -7,6 +7,7 @@ interface MomentModalProps {
     show: boolean;
     onClose: () => void;
     moment?: Moment;
+    defaultValues?: Partial<MomentFormData>;
     onSubmit: (data: MomentFormData, form: ReturnType<typeof useMomentForm>) => void;
     submitLabel?: string;
 }
@@ -15,6 +16,7 @@ export default function MomentModal({
     show,
     onClose,
     moment,
+    defaultValues,
     onSubmit,
     submitLabel,
 }: MomentModalProps) {
@@ -40,6 +42,7 @@ export default function MomentModal({
                 <div className="moment-modal__body">
                     <MomentForm
                         moment={moment}
+                        defaultValues={defaultValues}
                         onSubmit={onSubmit}
                         submitLabel={submitLabel ?? (moment ? 'Save Changes' : 'Create Moment')}
                         onCancel={onClose}

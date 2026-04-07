@@ -5,7 +5,8 @@ import TimeSlotCell from './TimeSlotCell';
 interface Props {
     day: WeekDay;
     config: WeeklyConfig;
-    onAddMoment: (date: string, time: string) => void;
+    onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
+    highlightTime?: string;
 }
 
 const VISIBLE_SLOTS = 6;
@@ -44,7 +45,7 @@ function getWindowedSlots(slots: TimeSlot[], isToday: boolean): TimeSlot[] {
     return hourly.slice(start, start + VISIBLE_SLOTS);
 }
 
-export default function DaySection({ day, config, onAddMoment }: Props) {
+export default function DaySection({ day, config, onAddMoment, highlightTime }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getWindowedSlots(day.slots, day.isToday);
 
@@ -72,6 +73,7 @@ export default function DaySection({ day, config, onAddMoment }: Props) {
                         date={day.date}
                         config={config}
                         onAddMoment={onAddMoment}
+                        highlightTime={highlightTime}
                         isWeekend={day.isWeekend}
                         isToday={day.isToday}
                     />

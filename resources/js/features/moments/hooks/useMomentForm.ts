@@ -20,7 +20,7 @@ const defaults: MomentFormData = {
     temptation_bundle: '',
 };
 
-export function useMomentForm(moment?: Moment) {
+export function useMomentForm(moment?: Moment, overrides?: Partial<MomentFormData>) {
     return useForm<MomentFormData>({
         ...defaults,
         ...(moment
@@ -42,5 +42,6 @@ export function useMomentForm(moment?: Moment) {
                 temptation_bundle: moment.reward?.temptation_bundle ?? '',
             }
             : {}),
+        ...(!moment && overrides ? overrides : {}),
     });
 }
