@@ -7,7 +7,6 @@ const defaults: MomentFormData = {
     description: '',
     color: '#3B82F6',
     icon: '',
-    identity_statement: '',
     sort_order: 0,
     is_active: true,
     frequency: 'daily',
@@ -20,7 +19,7 @@ const defaults: MomentFormData = {
     temptation_bundle: '',
 };
 
-export function useMomentForm(moment?: Moment) {
+export function useMomentForm(moment?: Moment, overrides?: Partial<MomentFormData>) {
     return useForm<MomentFormData>({
         ...defaults,
         ...(moment
@@ -29,7 +28,7 @@ export function useMomentForm(moment?: Moment) {
                 description: moment.description ?? '',
                 color: moment.color ?? '#3B82F6',
                 icon: moment.icon ?? '',
-                identity_statement: moment.identity_statement ?? '',
+
                 sort_order: moment.sort_order,
                 is_active: moment.is_active,
                 frequency: moment.schedule?.frequency ?? 'daily',
@@ -42,5 +41,6 @@ export function useMomentForm(moment?: Moment) {
                 temptation_bundle: moment.reward?.temptation_bundle ?? '',
             }
             : {}),
+        ...(!moment && overrides ? overrides : {}),
     });
 }

@@ -44,8 +44,18 @@
 | **Make it Attractive** (Craving) | Temptation bundling: pair a needed action with a wanted one | Reward preview before task, motivational identity framing |
 | **Make it Easy** (Response) | Reduce friction. Two-Minute Rule: new habits take < 2 mins | Friction slider (easy ↔ hard), If–Then plan builder |
 | **Make it Satisfying** (Reward) | Instant reinforcement. What is rewarded is repeated | Reward marker on completion, identity streaks (*"I am a runner"*) |
+| **Ikigai** View | Align tasks to purpose and meaning to increase lasting motivation | Ikigai prompt during moment creation ("Why does this matter?"); purpose tag, micro-reflection after completion; purpose-based streaks and long-term progress view |
+| **Balance** (Reward) | Ensure that there is a balance of work and rest | Balance prompt during moment creation ("Why does this matter?");   | 
 
 ### UX Features
+- Cue checklist shown in calendar slot
+- If–Then plan per moment
+- Environment prompts (e.g., "Book on table")
+- Reward marker after completion
+- Identity streaks (e.g., "I am a runner")
+- Friction slider (easy ↔ hard)
+
+### UI Features
 - Cue checklist shown in calendar slot
 - If–Then plan per moment
 - Environment prompts (e.g., "Book on table")

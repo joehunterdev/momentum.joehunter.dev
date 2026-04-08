@@ -22,7 +22,7 @@ export default function Authenticated({
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                    <ApplicationLogo className="block h-9 w-9" />
                                 </Link>
                             </div>
 
@@ -34,10 +34,16 @@ export default function Authenticated({
                                     Daily
                                 </NavLink>
                                 <NavLink
+                                    href={route('weekly')}
+                                    active={route().current('weekly')}
+                                >
+                                    Weekly
+                                </NavLink>
+                                <NavLink
                                     href={route('config.edit')}
                                     active={route().current('config.edit')}
                                 >
-                                    Settings
+                                    Config
                                 </NavLink>
                             </div>
                         </div>
@@ -144,10 +150,16 @@ export default function Authenticated({
                             Daily
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
+                            href={route('weekly')}
+                            active={route().current('weekly')}
+                        >
+                            Weekly
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
                             href={route('config.edit')}
                             active={route().current('config.edit')}
                         >
-                            Settings
+                            Config
                         </ResponsiveNavLink>
                     </div>
 

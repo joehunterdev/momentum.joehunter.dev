@@ -1,58 +1,170 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/logo_75.png" alt="Momentum" width="75" />
 </p>
 
-## About Laravel
+<h1 align="center">Momentum</h1>
+<p align="center"><strong>Build momentum, one habit at a time.</strong></p>
+<p align="center">
+  A behaviour-science-backed habit tracker built with Laravel, React & Inertia.js.
+  <br />
+  <a href="https://momentum.joehunter.dev">momentum.joehunter.dev</a> &middot;
+  Built by <a href="https://joehunter.es">Joe Hunter</a>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  <img src="https://img.shields.io/badge/Laravel-13-FF2D20?style=flat&logo=laravel&logoColor=white" alt="Laravel 13" />
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=black" alt="React 18" />
+  <img src="https://img.shields.io/badge/Inertia.js-v2-8B5CF6?style=flat" alt="Inertia v2" />
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/PHP-8.4-777BB4?style=flat&logo=php&logoColor=white" alt="PHP 8.4" />
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat" alt="MIT License" />
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## What is Momentum?
 
-## Learning Laravel
+Momentum is a habit-tracking web application built on the behaviour science behind lasting change — cue-routine-reward loops, habit stacking, implementation intentions, and environment design.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+It's not a checklist. It's a **scheduling and design system** for the habits that matter.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Live:** [momentum.joehunter.dev](https://momentum.joehunter.dev)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Features
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+| Feature | Description |
+|---|---|
+| **Weekly View** | See all habits across 7 days, colour-coded by completion status |
+| **Daily Schedule** | 30-minute time-slotted day from wake to sleep — eliminates decision fatigue |
+| **Moment Builder** | Define habits with cues, stacks, environment prompts & rewards |
+| **Habit Stacking** | Chain habits together with the proven after-X-do-Y formula |
+| **Dashboard** | Completion rates, streaks, and consistency tracking over time |
+| **Flexible Config** | Customisable wake/sleep times and slot durations |
+| **Bilingual content** | SEO content pages in English & Spanish (`/en/`, `/es/`) |
+| **SSR + SEO** | Full server-side rendering via Inertia v2 + dynamic sitemap |
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
+## Tech Stack
+
+### Backend
+- **Laravel 13** (PHP 8.4) — routing, Eloquent ORM, queues, auth
+- **MySQL** — primary datastore
+- **Laravel Breeze** — authentication scaffolding
+- **Laravel Sanctum** — API token auth
+
+### Frontend
+- **React 18** + **TypeScript** (strict)
+- **Inertia.js v2** — server-driven SPA with SSR
+- **Vite** — bundler with rolldown, SSR client + server builds
+- **Tailwind CSS v3** — layout utilities
+- **Custom SCSS design system** — `_drop-border.scss`, `_components.scss`, `_content.scss`
+
+### Design System
+- Brand tokens: `--mm-drop-green: #00E5AA`, `--mm-drop-purple: #604C81`
+- Hard-offset cube drop-shadow mixin (`mm-drop-border`) replicating the logo's cube effect
+- Square corners throughout — no border-radius
+- Hybrid Tailwind (structure) + SCSS (component styles) approach
+
+---
+
+## Project Structure
+
+```
+resources/
+├── js/
+│   ├── Pages/
+│   │   ├── Welcome.tsx          # Marketing homepage
+│   │   ├── Content/Show.tsx     # Reusable SEO content page renderer
+│   │   ├── Daily/               # Daily schedule view
+│   │   ├── Weekly/              # Weekly overview
+│   │   ├── Moments/             # Habit CRUD
+│   │   └── Config/              # User configuration
+│   └── features/                # Feature-scoped components
+├── css/
+│   ├── _drop-border.scss        # Brand drop-shadow token + mixin
+│   ├── _components.scss         # Global UI components (mm-btn-primary, mm-input, etc.)
+│   ├── _welcome.scss            # Marketing page styles
+│   └── _content.scss            # SEO content page styles
+└── content/
+    ├── en/                      # English content JSON files
+    └── es/                      # Spanish content JSON files
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## Content Pages (EN/ES)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Pages are driven by JSON files in `resources/content/{locale}/` and rendered via a single `ContentController` + `Content/Show.tsx` component.
 
-## Code of Conduct
+| Route | EN | ES |
+|---|---|---|
+| About | `/en/about` | `/es/sobre-nosotros` |
+| Features | `/en/features` | `/es/funcionalidades` |
+| Weekly View | `/en/weekly-habit-view` | `/es/vista-semanal-habitos` |
+| Daily Schedule | `/en/daily-habit-schedule` | `/es/horario-diario-habitos` |
+| Habit Stacking | `/en/habit-stacking` | `/es/apilamiento-habitos` |
+| Pricing | `/en/pricing` | `/es/precios` |
+| Hire me | `/en/hire-developer` | `/es/contratar-desarrollador` |
+| Blog: Build better habits | `/en/how-to-build-better-habits` | `/es/como-crear-mejores-habitos` |
+| Blog: Best habit apps | `/en/best-habit-tracking-apps` | `/es/mejores-apps-seguimiento-habitos` |
+| Blog: Building a SaaS | `/en/building-a-saas-with-laravel-react` | `/es/construir-saas-con-laravel-react` |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+All content pages include:
+- Full Open Graph + Twitter Card meta tags
+- `hreflang` alternate links
+- Canonical URLs
+- Included in the dynamic `/sitemap.xml`
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Local Development
+
+```bash
+# Clone and install
+git clone https://github.com/joehunterdev/momentum.joehunter.dev.git
+cd momentum.joehunter.dev
+composer install
+npm install
+
+# Environment
+cp .env.example .env
+php artisan key:generate
+
+# Database
+php artisan migrate --seed
+
+# Dev server
+composer run dev
+# or separately:
+php artisan serve
+npm run dev
+```
+
+---
+
+## SEO
+
+- Dynamic sitemap at `/sitemap.xml` — auto-includes all content pages
+- `public/og-image.png` — 1200×630 branded OG image
+- Per-page meta via Inertia `<Head>` component with `head-key` deduplication
+- `hreflang` tags on all bilingual content pages
+- `robots.txt` with Sitemap directive and app routes disallowed
+
+---
+
+## About the developer
+
+Built by **Joe Hunter** — full-stack developer based in Spain.
+
+- Portfolio: [joehunter.es](https://joehunter.es)
+- Stack: Laravel, React, TypeScript, AI integrations
+- Open to freelance & contract work
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT — see [LICENSE](LICENSE)

@@ -19,7 +19,6 @@ class Moment extends Model
         'description',
         'color',
         'icon',
-        'identity_statement',
         'is_active',
         'sort_order',
     ];

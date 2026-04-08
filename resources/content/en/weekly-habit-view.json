@@ -1,0 +1,36 @@
+{
+    "slug": "weekly-habit-view",
+    "locale": "en",
+    "alternate": { "es": "vista-semanal-habitos" },
+    "seo": {
+        "title": "Weekly Habit View — See Your Entire Week at a Glance | Momentum",
+        "description": "Momentum's weekly view shows all your habits colour-coded across 7 days. Spot patterns, track consistency, and never lose sight of your progress.",
+        "keywords": "weekly habit view, habit tracker weekly, weekly habit planner, habit calendar view"
+    },
+    "hero": {
+        "badge": "Feature",
+        "headline": "Your week, at a glance.",
+        "subline": "See every habit across all 7 days — colour-coded by status. Spot gaps, celebrate streaks, and adjust in real time."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "Why a weekly view matters",
+            "body": "Daily views are great for execution, but the weekly view is where patterns emerge. You'll quickly see which days you're strongest, where habits drop off, and how consistent you really are. It turns vague feelings about progress into concrete visual data."
+        },
+        {
+            "type": "text",
+            "heading": "Colour-coded at a glance",
+            "body": "Each moment in the weekly view is colour-coded: completed, missed, or upcoming. No need to open each day — you can see your entire week's progress in seconds. The today column is highlighted so you always know where you are."
+        },
+        {
+            "type": "text",
+            "heading": "Built for behaviour change",
+            "body": "Research shows that visual feedback loops are one of the strongest drivers of habit formation. The weekly view acts as your 'don't break the chain' calendar — a proven technique used by everyone from Jerry Seinfeld to James Clear."
+        }
+    ],
+    "cta": {
+        "text": "Start tracking your week",
+        "href": "/register"
+    }
+}

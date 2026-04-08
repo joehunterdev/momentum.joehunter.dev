@@ -1,0 +1,214 @@
+// ─── Welcome / Marketing Page ─────────────────────────────────────────────────
+
+.welcome-page {
+    position: relative;
+    min-height: 100vh;
+    background: #fff;
+    overflow: hidden;
+    font-family: var(--mm-font, inherit);
+
+    &__glow {
+        position: absolute;
+        top: -10vh;
+        left: -10vw;
+        width: 60vw;
+        height: 60vh;
+        background: radial-gradient(ellipse 70% 60% at 10% 10%,
+                rgba(96, 76, 129, 0.13) 0%,
+                rgba(139, 107, 174, 0.07) 45%,
+                transparent 75%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    &__inner {
+        position: relative;
+        z-index: 1;
+        max-width: 48rem;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+    }
+
+    // ── Header ──────────────────────────────────────────────────────────────
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 0;
+    }
+
+    &__logo {
+        height: 2.5rem;
+        width: auto;
+    }
+
+    &__nav {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__nav-link {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        padding: 0.4rem 0.875rem;
+        border-radius: 0;
+        text-decoration: none;
+        transition: background 0.15s, color 0.15s;
+
+        &:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        &--primary {
+            background: #00E5AA;
+            color: #111827;
+
+            &:hover {
+                background: #00cfa0;
+                color: #111827;
+            }
+        }
+    }
+
+    // ── Hero ────────────────────────────────────────────────────────────────
+
+    &__hero {
+        text-align: center;
+        padding: 4rem 0 3rem;
+    }
+
+    &__headline {
+        font-size: clamp(2rem, 6vw, 3.25rem);
+        font-weight: 800;
+        line-height: 1.15;
+        color: #111827;
+        letter-spacing: -0.02em;
+        margin: 0 0 1.25rem;
+    }
+
+    &__subline {
+        font-size: 1.0625rem;
+        color: #6b7280;
+        line-height: 1.65;
+        max-width: 36rem;
+        margin: 0 auto 2rem;
+    }
+
+    &__cta {
+        display: inline-block;
+        background: #00E5AA;
+        color: #111827;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        border-radius: 0;
+        text-decoration: none;
+        @include mm-drop-border(var(--mm-drop-green));
+
+        &:hover {
+            background: #00cfa0;
+        }
+    }
+
+    // ── Feature cards ───────────────────────────────────────────────────────
+
+    &__features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding-bottom: 4rem;
+
+        @media (max-width: 480px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__card {
+        display: block;
+        text-decoration: none;
+        cursor: pointer;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 0;
+        padding: 1.5rem;
+        box-shadow: -8px -8px 0 0 rgba(0, 229, 170, 0.7);
+        transition: box-shadow 0.12s ease, transform 0.12s ease;
+
+        &:hover {
+            box-shadow: -4px -4px 0 0 rgba(0, 229, 170, 0.7);
+            transform: translate(-4px, -4px);
+        }
+
+        &:active {
+            box-shadow: none;
+            transform: translate(-8px, -8px);
+        }
+
+        // First card: purple at 70% opacity + soft drop shadow for depth
+        &:first-child {
+            background: rgba(96, 76, 129, 0.7);
+            border-color: rgba(96, 76, 129, 0.4);
+            box-shadow:
+                -8px -8px 0 0 rgba(0, 229, 170, 0.7),
+                0 8px 32px rgba(96, 76, 129, 0.35),
+                0 2px 8px rgba(0, 0, 0, 0.12);
+
+            &:hover {
+                box-shadow:
+                    -4px -4px 0 0 rgba(0, 229, 170, 0.7),
+                    0 12px 40px rgba(96, 76, 129, 0.45),
+                    0 4px 12px rgba(0, 0, 0, 0.15);
+                transform: translate(-4px, -4px);
+            }
+
+            .welcome-page__card-title {
+                color: #fff;
+            }
+
+            .welcome-page__card-body {
+                color: rgba(255, 255, 255, 0.75);
+            }
+        }
+    }
+
+    &__card-icon {
+        display: block;
+        font-size: 1.75rem;
+        margin-bottom: 0.75rem;
+        line-height: 1;
+    }
+
+    &__card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #111827;
+        margin: 0 0 0.5rem;
+    }
+
+    &__card-body {
+        font-size: 0.875rem;
+        color: #6b7280;
+        line-height: 1.6;
+        margin: 0 0 0.75rem;
+    }
+
+    &__card-arrow {
+        display: inline-block;
+        font-size: 0.875rem;
+        color: #00e5aa;
+        font-weight: 700;
+        transition: transform 0.12s ease;
+    }
+
+    &__card:hover &__card-arrow {
+        transform: translateX(3px);
+    }
+
+    &__card:first-child &__card-arrow {
+        color: rgba(255, 255, 255, 0.8);
+    }
+}

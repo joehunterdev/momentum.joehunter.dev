@@ -1,0 +1,48 @@
+{
+    "slug": "how-to-build-better-habits",
+    "locale": "en",
+    "alternate": { "es": "como-crear-mejores-habitos" },
+    "type": "blog",
+    "publishedAt": "2026-04-08",
+    "seo": {
+        "title": "How to Build Better Habits — A Complete Guide | Momentum Blog",
+        "description": "Learn the science behind habit formation: cues, routines, rewards, and identity-based change. A practical guide to building habits that last.",
+        "keywords": "how to build better habits, habit formation science, atomic habits guide, behaviour change, build lasting habits"
+    },
+    "hero": {
+        "badge": "Blog",
+        "headline": "How to build better habits: a practical guide.",
+        "subline": "Most people fail at habits not because of willpower — but because of poor design. Here's how to build habits that actually stick."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "The habit loop: cue, routine, reward",
+            "body": "Every habit follows the same neurological pattern. A cue triggers the behaviour, the routine is the behaviour itself, and the reward is what your brain gets out of it. Understanding this loop is the foundation — once you can see it, you can redesign it. Momentum is built around this exact structure, letting you define cues and rewards for every habit you create."
+        },
+        {
+            "type": "text",
+            "heading": "Start small — embarrassingly small",
+            "body": "The biggest mistake people make is starting too big. 'I'll run 5km every morning' becomes nothing within a week. Instead: 'I'll put on my running shoes after breakfast.' That's it. The behaviour is so small it's impossible to fail. Once the habit is automatic, you scale it. Momentum's slot system helps — schedule a tiny 30-minute block and build from there."
+        },
+        {
+            "type": "text",
+            "heading": "Use habit stacking",
+            "body": "One of the most powerful techniques from James Clear's Atomic Habits is habit stacking: 'After I [existing habit], I will [new habit].' Your brain already has strong neural pathways for existing habits — by linking a new habit to an old one, you borrow that existing wiring. Momentum makes this explicit by letting you chain moments together."
+        },
+        {
+            "type": "text",
+            "heading": "Design your environment",
+            "body": "Willpower is overrated. The most reliable way to change behaviour is to change your environment. Want to read more? Put a book on your pillow. Want to eat healthier? Don't keep junk food in the house. Momentum prompts you to define environment cues for each habit, so you're designing the context for success."
+        },
+        {
+            "type": "text",
+            "heading": "Track visually — don't break the chain",
+            "body": "Visual tracking creates a feedback loop that reinforces your identity. Every completed day is proof that 'you are the kind of person who does X'. Momentum's weekly view gives you this at a glance — colour-coded streaks across 7 days. It's the same technique Jerry Seinfeld used to write jokes every single day."
+        }
+    ],
+    "cta": {
+        "text": "Start building your habits with Momentum",
+        "href": "/register"
+    }
+}

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('color', 7)->nullable();
             $table->string('icon')->nullable();
-            $table->string('identity_statement')->nullable();
             $table->boolean('is_active')->default(true);
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();

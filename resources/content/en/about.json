@@ -1,0 +1,46 @@
+{
+    "slug": "about",
+    "locale": "en",
+    "alternate": { "es": "sobre-nosotros" },
+    "seo": {
+        "title": "About Momentum — Habit Tracking App by Joe Hunter",
+        "description": "Momentum is a behaviour-science-backed habit tracker built by Joe Hunter, a full-stack developer based in Spain. Learn the story behind the app.",
+        "keywords": "about momentum, habit tracker, joe hunter developer, behaviour science habits"
+    },
+    "hero": {
+        "badge": "About",
+        "headline": "Built by a developer who needed it himself.",
+        "subline": "Momentum started as a personal tool for stacking habits and staying consistent — then it became something worth sharing."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "Why Momentum exists",
+            "body": "Most habit apps treat habits like a to-do list: check it off, move on. But real behaviour change needs more — cues, environment design, stacking, and rewards. Momentum is built on the systems from Atomic Habits and behaviour science research, giving you the tools to design habits that actually stick."
+        },
+        {
+            "type": "text",
+            "heading": "Who built it",
+            "body": "I'm Joe Hunter — a full-stack developer based in Spain. I build web applications with Laravel, React, and modern tooling. Momentum is my personal project, built to solve my own problem and shared openly. You can find more of my work at joehunter.es."
+        },
+        {
+            "type": "features",
+            "heading": "The tech behind Momentum",
+            "items": [
+                { "icon": "\u26A1", "title": "Laravel 13", "description": "Rock-solid PHP backend with Eloquent ORM, queues, and a clean MVC architecture." },
+                { "icon": "\u269B\uFE0F", "title": "React + Inertia.js", "description": "Server-driven SPA with full SSR — fast page loads with a rich interactive experience." },
+                { "icon": "\uD83C\uDFA8", "title": "Tailwind + SCSS", "description": "Utility-first CSS for layout with custom SCSS design tokens for brand consistency." },
+                { "icon": "\uD83D\uDCC8", "title": "Behaviour Science", "description": "Cue-routine-reward loops, habit stacking, and environment design baked into the UI." }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "Open source, open development",
+            "body": "Momentum is developed in the open. The codebase is public on GitHub and I share the build process along the way. If you're a developer, feel free to explore, fork, or contribute."
+        }
+    ],
+    "cta": {
+        "text": "Start building your habits",
+        "href": "/register"
+    }
+}

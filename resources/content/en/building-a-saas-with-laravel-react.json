@@ -1,0 +1,48 @@
+{
+    "slug": "building-a-saas-with-laravel-react",
+    "locale": "en",
+    "alternate": { "es": "construir-saas-con-laravel-react" },
+    "type": "blog",
+    "publishedAt": "2026-04-08",
+    "seo": {
+        "title": "Building a SaaS with Laravel & React — Developer Case Study | Momentum Blog",
+        "description": "A behind-the-scenes look at building Momentum: a SaaS habit tracker with Laravel 13, Inertia.js, React, SSR, and a custom SCSS design system.",
+        "keywords": "building saas laravel react, laravel inertia react tutorial, saas development case study, laravel 13 project, fullstack laravel react"
+    },
+    "hero": {
+        "badge": "Blog",
+        "headline": "Building a SaaS with Laravel & React: a case study.",
+        "subline": "How I built Momentum — from database design to SSR rendering — using Laravel 13, Inertia.js v2, React 18, and a custom SCSS design system."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "The stack",
+            "body": "Momentum runs on Laravel 13 for the backend, React 18 for the frontend, and Inertia.js v2 as the glue. Inertia gives you server-side routing with a full client-side SPA experience — no API layer needed. Vite handles bundling with SSR for fast initial loads and SEO. Styling uses Tailwind for layout plus custom SCSS with design tokens for brand consistency."
+        },
+        {
+            "type": "text",
+            "heading": "Data modelling for habits",
+            "body": "The core model is a 'Moment' — a habit definition with a name, cue, reward, time slot, and recurrence rules. Each day generates 'MomentInstance' records that track completion. This separation keeps the habit definition clean while allowing per-day tracking, streaks, and historical data."
+        },
+        {
+            "type": "text",
+            "heading": "SSR and SEO",
+            "body": "With Inertia v2 and Vite's SSR support, every page is server-rendered on first load. This means crawlers see full HTML, meta tags are rendered server-side, and the page is interactive in milliseconds. Combined with dynamic sitemap generation and OG images, the app is fully SEO-ready."
+        },
+        {
+            "type": "text",
+            "heading": "Design system approach",
+            "body": "Rather than relying purely on Tailwind utilities, Momentum uses a hybrid approach: Tailwind for layout and spacing, SCSS partials for component-specific styling. CSS custom properties (design tokens) define the brand palette, and a custom 'drop border' mixin creates the signature hard-offset box shadow used throughout the UI."
+        },
+        {
+            "type": "text",
+            "heading": "Open development",
+            "body": "The entire project is open source on GitHub. I develop in the open, sharing the architecture decisions, mistakes, and wins. If you're building your own SaaS with Laravel and React, feel free to explore the codebase for patterns and inspiration."
+        }
+    ],
+    "cta": {
+        "text": "See the project on GitHub",
+        "href": "https://github.com/joehunterdev/momentum.joehunter.dev"
+    }
+}

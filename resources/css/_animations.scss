@@ -1,0 +1,60 @@
+// _animations.scss — keyframes & animation utilities
+
+// Streak badge fire pulse
+@keyframes mm-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--mm-streak-glow); }
+  50% { box-shadow: 0 0 12px 4px var(--mm-streak-glow); }
+}
+
+// Checkbox completion pop
+@keyframes mm-check-pop {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+// Accordion slide down
+@keyframes mm-slide-down {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    max-height: 800px;
+    transform: translateY(0);
+  }
+}
+
+// Flash message enter
+@keyframes mm-flash-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+// Flash message exit
+@keyframes mm-flash-out {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(100%); }
+}
+
+// Card hover lift
+@keyframes mm-lift {
+  to {
+    transform: translateY(-4px);
+    box-shadow: var(--mm-shadow-md);
+  }
+}
+
+// Utility classes
+.mm-animate-check    { animation: mm-check-pop var(--mm-duration) var(--mm-ease); }
+.mm-animate-slide    { animation: mm-slide-down var(--mm-duration-slow) ease-out forwards; }
+.mm-animate-flash-in { animation: mm-flash-in 300ms var(--mm-ease) forwards; }
+.mm-animate-pulse    { animation: mm-pulse-glow 2s ease-in-out infinite; }

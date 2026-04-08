@@ -1,0 +1,41 @@
+{
+    "slug": "contratar-desarrollador",
+    "locale": "es",
+    "alternate": { "en": "hire-developer" },
+    "seo": {
+        "title": "Contratar a Joe Hunter — Desarrollador Full-Stack en España | Laravel, React, IA",
+        "description": "¿Buscas un desarrollador full-stack? Joe Hunter construye aplicaciones web con Laravel, React, Inertia.js e integraciones de IA. En España, disponible mundialmente.",
+        "keywords": "contratar desarrollador full stack españa, desarrollador laravel, desarrollador react españa, freelance desarrollador web, desarrollador IA españa"
+    },
+    "hero": {
+        "badge": "Contrátame",
+        "headline": "Desarrollador full-stack. Especialista en Laravel y React.",
+        "subline": "Soy Joe Hunter — construyo aplicaciones web modernas con Laravel, React, TypeScript e IA. En España, trabajando con clientes de todo el mundo."
+    },
+    "sections": [
+        {
+            "type": "features",
+            "heading": "Con qué trabajo",
+            "items": [
+                { "icon": "\uD83D\uDC18", "title": "Laravel y PHP", "description": "Nivel experto en Laravel: Eloquent, colas, APIs, testing, Inertia SSR, tiempo real. PHP 8.4+." },
+                { "icon": "\u269B\uFE0F", "title": "React y TypeScript", "description": "React moderno con hooks, Inertia.js, TypeScript, arquitectura de componentes." },
+                { "icon": "\uD83E\uDDE0", "title": "IA e Integraciones", "description": "OpenAI, integraciones LLM, pipelines de embeddings, funcionalidades IA en producción." },
+                { "icon": "\u2601\uFE0F", "title": "Infraestructura", "description": "AWS, Docker, CI/CD, MySQL/PostgreSQL, Redis, workers de colas, despliegues sin downtime." }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "Mi trabajo",
+            "body": "Momentum — la app que estás usando ahora — es una muestra de mi enfoque: arquitectura limpia, UX basado en ciencia del comportamiento, React renderizado en servidor y un sistema de diseño construido para consistencia. Ve más en joehunter.es."
+        },
+        {
+            "type": "text",
+            "heading": "Trabajemos juntos",
+            "body": "Acepto proyectos freelance y contratos selectos. Ya sea una construcción SaaS completa, una integración API o ayuda escalando una app Laravel existente — encantado de hablar. Contáctame en joehunter.es."
+        }
+    ],
+    "cta": {
+        "text": "Visita joehunter.es",
+        "href": "https://joehunter.es"
+    }
+}

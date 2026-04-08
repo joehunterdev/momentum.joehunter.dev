@@ -35,7 +35,6 @@ class DailyController extends Controller
                 'name'               => $m->name,
                 'color'              => $m->color,
                 'icon'               => $m->icon,
-                'identity_statement' => $m->identity_statement,
                 'completed_at'       => $m->instances->first()?->completed_at,
                 'instance_id'        => $m->instances->first()?->id,
                 'streak'             => $this->currentStreak($m, $today),

@@ -1,12 +1,14 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { FormEvent, useState } from 'react';
 import type { Moment, MomentFormData } from '../types';
 import { useMomentForm } from '../hooks/useMomentForm';
 import ColorPicker from './ColorPicker';
 import CueFields from './CueFields';
+import IconPicker from './IconPicker';
 import RewardFields from './RewardFields';
 import ScheduleFields from './ScheduleFields';
 
@@ -14,13 +16,16 @@ import { MOMENT_FORM_SECTIONS } from '@/shared/constants/moments';
 
 interface MomentFormProps {
     moment?: Moment;
+    defaultValues?: Partial<MomentFormData>;
     onSubmit: (data: MomentFormData, form: ReturnType<typeof useMomentForm>) => void;
     submitLabel?: string;
+    onCancel?: () => void;
 }
 
-export default function MomentForm({ moment, onSubmit, submitLabel = 'Save' }: MomentFormProps) {
-    const form = useMomentForm(moment);
-    const [openSection, setOpenSection] = useState<string>('basics');
+export default function MomentForm({ moment, defaultValues, onSubmit, submitLabel = 'Save', onCancel }: MomentFormProps) {
+    const form = useMomentForm(moment, defaultValues);
+    const initialSection = !moment && defaultValues?.frequency ? 'schedule' : 'basics';
+    const [openSection, setOpenSection] = useState<string>(initialSection);
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -81,26 +86,13 @@ export default function MomentForm({ moment, onSubmit, submitLabel = 'Save' }: M
                                         </div>
 
                                         <div>
-                                            <InputLabel htmlFor="identity_statement" value="Identity statement" />
-                                            <TextInput
-                                                id="identity_statement"
-                                                value={form.data.identity_statement}
-                                                onChange={(e) => setField('identity_statement', e.target.value)}
-                                                placeholder="e.g. I am someone who stays hydrated"
-                                                className="mt-1 block w-full"
-                                            />
-                                            <InputError message={form.errors.identity_statement} className="mt-1" />
-                                        </div>
-
-                                        <div>
-                                            <InputLabel htmlFor="icon" value="Icon (emoji)" />
-                                            <TextInput
-                                                id="icon"
-                                                value={form.data.icon}
-                                                onChange={(e) => setField('icon', e.target.value)}
-                                                placeholder="💧"
-                                                className="mt-1 block w-24"
-                                            />
+                                            <InputLabel htmlFor="icon" value="Icon" />
+                                            <div className="mt-2">
+                                                <IconPicker
+                                                    value={form.data.icon}
+                                                    onChange={(emoji) => setField('icon', emoji)}
+                                                />
+                                            </div>
                                             <InputError message={form.errors.icon} className="mt-1" />
                                         </div>
 
@@ -151,7 +143,12 @@ export default function MomentForm({ moment, onSubmit, submitLabel = 'Save' }: M
                 );
             })}
 
-            <div className="flex justify-end pt-2">
+            <div className="flex justify-end gap-3 pt-2">
+                {onCancel && (
+                    <SecondaryButton type="button" onClick={onCancel}>
+                        Cancel
+                    </SecondaryButton>
+                )}
                 <PrimaryButton disabled={form.processing}>{submitLabel}</PrimaryButton>
             </div>
         </form>

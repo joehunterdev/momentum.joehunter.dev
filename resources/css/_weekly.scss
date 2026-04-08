@@ -1,0 +1,713 @@
+// ─── Weekly View ───────────────────────────────────────────────────────────────
+//
+// LAYOUT
+//   Days stack vertically as cards.
+//
+//   Mobile (< md) — time as rows (time label left, icon right):
+//   ┌──────────────────────────┐
+//   │  Mon  6 Apr  [Today]     │
+//   │  08:00 │  🏃             │
+//   │  09:00 │  +              │
+//   │  10:00 │  📚             │
+//   └──────────────────────────┘
+//
+//   Desktop (≥ md) — time as columns (time label top, icon below):
+//   ┌──────────────────────────────────────────────────────┐
+//   │  Monday 6 Apr  [Today]                               │
+//   │  ┌──────┬──────┬──────┬──────┬──────┬──────┐        │
+//   │  │08:00 │09:00 │10:00 │11:00 │12:00 │13:00 │        │
+//   │  │  🏃  │  +   │  📚  │  +   │  +   │  +   │        │
+//   │  └──────┴──────┴──────┴──────┴──────┴──────┘        │
+//   └──────────────────────────────────────────────────────┘
+
+$slot-min-w: 4.5rem;
+$slot-h: 5rem;
+$border: #e5e7eb;
+$border-light: #f3f4f6;
+
+// ─── Week Selector Bar ────────────────────────────────────────────────────────
+
+.week-selector {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    height: 2.75rem;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+
+    &__btn {
+        display: flex;
+        align-items: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #9ca3af;
+        padding: 0 0.75rem;
+        transition: color 0.15s, background 0.15s;
+
+        &:hover {
+            color: var(--mm-primary, #6366f1);
+            background: rgba(99, 102, 241, 0.04);
+        }
+
+        &--prev {
+            justify-content: flex-start;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        &--next {
+            justify-content: flex-end;
+            border-left: 1px solid #e5e7eb;
+        }
+    }
+
+    &__btn-range {
+        font-size: 0.6875rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    &__current {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 0.5rem;
+    }
+
+    &__current-range {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: #111827;
+        white-space: nowrap;
+    }
+}
+
+// ─── Page wrapper ─────────────────────────────────────────────────────────────
+
+.weekly-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: $border-light;
+
+    @media (min-width: 640px) {
+        border: 1px solid $border;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        padding: 0.5rem;
+    }
+}
+
+// ─── Day section ─────────────────────────────────────────────────────────────
+
+.weekly-day-section {
+    border-top: 1px solid $border;
+    overflow: hidden;
+    background: #fff;
+
+    @media (min-width: 640px) {
+        border: 1px solid $border;
+        border-radius: 0.375rem;
+    }
+
+    &--today {
+        .weekly-day-header {
+            background: rgba(96, 76, 129, 0.05);
+            border-left: 3px solid #8B6BAE; // lighter offshoot of #604C81
+        }
+    }
+
+    &--weekend {
+
+        .weekly-day-header,
+        .weekly-day-slots {
+            background: rgba(100, 116, 139, 0.03);
+        }
+    }
+}
+
+// ─── Day header ───────────────────────────────────────────────────────────────
+
+.weekly-day-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    background: #fafafa;
+    border-bottom: 1px solid $border-light;
+
+    &__name {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #374151;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__date {
+        font-size: 0.75rem;
+        color: #9ca3af;
+    }
+
+    &__badge {
+        margin-left: auto;
+        font-size: 0.625rem;
+        font-weight: 600;
+        color: var(--mm-primary, #6366f1);
+        background: rgba(99, 102, 241, 0.1);
+        padding: 0.125rem 0.5rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+}
+
+// ─── Slot row ────────────────────────────────────────────────────────────────
+// Mobile: vertical list of rows. Desktop: 6 equal columns.
+
+.weekly-day-slots {
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+// ─── Individual time slot column ─────────────────────────────────────────────
+
+.weekly-slot {
+    display: flex;
+    transition: background 0.1s;
+
+    // ── Mobile: horizontal row — time label left, content right ───────────
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid $border-light;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &__time {
+        flex-shrink: 0;
+        width: 3.5rem;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: #9ca3af;
+        text-align: right;
+        border-right: 1px solid $border-light;
+        background: #fafafa;
+        letter-spacing: 0.03em;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0.5rem 0.875rem;
+        min-height: 3rem;
+
+        // When a moment card is present, remove side padding so the bar goes edge-to-edge
+        &:has(.slot-moment-card) {
+            padding: 0;
+            align-items: stretch;
+        }
+    }
+
+    // ── Desktop: vertical column — time label top, content below ──────────
+    @media (min-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+        border-bottom: none;
+        border-right: 1px solid $border-light;
+        min-width: $slot-min-w;
+
+        &:last-child {
+            border-right: none;
+        }
+
+        &__time {
+            width: 100%;
+            padding: 0.3rem 0.25rem;
+            font-size: 0.625rem;
+            text-align: center;
+            border-right: none;
+            border-bottom: 1px solid $border-light;
+            background: #fafafa;
+            align-self: auto;
+            justify-content: center;
+        }
+
+        &__content {
+            flex: 1;
+            justify-content: center;
+            padding: 0.5rem 0.25rem;
+            min-height: $slot-h;
+        }
+    }
+
+    &--ooo {
+        background: rgba(100, 116, 139, 0.04);
+        pointer-events: none;
+
+        .weekly-slot__time {
+            color: #d1d5db;
+        }
+
+        .weekly-slot__ooo-dot {
+            display: block;
+            width: 0.375rem;
+            height: 0.375rem;
+            border-radius: 50%;
+            background: #e5e7eb;
+        }
+    }
+
+    &--weekend {
+        background: rgba(100, 116, 139, 0.02);
+    }
+
+    &--today {
+        .weekly-slot__time {
+            color: var(--mm-primary, #6366f1);
+            background: rgba(99, 102, 241, 0.05);
+        }
+    }
+
+    &--empty {
+        cursor: pointer;
+
+        &:hover {
+            background: rgba(99, 102, 241, 0.04);
+
+            .weekly-slot__add-btn {
+                opacity: 1;
+                border-color: var(--mm-primary, #6366f1);
+                color: var(--mm-primary, #6366f1);
+            }
+        }
+    }
+
+    &__add-btn {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        border: 1.5px dashed #d1d5db;
+        background: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: #d1d5db;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.15s, border-color 0.15s, color 0.15s;
+    }
+}
+
+// ─── Slot Moment Card ─────────────────────────────────────────────────────────
+
+.slot-moment-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+
+    // Top strip: bar (5/6) + score label (1/6)
+    &__top {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        width: 100%;
+
+        .consistency-bar {
+            flex: 5;
+            border-radius: 0;
+            margin: 0;
+        }
+    }
+
+    &__score {
+        flex: 0 0 2.5rem;
+        font-size: 0.5625rem;
+        font-weight: 700;
+        color: #6b7280;
+        text-align: center;
+        line-height: 1;
+        padding: 0 0.25rem;
+        border-left: 1px solid #e5e7eb;
+        white-space: nowrap;
+        overflow: visible;
+    }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.375rem 0.875rem 0.5rem;
+        min-height: 2.75rem; // locks all cards to the same height (name + desc/track line)
+        box-sizing: border-box;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+        min-width: 0;
+        flex: 1;
+    }
+
+    &__name-row {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        min-width: 0;
+    }
+
+    &__name {
+        flex: 1;
+        min-width: 0;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #111827;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
+    }
+
+    &__desc {
+        font-size: 0.6875rem;
+        color: #6b7280;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
+    }
+
+    // On desktop the slot is a narrow column — hide body text, icon only
+    @media (min-width: 768px) {
+        &__body {
+            display: none;
+        }
+    }
+
+    // Next upcoming moment gets a subtle left accent
+    &--next {
+        .slot-moment-card__name {
+            color: var(--mm-primary, #6366f1);
+        }
+    }
+}
+
+// ─── Moment Detail Ticker ─────────────────────────────────────────────────────
+
+.moment-detail-ticker {
+
+    // badge sits inline — rendered as flex children of __name-row
+    &__badge {
+        flex-shrink: 0;
+        font-size: 0.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #fff;
+        background: var(--mm-primary, #6366f1);
+        border-radius: 3px;
+        padding: 0.1em 0.35em;
+        line-height: 1.4;
+        align-self: center;
+    }
+
+    // full-width scrolling track on second line
+    &__track {
+        position: relative;
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: 1.1em; // lock height to one text line — prevents layout shift
+        overflow: hidden;
+        font-size: 0.6875rem;
+        line-height: 1.4;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+
+        &--out {
+            opacity: 0;
+            transform: translateY(-3px);
+        }
+    }
+
+    &__text {
+        display: inline-block;
+        font-size: inherit;
+        color: #6b7280;
+        white-space: nowrap;
+        line-height: inherit;
+
+        &--scroll {
+            animation: ticker-scroll var(--ticker-duration, 12s) linear 1.5s infinite;
+        }
+    }
+
+    // right-edge fade-out mask
+    &__fade {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 3rem;
+        height: 100%;
+        background: linear-gradient(to right, transparent, #fff 70%);
+        pointer-events: none;
+    }
+}
+
+@keyframes ticker-scroll {
+
+    0%,
+    15% {
+        transform: translateX(0);
+    }
+
+    80%,
+    100% {
+        transform: translateX(calc(-100% + var(--ticker-track-width, 120px)));
+    }
+}
+
+// ─── Consistency Bar ──────────────────────────────────────────────────────────
+
+.consistency-bar {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 0;
+    overflow: hidden;
+    margin: 0;
+
+    &__fill {
+        height: 100%;
+        border-radius: 9999px;
+        background: linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e);
+        background-size: 200% 100%;
+        transition: width 0.4s ease;
+    }
+}
+
+
+.slot-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    font-size: 1.125rem;
+    border: 2px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    z-index: 1;
+    touch-action: pan-y; // allow vertical scroll, intercept horizontal drag
+    user-select: none;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+
+    &--completed {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.6);
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+    }
+
+    &--missed {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.25);
+        border-style: dashed;
+        opacity: 0.8;
+    }
+
+    &--pending {
+        background: rgba(100, 116, 139, 0.08);
+        border-color: #e5e7eb;
+    }
+
+    &--future {
+        background: rgba(99, 102, 241, 0.06);
+        border-color: #e5e7eb;
+    }
+
+    &--swiping {
+        box-shadow: 2px 0 8px rgba(16, 185, 129, 0.25);
+        border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    &--done {
+        animation: slot-icon-flash 0.5s ease forwards;
+    }
+}
+
+// ─── Swipe-to-complete track ──────────────────────────────────────────────────
+
+.slot-icon-track {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 0.5rem;
+
+    &__check {
+        position: absolute;
+        left: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #10b981;
+        opacity: 0;
+        transition: opacity 0.1s;
+        pointer-events: none;
+    }
+
+    &:has(.slot-icon--swiping) .slot-icon-track__check {
+        opacity: 1;
+    }
+}
+
+// ─── Row-level swipe highlight ────────────────────────────────────────────────
+
+.weekly-slot--swiping {
+    // Green wash that grows with drag progress via --swipe-progress (0–1)
+    background: rgba(16, 185, 129, calc(0.06 + var(--swipe-progress, 0) * 0.18)) !important;
+    transition: background 0.05s linear;
+
+    .weekly-slot__time {
+        color: #10b981;
+        border-right-color: rgba(16, 185, 129, 0.2);
+    }
+}
+
+.weekly-slot--swipe-done {
+    animation: slot-row-flash 0.65s ease forwards;
+
+    .weekly-slot__time {
+        color: #10b981;
+    }
+}
+
+// Persistent green wash once a moment is marked completed
+.weekly-slot--completed {
+    background: rgba(16, 185, 129, 0.05);
+
+    .weekly-slot__time {
+        color: #10b981;
+        font-weight: 700;
+    }
+}
+
+@keyframes slot-row-flash {
+    0% {
+        background: rgba(16, 185, 129, 0.28);
+    }
+
+    50% {
+        background: rgba(16, 185, 129, 0.14);
+    }
+
+    100% {
+        background: transparent;
+    }
+}
+
+@keyframes slot-icon-flash {
+    0% {
+        background: rgba(16, 185, 129, 0.4);
+        border-color: rgba(16, 185, 129, 0.8);
+        transform: scale(1.15);
+    }
+
+    60% {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.4);
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+// --- Slot Add Popover ---------------------------------------------------------
+
+.slot-popover {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    min-width: 10rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    &__option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.8125rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        color: #374151;
+        transition: background 0.1s;
+
+        &:hover {
+            background: rgba(99, 102, 241, 0.06);
+            color: var(--mm-primary, #6366f1);
+        }
+
+        &+& {
+            border-top: 1px solid #f3f4f6;
+        }
+    }
+}
+
+// --- Slot Highlight (recurring preview) --------------------------------------
+
+.weekly-slot--highlight {
+    animation: slot-pulse 1.5s ease-in-out infinite;
+
+    .weekly-slot__add-btn {
+        opacity: 1;
+        border-color: var(--mm-primary, #6366f1);
+        color: var(--mm-primary, #6366f1);
+    }
+}
+
+@keyframes slot-pulse {
+
+    0%,
+    100% {
+        background: rgba(99, 102, 241, 0.06);
+    }
+
+    50% {
+        background: rgba(99, 102, 241, 0.14);
+    }
+}

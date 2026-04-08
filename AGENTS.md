@@ -39,6 +39,13 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
 - Check for existing components to reuse before writing a new one.
 
+## Styling Conventions
+
+- **Prefer SCSS for overrides** — custom styles, component overrides, animations, and anything beyond basic layout should live in the SCSS partials (`resources/css/`) as named classes, not as inline `style={}` props or `className` strings baked into React components.
+- **Tailwind for layout and spacing** — utility classes in `className` are fine and preferred for structural concerns (flex, grid, padding, margin, sizing).
+- **No inline style props** — avoid `style={{ ... }}` in React; use a CSS class instead.
+- The pattern is: Tailwind utilities for structure in JSX + semantic SCSS classes for component-specific styling.
+
 ## Verification Scripts
 
 - Do not create verification scripts or tinker when tests cover that functionality and prove they work. Unit and feature tests are more important.
@@ -48,9 +55,18 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Stick to existing directory structure; don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
 
+## Migrations
+
+- **Never create incremental migrations** to add columns to existing tables. Instead, edit the original migration file directly and run `php artisan migrate:fresh` to rebuild the schema from scratch.
+- This keeps the migration history clean and avoids accumulating one-off `add_column_to_table` files during development.
+
 ## Frontend Bundling
 
 - If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+
+## Beta Testing Policy
+
+- **No PHPUnit tests during beta.** Do not write or suggest feature/unit tests while the application is in active beta development. Tests will be added once the feature set stabilises.
 
 ## Documentation Files
 

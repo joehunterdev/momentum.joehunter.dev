@@ -1,0 +1,48 @@
+{
+    "slug": "como-crear-mejores-habitos",
+    "locale": "es",
+    "alternate": { "en": "how-to-build-better-habits" },
+    "type": "blog",
+    "publishedAt": "2026-04-08",
+    "seo": {
+        "title": "Cómo Crear Mejores Hábitos — Guía Completa | Blog Momentum",
+        "description": "Aprende la ciencia detrás de la formación de hábitos: señales, rutinas, recompensas y cambio basado en identidad. Una guía práctica.",
+        "keywords": "como crear mejores habitos, ciencia formacion habitos, guia atomic habits, cambio comportamiento"
+    },
+    "hero": {
+        "badge": "Blog",
+        "headline": "Cómo crear mejores hábitos: una guía práctica.",
+        "subline": "La mayoría de personas fallan con los hábitos no por falta de voluntad — sino por mal diseño. Así es como crear hábitos que realmente se mantienen."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "El bucle del hábito: señal, rutina, recompensa",
+            "body": "Cada hábito sigue el mismo patrón neurológico. Una señal dispara el comportamiento, la rutina es el comportamiento en sí, y la recompensa es lo que tu cerebro obtiene. Entender este bucle es la base — una vez que lo ves, puedes rediseñarlo. Momentum está construido alrededor de esta estructura exacta."
+        },
+        {
+            "type": "text",
+            "heading": "Empieza pequeño — ridículamente pequeño",
+            "body": "El error más grande es empezar demasiado grande. 'Correré 5km cada mañana' se convierte en nada en una semana. En cambio: 'Me pondré las zapatillas después de desayunar.' Eso es todo. El comportamiento es tan pequeño que es imposible fallar. El sistema de franjas de Momentum ayuda — programa un bloque de 30 minutos y crece desde ahí."
+        },
+        {
+            "type": "text",
+            "heading": "Usa el apilamiento de hábitos",
+            "body": "Una de las técnicas más poderosas de Atomic Habits: 'Después de [hábito existente], haré [hábito nuevo].' Tu cerebro ya tiene vías neurales fuertes para hábitos existentes — al vincular un nuevo hábito, aprovechas ese cableado. Momentum hace esto explícito permitiéndote encadenar momentos."
+        },
+        {
+            "type": "text",
+            "heading": "Diseña tu entorno",
+            "body": "La fuerza de voluntad está sobrevalorada. La forma más fiable de cambiar el comportamiento es cambiar tu entorno. ¿Quieres leer más? Pon un libro en tu almohada. Momentum te pide definir señales de entorno para cada hábito."
+        },
+        {
+            "type": "text",
+            "heading": "Sigue visualmente — no rompas la cadena",
+            "body": "El seguimiento visual crea un bucle de retroalimentación que refuerza tu identidad. Cada día completado es prueba de que 'eres el tipo de persona que hace X'. La vista semanal de Momentum te da esto de un vistazo."
+        }
+    ],
+    "cta": {
+        "text": "Empieza a crear tus hábitos con Momentum",
+        "href": "/register"
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "slug": "sobre-nosotros",
+    "locale": "es",
+    "alternate": { "en": "about" },
+    "seo": {
+        "title": "Sobre Momentum — App de hábitos creada por Joe Hunter",
+        "description": "Momentum es un rastreador de hábitos basado en ciencia del comportamiento, creado por Joe Hunter, desarrollador full-stack en España.",
+        "keywords": "sobre momentum, app de habitos, joe hunter desarrollador, ciencia del comportamiento habitos"
+    },
+    "hero": {
+        "badge": "Sobre nosotros",
+        "headline": "Creado por un desarrollador que lo necesitaba.",
+        "subline": "Momentum empezó como una herramienta personal para apilar hábitos y mantener la constancia — después se convirtió en algo que valía la pena compartir."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "Por qué existe Momentum",
+            "body": "La mayoría de apps de hábitos tratan los hábitos como una lista de tareas: márcalo y sigue. Pero el cambio real de comportamiento necesita más: señales, diseño del entorno, apilamiento y recompensas. Momentum está construido sobre los sistemas de Atomic Habits y la investigación en ciencia del comportamiento."
+        },
+        {
+            "type": "text",
+            "heading": "Quién lo creó",
+            "body": "Soy Joe Hunter — desarrollador full-stack en España. Construyo aplicaciones web con Laravel, React y herramientas modernas. Momentum es mi proyecto personal, creado para resolver mi propio problema y compartido abiertamente. Puedes ver más de mi trabajo en joehunter.es."
+        },
+        {
+            "type": "features",
+            "heading": "La tecnología detrás de Momentum",
+            "items": [
+                { "icon": "\u26A1", "title": "Laravel 13", "description": "Backend PHP sólido con Eloquent ORM, colas y arquitectura MVC limpia." },
+                { "icon": "\u269B\uFE0F", "title": "React + Inertia.js", "description": "SPA renderizada en servidor con SSR completo — cargas rápidas con experiencia interactiva." },
+                { "icon": "\uD83C\uDFA8", "title": "Tailwind + SCSS", "description": "CSS utility-first para layout con tokens de diseño SCSS personalizados." },
+                { "icon": "\uD83D\uDCC8", "title": "Ciencia del comportamiento", "description": "Bucles señal-rutina-recompensa, apilamiento de hábitos y diseño del entorno integrados en la UI." }
+            ]
+        }
+    ],
+    "cta": {
+        "text": "Empieza a crear tus hábitos",
+        "href": "/register"
+    }
+}

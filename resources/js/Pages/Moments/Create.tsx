@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import FlashMessage from '@/shared/components/FlashMessage';
-import { MomentForm } from '@/features/moments';
+import { MomentModal } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
 import { useMomentForm } from '@/features/moments';
 import { Head, router } from '@inertiajs/react';
@@ -22,11 +22,12 @@ export default function Create(_props: PageProps) {
             <Head title="New Moment" />
             <FlashMessage />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-                    <MomentForm onSubmit={handleSubmit} submitLabel="Create Moment" />
-                </div>
-            </div>
+            <MomentModal
+                show={true}
+                onClose={() => router.visit(route('daily'))}
+                onSubmit={handleSubmit}
+                submitLabel="Create Moment"
+            />
         </AuthenticatedLayout>
     );
 }

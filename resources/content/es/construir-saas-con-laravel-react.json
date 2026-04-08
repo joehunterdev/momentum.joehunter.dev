@@ -1,0 +1,43 @@
+{
+    "slug": "construir-saas-con-laravel-react",
+    "locale": "es",
+    "alternate": { "en": "building-a-saas-with-laravel-react" },
+    "type": "blog",
+    "publishedAt": "2026-04-08",
+    "seo": {
+        "title": "Construir un SaaS con Laravel y React — Caso de Estudio | Blog Momentum",
+        "description": "Un vistazo entre bastidores a la construcción de Momentum: un SaaS de hábitos con Laravel 13, Inertia.js, React, SSR y un sistema de diseño SCSS.",
+        "keywords": "construir saas laravel react, tutorial laravel inertia react, caso estudio desarrollo saas, proyecto laravel 13"
+    },
+    "hero": {
+        "badge": "Blog",
+        "headline": "Construir un SaaS con Laravel y React: caso de estudio.",
+        "subline": "Cómo construí Momentum — desde el diseño de base de datos hasta el renderizado SSR — usando Laravel 13, Inertia.js v2, React 18 y un sistema de diseño SCSS."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "El stack",
+            "body": "Momentum usa Laravel 13 para el backend, React 18 para el frontend, e Inertia.js v2 como pegamento. Inertia te da rutas del servidor con experiencia SPA completa — sin capa API. Vite maneja el bundling con SSR para cargas iniciales rápidas y SEO."
+        },
+        {
+            "type": "text",
+            "heading": "Modelado de datos para hábitos",
+            "body": "El modelo central es un 'Moment' — una definición de hábito con nombre, señal, recompensa, franja horaria y reglas de recurrencia. Cada día genera registros 'MomentInstance' que rastrean el completado."
+        },
+        {
+            "type": "text",
+            "heading": "SSR y SEO",
+            "body": "Con Inertia v2 y el soporte SSR de Vite, cada página se renderiza en el servidor en la primera carga. Los crawlers ven HTML completo, las meta tags se renderizan del lado del servidor."
+        },
+        {
+            "type": "text",
+            "heading": "Desarrollo abierto",
+            "body": "Todo el proyecto es open source en GitHub. Desarrollo en abierto, compartiendo decisiones de arquitectura, errores y victorias. Si estás construyendo tu propio SaaS con Laravel y React, explora el código."
+        }
+    ],
+    "cta": {
+        "text": "Ver el proyecto en GitHub",
+        "href": "https://github.com/joehunterdev/momentum.joehunter.dev"
+    }
+}

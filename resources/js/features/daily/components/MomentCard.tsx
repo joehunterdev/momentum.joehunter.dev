@@ -59,9 +59,6 @@ export default function MomentCard({ moment, date, onToggled }: MomentCardProps)
                     >
                         {moment.name}
                     </p>
-                    {moment.identity_statement && (
-                        <p className="truncate text-xs text-gray-400">{moment.identity_statement}</p>
-                    )}
                 </div>
             </div>
 

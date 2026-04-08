@@ -1,5 +1,7 @@
 export { default as MomentForm } from './components/MomentForm';
+export { default as MomentModal } from './components/MomentModal';
 export { default as ColorPicker } from './components/ColorPicker';
+export { default as IconPicker } from './components/IconPicker';
 export { default as ScheduleFields } from './components/ScheduleFields';
 export { default as CueFields } from './components/CueFields';
 export { default as RewardFields } from './components/RewardFields';
