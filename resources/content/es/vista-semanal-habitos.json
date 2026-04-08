@@ -1,0 +1,36 @@
+{
+    "slug": "vista-semanal-habitos",
+    "locale": "es",
+    "alternate": { "en": "weekly-habit-view" },
+    "seo": {
+        "title": "Vista Semanal de Hábitos — Ve Tu Semana Completa | Momentum",
+        "description": "La vista semanal de Momentum muestra todos tus hábitos con código de colores en 7 días. Detecta patrones y sigue tu progreso.",
+        "keywords": "vista semanal habitos, planificador habitos semanal, calendario habitos, seguimiento semanal"
+    },
+    "hero": {
+        "badge": "Funcionalidad",
+        "headline": "Tu semana, de un vistazo.",
+        "subline": "Ve cada hábito a lo largo de 7 días — con código de colores por estado. Detecta huecos, celebra rachas y ajusta en tiempo real."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "Por qué importa la vista semanal",
+            "body": "Las vistas diarias son geniales para la ejecución, pero la vista semanal es donde emergen los patrones. Verás rápidamente qué días eres más fuerte, dónde caen los hábitos y cuán consistente eres realmente."
+        },
+        {
+            "type": "text",
+            "heading": "Código de colores de un vistazo",
+            "body": "Cada momento en la vista semanal tiene código de colores: completado, perdido o próximo. No necesitas abrir cada día — ves el progreso de toda tu semana en segundos."
+        },
+        {
+            "type": "text",
+            "heading": "Construido para el cambio de comportamiento",
+            "body": "La investigación muestra que los bucles de retroalimentación visual son uno de los motores más fuertes de la formación de hábitos. La vista semanal actúa como tu calendario 'no rompas la cadena'."
+        }
+    ],
+    "cta": {
+        "text": "Empieza a seguir tu semana",
+        "href": "/register"
+    }
+}

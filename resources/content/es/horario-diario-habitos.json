@@ -1,0 +1,36 @@
+{
+    "slug": "horario-diario-habitos",
+    "locale": "es",
+    "alternate": { "en": "daily-habit-schedule" },
+    "seo": {
+        "title": "Horario Diario de Hábitos — Planifica Cada Franja de 30 Min | Momentum",
+        "description": "La vista diaria de Momentum organiza tus hábitos en franjas de 30 minutos. Elimina la fatiga de decisión y sabe exactamente qué viene después.",
+        "keywords": "horario diario habitos, planificador habitos diario, planificador rutina diaria, time blocking habitos"
+    },
+    "hero": {
+        "badge": "Funcionalidad",
+        "headline": "Tu día, planificado a la media hora.",
+        "subline": "Momentum organiza tus hábitos en franjas de 30 minutos desde despertar hasta dormir. Sin adivinanzas, sin fatiga de decisión."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "Hábitos con bloques de tiempo",
+            "body": "En lugar de una lista vaga, Momentum asigna cada hábito a una franja de tiempo específica. Esto convierte 'debería meditar' en 'medito a las 07:00 durante 30 minutos'. La investigación muestra que las intenciones de implementación aumentan drásticamente el seguimiento."
+        },
+        {
+            "type": "text",
+            "heading": "Desde despertar hasta dormir",
+            "body": "Tu horario diario va desde tu hora configurada de despertar hasta la de dormir, dividido en franjas de 30 minutos. Cada franja muestra qué está programado, qué está hecho y qué viene."
+        },
+        {
+            "type": "text",
+            "heading": "Reduce la fatiga de decisión",
+            "body": "Cada decisión que tomas durante el día cuesta energía mental. Al preprogramar tus hábitos, eliminas la necesidad de decidir 'qué debería hacer ahora' — liberando fuerza de voluntad para los hábitos en sí."
+        }
+    ],
+    "cta": {
+        "text": "Planifica tu primer día",
+        "href": "/register"
+    }
+}

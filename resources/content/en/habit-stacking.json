@@ -1,0 +1,36 @@
+{
+    "slug": "habit-stacking",
+    "locale": "en",
+    "alternate": { "es": "apilamiento-habitos" },
+    "seo": {
+        "title": "Habit Stacking — Chain Habits Together for Better Results | Momentum",
+        "description": "Use Momentum's habit stacking feature to chain habits together. Based on the Atomic Habits technique — after X, I do Y — built into your schedule.",
+        "keywords": "habit stacking, atomic habits stacking, chain habits together, habit stacking app, after I do X I do Y"
+    },
+    "hero": {
+        "badge": "Feature",
+        "headline": "Stack habits. Build chains. Stay consistent.",
+        "subline": "The habit stacking formula — 'After I [current habit], I will [new habit]' — is one of the most effective behaviour change techniques. Momentum makes it automatic."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "What is habit stacking?",
+            "body": "Habit stacking is a technique popularised by James Clear in Atomic Habits. The idea is simple: instead of trying to remember a new habit on its own, you attach it to an existing one. 'After I pour my morning coffee, I will meditate for 2 minutes.' The existing habit becomes the cue for the new one."
+        },
+        {
+            "type": "text",
+            "heading": "How Momentum implements it",
+            "body": "When you create a moment in Momentum, you can define its cue — including linking it to another moment. The schedule then places them consecutively, and the UI shows the chain visually. You're not just tracking; you're designing the sequence."
+        },
+        {
+            "type": "text",
+            "heading": "Why it works",
+            "body": "Your brain is wired for sequences. Neural pathways for existing habits are already strong — by attaching new behaviours to them, you piggyback on that existing wiring. Over time the entire chain becomes automatic, like a morning routine you don't even think about."
+        }
+    ],
+    "cta": {
+        "text": "Start stacking habits",
+        "href": "/register"
+    }
+}

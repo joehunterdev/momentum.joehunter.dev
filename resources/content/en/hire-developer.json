@@ -1,0 +1,41 @@
+{
+    "slug": "hire-developer",
+    "locale": "en",
+    "alternate": { "es": "contratar-desarrollador" },
+    "seo": {
+        "title": "Hire Joe Hunter — Full-Stack Developer in Spain | Laravel, React, AI",
+        "description": "Looking for a full-stack developer? Joe Hunter builds web applications with Laravel, React, Inertia.js, and AI integrations. Based in Spain, available worldwide.",
+        "keywords": "hire full stack developer spain, laravel developer, react developer spain, freelance web developer, AI developer spain, joe hunter developer"
+    },
+    "hero": {
+        "badge": "Hire me",
+        "headline": "Full-stack developer. Laravel & React specialist.",
+        "subline": "I'm Joe Hunter — I build modern web applications with Laravel, React, TypeScript, and AI. Based in Spain, working with clients worldwide."
+    },
+    "sections": [
+        {
+            "type": "features",
+            "heading": "What I work with",
+            "items": [
+                { "icon": "\uD83D\uDC18", "title": "Laravel & PHP", "description": "Expert-level Laravel: Eloquent, queues, APIs, testing, Inertia SSR, real-time. PHP 8.4+." },
+                { "icon": "\u269B\uFE0F", "title": "React & TypeScript", "description": "Modern React with hooks, Inertia.js, TypeScript, component architecture, and state management." },
+                { "icon": "\uD83E\uDDE0", "title": "AI & Integrations", "description": "OpenAI, LLM integrations, embedding pipelines, AI-powered features in production apps." },
+                { "icon": "\u2601\uFE0F", "title": "Infrastructure", "description": "AWS, Docker, CI/CD, MySQL/PostgreSQL, Redis, queue workers, zero-downtime deployments." }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "My work",
+            "body": "Momentum — the app you're using right now — is a showcase of my approach: clean architecture, behaviour-science UX, server-rendered React, and a design system built for consistency. I apply the same standards to client projects. See more at joehunter.es."
+        },
+        {
+            "type": "text",
+            "heading": "Let's work together",
+            "body": "I take on select freelance and contract projects. Whether you need a full SaaS build, an API integration, or help scaling an existing Laravel app — I'm happy to chat. Reach me at joehunter.es or through the links below."
+        }
+    ],
+    "cta": {
+        "text": "Visit joehunter.es",
+        "href": "https://joehunter.es"
+    }
+}

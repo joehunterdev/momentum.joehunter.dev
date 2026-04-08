@@ -1,0 +1,235 @@
+// ─── Content / SEO Pages ──────────────────────────────────────────────────────
+
+.content-page {
+    position: relative;
+    min-height: 100vh;
+    background: #fff;
+    overflow: hidden;
+    font-family: var(--mm-font, inherit);
+
+    &__glow {
+        position: absolute;
+        top: -10vh;
+        left: -10vw;
+        width: 60vw;
+        height: 60vh;
+        background: radial-gradient(ellipse 70% 60% at 10% 10%,
+                rgba(96, 76, 129, 0.13) 0%,
+                rgba(139, 107, 174, 0.07) 45%,
+                transparent 75%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    &__inner {
+        position: relative;
+        z-index: 1;
+        max-width: 48rem;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+    }
+
+    // ── Header ──
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 0;
+    }
+
+    &__logo-link {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    &__logo {
+        height: 2rem;
+        width: auto;
+    }
+
+    &__nav {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    &__lang-link {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: #604c81;
+        border: 1px solid #e5e7eb;
+        text-decoration: none;
+        transition: background 0.15s ease, color 0.15s ease;
+
+        &:hover {
+            background: #f3f4f6;
+        }
+    }
+
+    &__nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        color: #111827;
+        transition: color 0.15s ease;
+
+        &:hover {
+            color: #604c81;
+        }
+
+        &--primary {
+            background: #00e5aa;
+            color: #111827;
+            border-radius: 0;
+        }
+    }
+
+    // ── Hero ──
+
+    &__hero {
+        padding: 3rem 0 2rem;
+        text-align: left;
+    }
+
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #604c81;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        margin-bottom: 1.25rem;
+    }
+
+    &__headline {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        line-height: 1.08;
+        color: #111827;
+        margin-bottom: 1rem;
+    }
+
+    &__subline {
+        font-size: 1.1rem;
+        color: #6b7280;
+        line-height: 1.6;
+        max-width: 40rem;
+    }
+
+    &__date {
+        display: block;
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: #9ca3af;
+    }
+
+    // ── Body / Sections ──
+
+    &__body {
+        padding-bottom: 2rem;
+    }
+
+    &__section {
+        margin-bottom: 2.5rem;
+    }
+
+    &__section-heading {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.75rem;
+    }
+
+    &__section-body {
+        font-size: 1rem;
+        color: #4b5563;
+        line-height: 1.75;
+    }
+
+    // ── Feature cards grid ──
+
+    &__features {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+        gap: 1.25rem;
+    }
+
+    &__feature-card {
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 0;
+        padding: 1.25rem;
+        transition: box-shadow 0.15s ease;
+
+        &:hover {
+            box-shadow: -4px -4px 0 0 rgba(0, 229, 170, 0.7);
+        }
+    }
+
+    &__feature-icon {
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    &__feature-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.35rem;
+    }
+
+    &__feature-desc {
+        font-size: 0.875rem;
+        color: #6b7280;
+        line-height: 1.5;
+    }
+
+    // ── CTA ──
+
+    &__cta-wrap {
+        padding: 2rem 0 3rem;
+        text-align: left;
+    }
+
+    &__cta {
+        display: inline-block;
+        padding: 0.85rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        background: #00e5aa;
+        color: #111827;
+        border-radius: 0;
+
+        @include mm-drop-border(var(--mm-drop-green));
+    }
+
+    // ── Footer ──
+
+    &__footer {
+        padding: 2rem 0;
+        border-top: 1px solid #e5e7eb;
+        font-size: 0.8rem;
+        color: #9ca3af;
+
+        a {
+            color: #604c81;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

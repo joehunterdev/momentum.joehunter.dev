@@ -1,0 +1,36 @@
+{
+    "slug": "apilamiento-habitos",
+    "locale": "es",
+    "alternate": { "en": "habit-stacking" },
+    "seo": {
+        "title": "Apilamiento de Hábitos — Encadena Hábitos Para Mejores Resultados | Momentum",
+        "description": "Usa el apilamiento de hábitos de Momentum para encadenar hábitos. Basado en la técnica de Atomic Habits — después de X, hago Y.",
+        "keywords": "apilamiento habitos, atomic habits apilamiento, encadenar habitos, app apilamiento habitos"
+    },
+    "hero": {
+        "badge": "Funcionalidad",
+        "headline": "Apila hábitos. Crea cadenas. Mantén la constancia.",
+        "subline": "La fórmula de apilamiento — 'Después de [hábito actual], haré [hábito nuevo]' — es una de las técnicas más efectivas. Momentum la hace automática."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "¿Qué es el apilamiento de hábitos?",
+            "body": "El apilamiento de hábitos es una técnica popularizada por James Clear en Atomic Habits. La idea es simple: en lugar de intentar recordar un nuevo hábito solo, lo vinculas a uno existente. 'Después de servir mi café, meditaré 2 minutos.' El hábito existente se convierte en la señal del nuevo."
+        },
+        {
+            "type": "text",
+            "heading": "Cómo lo implementa Momentum",
+            "body": "Cuando creas un momento en Momentum, puedes definir su señal — incluyendo vincularlo a otro momento. El horario los coloca consecutivamente, y la UI muestra la cadena visualmente."
+        },
+        {
+            "type": "text",
+            "heading": "Por qué funciona",
+            "body": "Tu cerebro está programado para secuencias. Las vías neurales de hábitos existentes ya son fuertes — al vincular nuevos comportamientos, aprovechas ese cableado existente. Con el tiempo, toda la cadena se vuelve automática."
+        }
+    ],
+    "cta": {
+        "text": "Empieza a apilar hábitos",
+        "href": "/register"
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "slug": "funcionalidades",
+    "locale": "es",
+    "alternate": { "en": "features" },
+    "seo": {
+        "title": "Funcionalidades — Momentum Rastreador de Hábitos",
+        "description": "Descubre las funcionalidades de Momentum: vista semanal, programación diaria, seguimiento de rachas, apilamiento de hábitos y más.",
+        "keywords": "funcionalidades rastreador habitos, vista semanal habitos, horario diario, seguimiento rachas, herramienta apilamiento habitos"
+    },
+    "hero": {
+        "badge": "Funcionalidades",
+        "headline": "Todo lo que necesitas para crear hábitos duraderos.",
+        "subline": "Momentum no es solo una checklist — es un sistema completo con programación, señales, apilamiento, recompensas y seguimiento visual."
+    },
+    "sections": [
+        {
+            "type": "features",
+            "heading": "Funcionalidades principales",
+            "items": [
+                { "icon": "\uD83D\uDCC5", "title": "Vista semanal", "description": "Ve tu semana completa de un vistazo. Cada momento, cada franja, con código de colores por estado de completado." },
+                { "icon": "\u26A1", "title": "Horario diario", "description": "Tu día en franjas de 30 minutos desde despertar hasta dormir. Sabe exactamente qué viene después." },
+                { "icon": "\uD83D\uDCC8", "title": "Panel y rachas", "description": "Sigue tus tasas de completado, rachas y consistencia a lo largo del tiempo." },
+                { "icon": "\uD83C\uDFAF", "title": "Constructor de momentos", "description": "Define hábitos con señales, pilas, indicadores de entorno y recompensas — el sistema completo de ciencia del comportamiento." },
+                { "icon": "\uD83D\uDD04", "title": "Apilamiento de hábitos", "description": "Encadena hábitos — 'después de hacer X, hago Y'. La técnica probada de Atomic Habits." },
+                { "icon": "\u2699\uFE0F", "title": "Configuración flexible", "description": "Configura hora de despertar, de dormir, duración de franjas y preferencias." }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "Construido sobre ciencia del comportamiento",
+            "body": "Cada funcionalidad está basada en investigación. Bucles señal-rutina-recompensa, hábitos basados en identidad, diseño del entorno — no son palabras de moda, son la arquitectura de la app."
+        }
+    ],
+    "cta": {
+        "text": "Prueba Momentum gratis",
+        "href": "/register"
+    }
+}

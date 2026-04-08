@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\ContentController;
 use App\Http\Controllers\DailyController;
 use App\Http\Controllers\MomentController;
 use App\Http\Controllers\MomentInstanceController;
@@ -16,32 +17,45 @@ Route::get('/', function () {
     ]);
 });
 
+// ─── Content / SEO Pages ─────────────────────────────────────────────────────
+Route::get('/{locale}/{slug}', [ContentController::class, 'show'])
+    ->where('locale', 'en|es')
+    ->where('slug', '[a-z0-9\-]+')
+    ->name('content.show');
+
+// ─── Sitemap ─────────────────────────────────────────────────────────────────
 Route::get('/sitemap.xml', function () {
     $url = rtrim(config('app.url'), '/');
     $today = now()->toDateString();
 
+    $urls = '';
+
+    // Static pages
+    $static = [
+        ['loc' => '/', 'changefreq' => 'weekly', 'priority' => '1.0'],
+        ['loc' => '/login', 'changefreq' => 'monthly', 'priority' => '0.5'],
+        ['loc' => '/register', 'changefreq' => 'monthly', 'priority' => '0.6'],
+    ];
+
+    foreach ($static as $page) {
+        $urls .= "    <url>\n        <loc>{$url}{$page['loc']}</loc>\n        <lastmod>{$today}</lastmod>\n        <changefreq>{$page['changefreq']}</changefreq>\n        <priority>{$page['priority']}</priority>\n    </url>\n";
+    }
+
+    // Dynamic content pages
+    $contentPages = ContentController::allPages();
+
+    foreach ($contentPages as $page) {
+        $priority = $page['type'] === 'blog' ? '0.7' : '0.8';
+        $changefreq = $page['type'] === 'blog' ? 'monthly' : 'weekly';
+        $lastmod = $page['publishedAt'] ?? $today;
+
+        $urls .= "    <url>\n        <loc>{$url}/{$page['locale']}/{$page['slug']}</loc>\n        <lastmod>{$lastmod}</lastmod>\n        <changefreq>{$changefreq}</changefreq>\n        <priority>{$priority}</priority>\n    </url>\n";
+    }
+
     $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-        <loc>{$url}/</loc>
-        <lastmod>{$today}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
-    </url>
-    <url>
-        <loc>{$url}/login</loc>
-        <lastmod>{$today}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    <url>
-        <loc>{$url}/register</loc>
-        <lastmod>{$today}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-</urlset>
+{$urls}</urlset>
 XML;
 
     return response($xml, 200)->header('Content-Type', 'application/xml');

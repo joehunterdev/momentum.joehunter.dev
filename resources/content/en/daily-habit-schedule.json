@@ -1,0 +1,36 @@
+{
+    "slug": "daily-habit-schedule",
+    "locale": "en",
+    "alternate": { "es": "horario-diario-habitos" },
+    "seo": {
+        "title": "Daily Habit Schedule — Plan Every 30-Minute Slot | Momentum",
+        "description": "Momentum's daily view lays out your habits in 30-minute time slots from wake to sleep. Eliminate decision fatigue and know exactly what's next.",
+        "keywords": "daily habit schedule, 30 minute habit planner, daily routine planner, time blocking habits"
+    },
+    "hero": {
+        "badge": "Feature",
+        "headline": "Your day, planned to the half-hour.",
+        "subline": "Momentum lays out your habits in 30-minute slots from wake to sleep. No guessing, no decision fatigue — just follow the plan."
+    },
+    "sections": [
+        {
+            "type": "text",
+            "heading": "Time-blocked habits",
+            "body": "Instead of a vague list of things to do, Momentum slots each habit into a specific time window. This turns 'I should meditate' into 'I meditate at 07:00 for 30 minutes'. Research shows that implementation intentions — specifying when and where — dramatically increase follow-through."
+        },
+        {
+            "type": "text",
+            "heading": "From wake to sleep",
+            "body": "Your daily schedule runs from your configured wake time to sleep time, broken into 30-minute slots. Each slot shows what's scheduled, what's done, and what's coming next. It's your entire day on one screen."
+        },
+        {
+            "type": "text",
+            "heading": "Reduce decision fatigue",
+            "body": "Every decision you make throughout the day costs mental energy. By pre-scheduling your habits, you remove the need to decide 'what should I do now?' — freeing up willpower for the habits themselves."
+        }
+    ],
+    "cta": {
+        "text": "Plan your first day",
+        "href": "/register"
+    }
+}

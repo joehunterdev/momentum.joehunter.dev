@@ -1,0 +1,38 @@
+{
+    "slug": "pricing",
+    "locale": "en",
+    "alternate": { "es": "precios" },
+    "seo": {
+        "title": "Pricing — Momentum Habit Tracker | Free During Beta",
+        "description": "Momentum is completely free during beta. Build habits, track streaks, and design your daily routine — no credit card required.",
+        "keywords": "momentum pricing, free habit tracker, habit app pricing, free habit tracking app"
+    },
+    "hero": {
+        "badge": "Pricing",
+        "headline": "Free. No strings attached.",
+        "subline": "Momentum is in active beta and completely free to use. All features, unlimited habits, no credit card."
+    },
+    "sections": [
+        {
+            "type": "features",
+            "heading": "Everything included",
+            "items": [
+                { "icon": "\u2705", "title": "Unlimited habits", "description": "Create as many moments as you need — no artificial limits." },
+                { "icon": "\u2705", "title": "Weekly & daily views", "description": "Full access to both planning views and the dashboard." },
+                { "icon": "\u2705", "title": "Habit stacking & cues", "description": "The complete behaviour-science toolkit at your fingertips." },
+                { "icon": "\u2705", "title": "Streak tracking", "description": "See your consistency and progress over time." },
+                { "icon": "\u2705", "title": "No ads, no tracking", "description": "Your data is yours. We don't sell it or show you ads." },
+                { "icon": "\u2705", "title": "Regular updates", "description": "New features ship regularly during beta. You get them all." }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "Why free?",
+            "body": "Momentum is in active development. During beta, everything is free so we can gather feedback and build the best possible habit tracker. Once we launch formally, there will be a generous free tier — early users will always be looked after."
+        }
+    ],
+    "cta": {
+        "text": "Get started for free",
+        "href": "/register"
+    }
+}

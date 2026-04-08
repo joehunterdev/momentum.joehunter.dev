@@ -1,0 +1,38 @@
+{
+    "slug": "precios",
+    "locale": "es",
+    "alternate": { "en": "pricing" },
+    "seo": {
+        "title": "Precios — Momentum Rastreador de Hábitos | Gratis Durante Beta",
+        "description": "Momentum es completamente gratis durante la beta. Crea hábitos, sigue rachas y diseña tu rutina diaria — sin tarjeta de crédito.",
+        "keywords": "precios momentum, rastreador habitos gratis, app habitos precios, app seguimiento habitos gratis"
+    },
+    "hero": {
+        "badge": "Precios",
+        "headline": "Gratis. Sin compromisos.",
+        "subline": "Momentum está en beta activa y es completamente gratis. Todas las funcionalidades, hábitos ilimitados, sin tarjeta de crédito."
+    },
+    "sections": [
+        {
+            "type": "features",
+            "heading": "Todo incluido",
+            "items": [
+                { "icon": "\u2705", "title": "Hábitos ilimitados", "description": "Crea tantos momentos como necesites — sin límites artificiales." },
+                { "icon": "\u2705", "title": "Vistas semanal y diaria", "description": "Acceso completo a ambas vistas de planificación y al panel." },
+                { "icon": "\u2705", "title": "Apilamiento y señales", "description": "El kit completo de ciencia del comportamiento a tu alcance." },
+                { "icon": "\u2705", "title": "Seguimiento de rachas", "description": "Ve tu consistencia y progreso a lo largo del tiempo." },
+                { "icon": "\u2705", "title": "Sin anuncios, sin rastreo", "description": "Tus datos son tuyos. No los vendemos ni mostramos anuncios." },
+                { "icon": "\u2705", "title": "Actualizaciones regulares", "description": "Nuevas funcionalidades se lanzan regularmente durante la beta." }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "¿Por qué gratis?",
+            "body": "Momentum está en desarrollo activo. Durante la beta, todo es gratis para poder recoger feedback y construir el mejor rastreador de hábitos posible. Los usuarios tempranos siempre tendrán beneficios."
+        }
+    ],
+    "cta": {
+        "text": "Empieza gratis",
+        "href": "/register"
+    }
+}

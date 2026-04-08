@@ -1,0 +1,43 @@
+{
+    "slug": "features",
+    "locale": "en",
+    "alternate": { "es": "funcionalidades" },
+    "seo": {
+        "title": "Features — Momentum Habit Tracker",
+        "description": "Explore Momentum's features: weekly view, daily scheduling, streak tracking, habit stacking, environment design, and more.",
+        "keywords": "habit tracker features, weekly habit view, daily schedule, streak tracking, habit stacking tool"
+    },
+    "hero": {
+        "badge": "Features",
+        "headline": "Everything you need to build lasting habits.",
+        "subline": "Momentum isn't just a checklist — it's a complete habit system with scheduling, cues, stacking, rewards, and visual tracking."
+    },
+    "sections": [
+        {
+            "type": "features",
+            "heading": "Core features",
+            "items": [
+                { "icon": "\uD83D\uDCC5", "title": "Weekly View", "description": "See your entire week at a glance. Every moment, every slot, colour-coded by completion status so you can spot patterns instantly." },
+                { "icon": "\u26A1", "title": "Daily Schedule", "description": "Your day laid out in 30-minute slots from wake to sleep. Know exactly what comes next — no decision fatigue." },
+                { "icon": "\uD83D\uDCC8", "title": "Dashboard & Streaks", "description": "Track your completion rates, streaks, and consistency across all your moments over time. Stay motivated with real data." },
+                { "icon": "\uD83C\uDFAF", "title": "Moment Builder", "description": "Define habits with cues, stacks, environment prompts and rewards — the full behaviour-science system, not just a name and a checkbox." },
+                { "icon": "\uD83D\uDD04", "title": "Habit Stacking", "description": "Chain habits together — 'after I do X, I do Y'. The proven technique from Atomic Habits, built right into the scheduling." },
+                { "icon": "\u2699\uFE0F", "title": "Flexible Config", "description": "Set your wake time, sleep time, slot duration, and preferences. Momentum adapts to your life, not the other way around." }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "Built on behaviour science",
+            "body": "Every feature in Momentum is grounded in research. Cue-routine-reward loops, identity-based habits, environment design — these aren't buzzwords, they're the architecture of the app. We built it this way because checklists don't change behaviour — systems do."
+        },
+        {
+            "type": "text",
+            "heading": "Fast, private, and yours",
+            "body": "Momentum is a server-rendered SPA — it loads fast, works on any device, and your data stays on our servers (not sold to third parties). No ads, no tracking pixels, no dark patterns."
+        }
+    ],
+    "cta": {
+        "text": "Try Momentum free",
+        "href": "/register"
+    }
+}
