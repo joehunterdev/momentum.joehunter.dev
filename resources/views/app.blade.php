@@ -8,6 +8,9 @@
 
     <title inertia>{{ config('app.name', 'Momentum') }}</title>
     <meta name="description" content="Momentum — build lasting habits, track streaks, and stay consistent every day.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#604C81">
+    <link rel="canonical" href="{{ config('app.url') }}">
 
     <!-- Favicon / App Icons -->
     <link rel="icon" type="image/png" href="/logo_75.png">
@@ -19,15 +22,19 @@
     <meta property="og:title" content="Momentum — Build Better Habits">
     <meta property="og:description"
         content="Track your habits, build streaks, and stay consistent every day with Momentum.">
-    <meta property="og:image" content="{{ config('app.url') }}/logo_75.png">
+    <meta property="og:image" content="{{ config('app.url') }}/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
     <meta property="og:url" content="{{ config('app.url') }}">
+    <meta property="og:locale" content="en_GB">
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Momentum — Build Better Habits">
     <meta name="twitter:description"
         content="Track your habits, build streaks, and stay consistent every day with Momentum.">
-    <meta name="twitter:image" content="{{ config('app.url') }}/logo_75.png">
+    <meta name="twitter:image" content="{{ config('app.url') }}/og-image.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">

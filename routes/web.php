@@ -6,7 +6,6 @@ use App\Http\Controllers\MomentController;
 use App\Http\Controllers\MomentInstanceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WeeklyController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -16,6 +15,37 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
+
+Route::get('/sitemap.xml', function () {
+    $url = rtrim(config('app.url'), '/');
+    $today = now()->toDateString();
+
+    $xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>{$url}/</loc>
+        <lastmod>{$today}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>{$url}/login</loc>
+        <lastmod>{$today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>{$url}/register</loc>
+        <lastmod>{$today}</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+</urlset>
+XML;
+
+    return response($xml, 200)->header('Content-Type', 'application/xml');
+})->name('sitemap');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 

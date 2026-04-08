@@ -27,7 +27,15 @@ const features = [
 export default function Welcome({ auth }: PageProps) {
     return (
         <>
-            <Head title="Momentum — Build better habits" />
+            <Head title="Momentum — Build better habits">
+                <meta head-key="description" name="description" content="Momentum helps you design, schedule and stick to the habits that matter — backed by proven behaviour science." />
+                <meta head-key="og:title" property="og:title" content="Momentum — Build better habits" />
+                <meta head-key="og:description" property="og:description" content="Momentum helps you design, schedule and stick to the habits that matter — backed by proven behaviour science." />
+                <meta head-key="og:image" property="og:image" content="https://momentum.joehunter.dev/og-image.png" />
+                <meta head-key="og:url" property="og:url" content="https://momentum.joehunter.dev" />
+                <meta head-key="twitter:card" name="twitter:card" content="summary_large_image" />
+                <meta head-key="twitter:image" name="twitter:image" content="https://momentum.joehunter.dev/og-image.png" />
+            </Head>
 
             <div className="welcome-page">
                 <div className="welcome-page__glow" aria-hidden />

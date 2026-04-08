@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Disallow: /daily
+Disallow: /weekly
+Disallow: /moments
+Disallow: /config
+Disallow: /profile
+
+Sitemap: https://momentum.joehunter.dev/sitemap.xml
