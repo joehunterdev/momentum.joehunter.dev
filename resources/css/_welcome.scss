@@ -8,7 +8,17 @@
     font-family: var(--mm-font, inherit);
 
     &__glow {
-        display: none;
+        position: absolute;
+        top: -10vh;
+        left: -10vw;
+        width: 60vw;
+        height: 60vh;
+        background: radial-gradient(ellipse 70% 60% at 10% 10%,
+                rgba(96, 76, 129, 0.13) 0%,
+                rgba(139, 107, 174, 0.07) 45%,
+                transparent 75%);
+        pointer-events: none;
+        z-index: 0;
     }
 
     &__inner {
@@ -97,7 +107,7 @@
         padding: 0.75rem 2rem;
         border-radius: 0;
         text-decoration: none;
-        @include mm-drop-border(var(--mm-drop-purple));
+        @include mm-drop-border(var(--mm-drop-green));
 
         &:hover {
             background: #00cfa0;
@@ -118,11 +128,48 @@
     }
 
     &__card {
-        background: #fff;
+        background: #f3f4f6;
         border: 1px solid #e5e7eb;
         border-radius: 0;
         padding: 1.5rem;
-        @include mm-drop-border(var(--mm-drop-green));
+        box-shadow: -8px -8px 0 0 rgba(0, 229, 170, 0.7);
+        transition: box-shadow 0.12s ease, transform 0.12s ease;
+
+        &:hover {
+            box-shadow: -4px -4px 0 0 rgba(0, 229, 170, 0.7);
+            transform: translate(-4px, -4px);
+        }
+
+        &:active {
+            box-shadow: none;
+            transform: translate(-8px, -8px);
+        }
+
+        // First card: purple at 70% opacity + soft drop shadow for depth
+        &:first-child {
+            background: rgba(96, 76, 129, 0.7);
+            border-color: rgba(96, 76, 129, 0.4);
+            box-shadow:
+                -8px -8px 0 0 rgba(0, 229, 170, 0.7),
+                0 8px 32px rgba(96, 76, 129, 0.35),
+                0 2px 8px rgba(0, 0, 0, 0.12);
+
+            &:hover {
+                box-shadow:
+                    -4px -4px 0 0 rgba(0, 229, 170, 0.7),
+                    0 12px 40px rgba(96, 76, 129, 0.45),
+                    0 4px 12px rgba(0, 0, 0, 0.15);
+                transform: translate(-4px, -4px);
+            }
+
+            .welcome-page__card-title {
+                color: #fff;
+            }
+
+            .welcome-page__card-body {
+                color: rgba(255, 255, 255, 0.75);
+            }
+        }
     }
 
     &__card-icon {

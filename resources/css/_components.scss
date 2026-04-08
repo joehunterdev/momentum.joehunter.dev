@@ -142,51 +142,53 @@
   }
 }
 
-// ─── Form inputs (dark override for Tailwind forms plugin) ───
+// ─── Form inputs ───
 .mm-input {
-  background: var(--mm-surface) !important;
-  border-color: var(--mm-surface-border) !important;
-  color: var(--mm-text) !important;
-  border-radius: var(--mm-radius-sm);
-  transition: border-color var(--mm-duration) ease, box-shadow var(--mm-duration) ease;
+  background: #fff !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 0 !important;
+  color: #111827 !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &::placeholder {
-    color: var(--mm-text-dimmed);
+    color: #9ca3af;
   }
 
   &:focus {
-    border-color: var(--mm-primary) !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+    border-color: #604C81 !important;
+    box-shadow: 0 0 0 3px rgba(96, 76, 129, 0.15) !important;
+    outline: none;
   }
 }
 
-// ─── Primary button (gradient) ───
+// ─── Form card wrapper ───
+.mm-form-card {
+  border-radius: 0 !important;
+  border: 1px solid #e5e7eb;
+}
+
+// ─── Primary button ───
 .mm-btn-primary {
-  background: linear-gradient(135deg, var(--mm-primary) 0%, var(--mm-primary-light) 100%);
-  color: white;
+  background: #604C81;
+  color: #fff;
   font-weight: 600;
   border: none;
-  border-radius: var(--mm-radius-sm);
+  border-radius: 0;
   padding: 10px 24px;
   cursor: pointer;
-  transition: all var(--mm-duration) var(--mm-ease);
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-  position: relative;
-  overflow: hidden;
+  transition: background 0.15s ease, box-shadow 0.12s ease, transform 0.12s ease;
+  @include mm-drop-border(var(--mm-drop-green));
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+    background: #503c6e;
   }
 
-  &:active {
-    transform: translateY(-1px);
-  }
-
-  &:disabled {
-    opacity: 0.5;
+  &:disabled,
+  &.opacity-25 {
+    opacity: 0.4;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
   }
 }
 
