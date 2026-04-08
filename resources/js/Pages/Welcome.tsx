@@ -6,21 +6,25 @@ const features = [
         icon: '\uD83D\uDCC5',
         title: 'Weekly View',
         description: 'See your entire week at a glance. Every moment, every slot, colour-coded by status.',
+        href: '/en/weekly-habit-view',
     },
     {
         icon: '\u26A1',
         title: 'Daily Schedule',
         description: "Your day laid out in 30-minute slots from wake to sleep. Know exactly what's next.",
+        href: '/en/daily-habit-schedule',
     },
     {
         icon: '\uD83D\uDCC8',
         title: 'Dashboard',
         description: 'Track completion rates, streaks, and consistency across all your moments over time.',
+        href: '/en/features',
     },
     {
         icon: '\uD83C\uDFAF',
         title: 'Moment Builder',
         description: 'Define habits with cues, stacks, environment prompts and rewards \u2014 the full system.',
+        href: '/en/habit-stacking',
     },
 ];
 
@@ -77,11 +81,12 @@ export default function Welcome({ auth }: PageProps) {
 
                     <section className="welcome-page__features">
                         {features.map((f) => (
-                            <div key={f.title} className="welcome-page__card">
+                            <Link key={f.title} href={f.href} className="welcome-page__card">
                                 <span className="welcome-page__card-icon">{f.icon}</span>
                                 <h2 className="welcome-page__card-title">{f.title}</h2>
                                 <p className="welcome-page__card-body">{f.description}</p>
-                            </div>
+                                <span className="welcome-page__card-arrow">&rarr;</span>
+                            </Link>
                         ))}
                     </section>
                 </div>
