@@ -21,7 +21,7 @@ export default function Edit({ config }: Props) {
 
             <div className="py-8">
                 <div className="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div className="mm-form-card bg-white p-6 shadow-sm">
                         <ConfigForm config={config} />
                     </div>
                 </div>
