@@ -5,7 +5,7 @@
 <h1 align="center">Momentum</h1>
 <p align="center"><strong>Build momentum, one habit at a time.</strong></p>
 <p align="center">
-  A behaviour-science-backed habit tracker built with Laravel, React & Inertia.js.
+  A behaviour-science-backed habit tracker built with Laravel, React & Inertia
   <br />
   <a href="https://momentum.joehunter.dev">momentum.joehunter.dev</a> &middot;
   Built by <a href="https://joehunter.es">Joe Hunter</a>
