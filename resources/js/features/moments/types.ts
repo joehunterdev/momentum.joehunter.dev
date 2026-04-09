@@ -1,39 +1,13 @@
-export interface MomentSchedule {
-    id: number;
-    moment_id: number;
-    frequency: 'daily' | 'weekly' | 'custom';
-    days_of_week: number[] | null; // 1=Mon … 7=Sun
-    preferred_time: string | null; // "HH:mm"
-}
-export interface Cue {
-    id: number;
-    moment_id: number;
-    implementation_intention: string | null;
-    habit_stack_after: string | null;
-    environment_prompt: string | null;
-}
+// Types are generated from PHP DTOs — do not edit manually.
+// Run `php artisan typescript:transform` to regenerate.
 
-export interface Reward {
-    id: number;
-    moment_id: number;
-    description: string | null;
-    temptation_bundle: string | null;
-}
+// Re-export generated types under the names the feature uses
+export type MomentSchedule = App.Data.MomentScheduleData;
+export type Cue = App.Data.CueData;
+export type Reward = App.Data.RewardData;
+export type Moment = App.Data.MomentData;
 
-export interface Moment {
-    id: number;
-    name: string;
-    description: string | null;
-    color: string | null;
-    icon: string | null;
-    is_active: boolean;
-    sort_order: number;
-    schedule: MomentSchedule | null;
-    cue: Cue | null;
-    reward: Reward | null;
-}
-
-/** Flat form shape submitted to MomentController@store/update */
+/** Flat form shape submitted to MomentController@store/update — not a DTO */
 export interface MomentFormData {
     name: string;
     description: string;

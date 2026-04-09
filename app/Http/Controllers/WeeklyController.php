@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\SlotMomentData;
+use App\Data\TimeSlotData;
+use App\Data\UserConfigData;
+use App\Data\WeekDayData;
+use App\Data\WeeklyPageData;
+use App\Enums\Frequency;
 use App\Models\Moment;
 use App\Models\UserConfig;
 use Carbon\Carbon;
@@ -81,11 +87,13 @@ class WeeklyController extends Controller
                 });
 
                 if (! $match) {
-                    return ['time' => $slotTime, 'moment' => null];
+                    return new TimeSlotData(
+                        time: $slotTime,
+                        moment: null,
+                    );
                 }
 
                 $instance = $match->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
-
                 $status = match (true) {
                     $instance?->completed_at !== null => 'completed',
                     $isPast => 'missed',
@@ -123,47 +131,49 @@ class WeeklyController extends Controller
 
                 $consistency = $scheduled > 0 ? (int) round(($completed / $scheduled) * 100) : null;
 
-                return [
-                    'time' => $slotTime,
-                    'moment' => [
-                        'id' => $match->id,
-                        'name' => $match->name,
-                        'description' => $match->description,
-                        'icon' => $match->icon,
-                        'color' => $match->color,
-                        'frequency' => $match->schedule?->frequency,
-                        'consistency' => $consistency,
-                        'status' => $status,
-                        'instance_id' => $instance?->id,
-                        'implementation_intention' => $match->cue?->implementation_intention,
-                        'habit_stack_after' => $match->cue?->habit_stack_after,
-                        'environment_prompt' => $match->cue?->environment_prompt,
-                    ],
-                ];
+                return new TimeSlotData(
+                    time: $slotTime,
+                    moment: new SlotMomentData(
+                        id: $match->id,
+                        name: $match->name,
+                        description: $match->description,
+                        icon: $match->icon,
+                        color: $match->color,
+                        frequency: $match->schedule?->frequency ? Frequency::from($match->schedule->frequency) : null,
+                        consistency: $consistency,
+                        status: $status,
+                        instance_id: $instance?->id,
+                        implementation_intention: $match->cue?->implementation_intention,
+                        habit_stack_after: $match->cue?->habit_stack_after,
+                        environment_prompt: $match->cue?->environment_prompt,
+                    ),
+                );
             }, $slots);
 
-            $days[] = [
-                'date' => $dateStr,
-                'dayName' => $date->format('l'),
-                'isToday' => $isToday,
-                'isWeekend' => $isWeekend,
-                'slots' => $daySlots,
-            ];
+            $days[] = new WeekDayData(
+                date: $dateStr,
+                dayName: $date->format('l'),
+                isToday: $isToday,
+                isWeekend: $isWeekend,
+                slots: $daySlots,
+            );
 
             $date = $date->addDay();
         }
 
-        return Inertia::render('Weekly/Index', [
-            'weekStart' => $weekStart->toDateString(),
-            'weekEnd' => $weekEnd->toDateString(),
-            'config' => [
-                'wake_time' => substr($wakeTime, 0, 5),
-                'sleep_time' => substr($sleepTime, 0, 5),
-                'office_start' => substr($officeStart, 0, 5),
-                'office_end' => substr($officeEnd, 0, 5),
-            ],
-            'days' => $days,
-        ]);
+        $pageData = new WeeklyPageData(
+            weekStart: $weekStart->toDateString(),
+            weekEnd: $weekEnd->toDateString(),
+            config: new UserConfigData(
+                wake_time: substr($wakeTime, 0, 5),
+                sleep_time: substr($sleepTime, 0, 5),
+                office_start: substr($officeStart, 0, 5),
+                office_end: substr($officeEnd, 0, 5),
+            ),
+            days: $days,
+        );
+
+        return Inertia::render('Weekly/Index', $pageData);
     }
 
     /**

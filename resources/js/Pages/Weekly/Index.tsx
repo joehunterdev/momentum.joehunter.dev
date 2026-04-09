@@ -41,7 +41,7 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
 
     async function handleToggleMoment(momentId: number, _instanceId: number | null, date: string) {
         const token = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement | null)?.content ?? '';
-
+        //TODO: Arent there more elegant ways to handle this, a hook maby? 
         await fetch(route('moments.toggle', { moment: momentId }), {
             method: 'POST',
             headers: {

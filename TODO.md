@@ -20,3 +20,19 @@
 - [] Have simple versoin feature either maby best in package json or similar to easily modify version and make it visible
 - Instructions prefer icons or font aweome over svg <svg className="icon-picker__trigger-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
 
+- [ ]  Laravel Spatie data
+
+
+## Todo
+The await fetch i think could be made to be a reusable hook or similar, what is best conisdering my architecture
+E:\www\momentum.joehunter.dev\resources\js\Pages\Weekly\Index.tsx 
+
+Are there any circumstances where we wouldnt want to highlight the time ?
+highlightTime={highlightTime ?? undefined}
+
+E:\www\momentum.joehunter.dev\resources\js\features\weekly\components\WeeklyGrid.tsx
+
+ slot.moment.status we should also have as types no ?
+
+E:\www\momentum.joehunter.dev\resources\js\features\weekly\components\DaySection.tsx
+'once' | 'recurring' could be enums too

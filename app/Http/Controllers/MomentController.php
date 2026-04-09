@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\MomentData;
 use App\Models\Moment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -71,8 +72,10 @@ class MomentController extends Controller
     {
         $this->authorize($moment);
 
+        $moment->load(['schedule', 'cue', 'reward']);
+
         return Inertia::render('Moments/Edit', [
-            'moment' => $moment->load(['schedule', 'cue', 'reward']),
+            'moment' => MomentData::fromModel($moment),
         ]);
     }
 
@@ -136,7 +139,7 @@ class MomentController extends Controller
             ]
         );
 
-        return redirect()->route('daily')->with('success', 'Moment updated.');
+        return redirect()->route('weekly')->with('success', 'Moment updated.');
     }
 
     public function destroy(Moment $moment): RedirectResponse
@@ -145,7 +148,7 @@ class MomentController extends Controller
 
         $moment->delete();
 
-        return redirect()->route('daily')->with('success', 'Moment deleted.');
+        return redirect()->route('weekly')->with('success', 'Moment deleted.');
     }
 
     private function authorize(Moment $moment): void

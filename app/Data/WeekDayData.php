@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Data;
+
+use Spatie\LaravelData\Data;
+use Spatie\TypeScriptTransformer\Attributes\TypeScript;
+
+#[TypeScript]
+class WeekDayData extends Data
+{
+    public function __construct(
+        public string $date,
+        public string $dayName,
+        public bool $isToday,
+        public bool $isWeekend,
+        /** @var TimeSlotData[] */
+        public array $slots,
+    ) {}
+}

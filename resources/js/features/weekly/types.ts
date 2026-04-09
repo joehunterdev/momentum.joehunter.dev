@@ -1,43 +1,11 @@
+// Types are generated from PHP DTOs — do not edit manually.
+// Run `php artisan typescript:transform` to regenerate.
+
 export type SlotStatus = 'completed' | 'missed' | 'pending' | null;
 
-export interface SlotMoment {
-    id: number;
-    name: string;
-    description: string | null;
-    icon: string | null;
-    color: string | null;
-    frequency: string | null;
-    consistency: number | null;
-    status: SlotStatus;
-    instance_id: number | null;
-    implementation_intention: string | null;
-    habit_stack_after: string | null;
-    environment_prompt: string | null;
-}
-
-export interface TimeSlot {
-    time: string; // 'HH:mm'
-    moment: SlotMoment | null;
-}
-
-export interface WeekDay {
-    date: string; // 'YYYY-MM-DD'
-    dayName: string; // 'Monday', 'Tuesday', etc.
-    isToday: boolean;
-    isWeekend: boolean;
-    slots: TimeSlot[];
-}
-
-export interface WeeklyConfig {
-    wake_time: string;
-    sleep_time: string;
-    office_start: string;
-    office_end: string;
-}
-
-export interface WeeklyPageProps {
-    weekStart: string;
-    weekEnd: string;
-    config: WeeklyConfig;
-    days: WeekDay[];
-}
+// Re-export generated types under the names the feature uses
+export type SlotMoment = App.Data.SlotMomentData;
+export type TimeSlot = App.Data.TimeSlotData;
+export type WeekDay = App.Data.WeekDayData;
+export type WeeklyConfig = App.Data.UserConfigData;
+export type WeeklyPageProps = App.Data.WeeklyPageData;
