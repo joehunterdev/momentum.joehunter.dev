@@ -36,14 +36,14 @@ It's not a checklist. It's a **scheduling and design system** for the habits tha
 
 | Feature | Description |
 |---|---|
-| **Weekly View** | See all habits across 7 days, colour-coded by completion status |
-| **Daily Schedule** | 30-minute time-slotted day from wake to sleep — eliminates decision fatigue |
+| **Weekly View** | See all habits across 7 days in 30-min slots, colour-coded by completion status |
+| **Consistency tracking** | Per-habit completion % over the last 28 days, calculated server-side |
 | **Moment Builder** | Define habits with cues, stacks, environment prompts & rewards |
 | **Habit Stacking** | Chain habits together with the proven after-X-do-Y formula |
-| **Dashboard** | Completion rates, streaks, and consistency tracking over time |
-| **Flexible Config** | Customisable wake/sleep times and slot durations |
+| **Flexible Config** | Customisable wake/sleep times and office hours |
 | **Bilingual content** | SEO content pages in English & Spanish (`/en/`, `/es/`) |
 | **SSR + SEO** | Full server-side rendering via Inertia v2 + dynamic sitemap |
+| **Type-safe DTOs** | `spatie/laravel-data` DTOs auto-generate TypeScript interfaces via `php artisan typescript:transform` |
 
 ---
 
@@ -54,6 +54,7 @@ It's not a checklist. It's a **scheduling and design system** for the habits tha
 - **MySQL** — primary datastore
 - **Laravel Breeze** — authentication scaffolding
 - **Laravel Sanctum** — API token auth
+- **spatie/laravel-data** — typed DTOs with auto-generated TypeScript interfaces
 
 ### Frontend
 - **React 18** + **TypeScript** (strict)
@@ -73,19 +74,23 @@ It's not a checklist. It's a **scheduling and design system** for the habits tha
 ## Project Structure
 
 ```
+app/
+├── Data/                        # spatie/laravel-data DTOs (source of truth for frontend types)
+├── Enums/                       # Backed PHP enums → TypeScript union types
 resources/
 ├── js/
 │   ├── Pages/
 │   │   ├── Welcome.tsx          # Marketing homepage
 │   │   ├── Content/Show.tsx     # Reusable SEO content page renderer
-│   │   ├── Daily/               # Daily schedule view
 │   │   ├── Weekly/              # Weekly overview
 │   │   ├── Moments/             # Habit CRUD
 │   │   └── Config/              # User configuration
-│   └── features/                # Feature-scoped components
+│   ├── features/                # Feature-scoped components & hooks
+│   └── types/
+│       └── generated.d.ts       # Auto-generated from DTOs — do not edit
 ├── css/
 │   ├── _drop-border.scss        # Brand drop-shadow token + mixin
-│   ├── _components.scss         # Global UI components (mm-btn-primary, mm-input, etc.)
+│   ├── _components.scss         # Global UI components
 │   ├── _welcome.scss            # Marketing page styles
 │   └── _content.scss            # SEO content page styles
 └── content/
@@ -141,7 +146,37 @@ composer run dev
 # or separately:
 php artisan serve
 npm run dev
+
+# Regenerate TypeScript types after changing any app/Data or app/Enums class
+php artisan typescript:transform
 ```
+
+### Virtual Host Setup
+
+The app expects `http://momentum.joehunter.local` by default (`APP_URL` in `.env`).
+
+**Apache** — add to `httpd-vhosts.conf` (or your distro's equivalent):
+
+```apache
+<VirtualHost *:80>
+    ServerName momentum.joehunter.local
+    DocumentRoot "C:/path/to/momentum.joehunter.dev/public"
+    <Directory "C:/path/to/momentum.joehunter.dev/public">
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+**Hosts file** — add to `C:\Windows\System32\drivers\etc\hosts` (Windows) or `/etc/hosts` (macOS/Linux):
+
+```
+127.0.0.1  momentum.joehunter.local
+```
+
+Then restart Apache and visit `http://momentum.joehunter.local`.
+
+> **Tip:** If you prefer a different local domain, update both the hosts file entry and `APP_URL` in your `.env`.
 
 ---
 
