@@ -49,7 +49,7 @@ export default function Edit({ moment }: Props) {
 
             <MomentModal
                 show={true}
-                onClose={() => router.visit(route('daily'))}
+                onClose={() => router.visit(route('weekly'))}
                 moment={moment}
                 onSubmit={handleSubmit}
             />

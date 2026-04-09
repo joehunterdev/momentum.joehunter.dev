@@ -24,7 +24,7 @@ export default function Create(_props: PageProps) {
 
             <MomentModal
                 show={true}
-                onClose={() => router.visit(route('daily'))}
+                onClose={() => router.visit(route('weekly'))}
                 onSubmit={handleSubmit}
                 submitLabel="Create Moment"
             />
