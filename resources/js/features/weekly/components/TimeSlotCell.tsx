@@ -53,10 +53,20 @@ export default function TimeSlotCell({
         .filter(Boolean)
         .join(' ');
 
-    // ── Overview mode: read-only ──────────────────────────────────────────────
+    // ── Overview mode ─────────────────────────────────────────────────────────
     if (mode === 'overview') {
+        const emptyClickable = !slot.moment && !ooo;
         return (
-            <div className={cls}>
+            <div
+                className={[
+                    cls,
+                    emptyClickable ? 'weekly-slot--overview-empty' : '',
+                ].filter(Boolean).join(' ')}
+                onClick={emptyClickable ? () => onStartScheduling(date, slot.time) : undefined}
+                role={emptyClickable ? 'button' : undefined}
+                tabIndex={emptyClickable ? 0 : undefined}
+                onKeyDown={emptyClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onStartScheduling(date, slot.time); } : undefined}
+            >
                 <span className="weekly-slot__time">{slot.time}</span>
                 <div className="weekly-slot__content">
                     {slot.moment && <SlotMomentCard moment={slot.moment} variant="overview" />}

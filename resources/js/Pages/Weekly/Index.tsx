@@ -48,9 +48,16 @@ export default function Index({ weekStart, config, days }: Props) {
         });
     }
 
+    function handleModalDelete(moment: import('@/features/moments').Moment) {
+        router.delete(route('moments.destroy', moment.id), {
+            onSuccess: () => handleModalClose(),
+        });
+    }
+
     // ── Schedule-first creation flow ──────────────────────────────────────────
     function handleStartScheduling(date: string, time: string) {
         const isoDay = jsToIsoDay(new Date(date).getDay());
+        setMode('configure');
         setScheduling({
             time,
             frequency: 'weekly',

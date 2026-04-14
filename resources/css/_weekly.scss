@@ -254,6 +254,25 @@ $border-light: #f3f4f6;
     right: 0.25rem;
 }
 
+// ─── Overview empty slot — clickable to enter configure mode ─────────────────
+
+.weekly-slot--overview-empty {
+    cursor: pointer;
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.04);
+
+        .weekly-slot__time {
+            color: var(--mm-primary, #6366f1);
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--mm-primary, #6366f1);
+        outline-offset: -2px;
+    }
+}
+
 // ─── Week Selector Bar ────────────────────────────────────────────────────────
 
 .week-selector {
