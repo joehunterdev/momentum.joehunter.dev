@@ -17,6 +17,8 @@ interface SchedulingState {
     time: string;
     frequency: 'daily' | 'weekly' | 'custom';
     daysOfWeek: number[];
+    name: string;
+    icon: string | null;
 }
 
 /** Convert JS getDay() (0=Sun) to ISO day (1=Mon … 7=Sun) */
@@ -53,6 +55,8 @@ export default function Index({ weekStart, config, days }: Props) {
             time,
             frequency: 'weekly',
             daysOfWeek: [1, 2, 3, 4, 5], // default: weekdays
+            name: '',
+            icon: null,
         });
         void isoDay; // used for context, not needed here
     }
@@ -61,16 +65,25 @@ export default function Index({ weekStart, config, days }: Props) {
         setScheduling((prev) => prev ? { ...prev, frequency, daysOfWeek } : null);
     }
 
+    function handleSchedulingNameChange(name: string) {
+        setScheduling((prev) => prev ? { ...prev, name } : null);
+    }
+
+    function handleSchedulingIconChange(icon: string | null) {
+        setScheduling((prev) => prev ? { ...prev, icon } : null);
+    }
+
     function handleConfirmSchedule() {
         if (!scheduling) { return; }
 
         router.post(
             route('moments.store'),
             {
-                name: null,
+                name: scheduling.name.trim() || null,
                 frequency: scheduling.frequency,
                 days_of_week: scheduling.daysOfWeek,
                 preferred_time: scheduling.time,
+                icon: scheduling.icon,
                 _redirect: route('weekly'),
             },
             {
@@ -149,6 +162,8 @@ export default function Index({ weekStart, config, days }: Props) {
                         mode={mode}
                         scheduling={scheduling}
                         onStartScheduling={handleStartScheduling}
+                        onGhostNameChange={handleSchedulingNameChange}
+                        onGhostIconChange={handleSchedulingIconChange}
                     />
                 </div>
             </div>

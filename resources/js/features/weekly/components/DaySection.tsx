@@ -6,6 +6,8 @@ interface SchedulingState {
     time: string;
     frequency: 'daily' | 'weekly' | 'custom';
     daysOfWeek: number[];
+    name: string;
+    icon: string | null;
 }
 
 interface Props {
@@ -14,6 +16,8 @@ interface Props {
     mode: 'overview' | 'configure';
     scheduling: SchedulingState | null;
     onStartScheduling: (date: string, time: string) => void;
+    onGhostNameChange: (name: string) => void;
+    onGhostIconChange: (icon: string | null) => void;
     windowStart: number;
 }
 
@@ -29,7 +33,7 @@ function jsToIsoDay(d: number): number {
     return d === 0 ? 7 : d;
 }
 
-export default function DaySection({ day, config, mode, scheduling, onStartScheduling, windowStart }: Props) {
+export default function DaySection({ day, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange, windowStart }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getWindowedSlots(day.slots, windowStart);
     const dayIso = jsToIsoDay(dateObj.getDay());
@@ -70,6 +74,10 @@ export default function DaySection({ day, config, mode, scheduling, onStartSched
                             isGhost={isGhost}
                             isConflict={isConflict}
                             onStartScheduling={onStartScheduling}
+                            onGhostNameChange={onGhostNameChange}
+                            onGhostIconChange={onGhostIconChange}
+                            ghostName={scheduling?.name ?? ''}
+                            ghostIcon={scheduling?.icon ?? null}
                             isWeekend={day.isWeekend}
                             isToday={day.isToday}
                         />

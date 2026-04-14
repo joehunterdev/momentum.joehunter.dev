@@ -11,6 +11,10 @@ interface Props {
     isGhost?: boolean;
     isConflict?: boolean;
     onStartScheduling: (date: string, time: string) => void;
+    onGhostNameChange: (name: string) => void;
+    onGhostIconChange: (icon: string | null) => void;
+    ghostName: string;
+    ghostIcon: string | null;
     isWeekend?: boolean;
     isToday?: boolean;
 }
@@ -27,6 +31,10 @@ export default function TimeSlotCell({
     isGhost,
     isConflict,
     onStartScheduling,
+    onGhostNameChange,
+    onGhostIconChange,
+    ghostName,
+    ghostIcon,
     isWeekend,
     isToday,
 }: Props) {
@@ -66,11 +74,11 @@ export default function TimeSlotCell({
                     <SlotMomentCard
                         moment={{
                             id: 0,
-                            name: 'New Moment',
+                            name: ghostName || 'New Moment',
                             description: null,
                             status: null,
                             color: null,
-                            icon: null,
+                            icon: ghostIcon,
                             frequency: null,
                             consistency: null,
                             instance_id: null,
@@ -79,6 +87,8 @@ export default function TimeSlotCell({
                             environment_prompt: null,
                         }}
                         variant="ghost"
+                        onGhostNameChange={onGhostNameChange}
+                        onGhostIconChange={onGhostIconChange}
                     />
                 ) : slot.moment ? (
                     <>

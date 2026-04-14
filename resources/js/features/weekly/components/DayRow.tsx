@@ -42,6 +42,10 @@ export default function DayRow({ day, config, mode, onStartScheduling }: Props) 
                         config={config}
                         mode={mode}
                         onStartScheduling={onStartScheduling}
+                        onGhostNameChange={() => { }}
+                        onGhostIconChange={() => { }}
+                        ghostName=""
+                        ghostIcon={null}
                     />
                 ))}
             </div>

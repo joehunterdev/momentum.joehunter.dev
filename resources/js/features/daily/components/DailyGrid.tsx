@@ -10,99 +10,92 @@ interface Props {
     nextMomentKey?: string | null;
 }
 
-const VISIBLE_SLOTS = 8;
+/** All hourly slots from wake through sleep. For today, anchors to current hour. */
+function getTodaySlots(slots: TimeSlot[], config: CalendarConfig, isToday: boolean): TimeSlot[] {
+    const hourly = slots.filter(
+        (s) => s.time.endsWith(':00') && s.time >= config.wake_time && s.time < config.sleep_time,
+    );
 
-/**
- * Keep only on-the-hour slots, then window to VISIBLE_SLOTS centred near
- * the current time (today) or from wake time (past/future days).
- * Slots with a moment are always included regardless of the window.
- */
-function getVisibleSlots(slots: TimeSlot[], isToday: boolean): TimeSlot[] {
-    const hourly = slots.filter((s) => s.time.endsWith(':00'));
-
-    if (!isToday || hourly.length <= VISIBLE_SLOTS) {
-        return hourly.slice(0, VISIBLE_SLOTS);
+    if (!isToday) {
+        return hourly;
     }
 
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+    // For today: show from 2 hours before current time, but always include
+    // any past slots that have a moment scheduled (so nothing is hidden).
+    const nowHour = new Date().getHours();
+    const cutoffHour = Math.max(0, nowHour - 2);
+    const cutoffTime = `${String(cutoffHour).padStart(2, '0')}:00`;
 
-    // Find the slot closest to now
-    let anchorIdx = 0;
-    let anchorDiff = Infinity;
-    hourly.forEach((s, i) => {
-        const [h] = s.time.split(':').map(Number);
-        const diff = Math.abs(h * 60 - nowMins);
-        if (diff < anchorDiff) {
-            anchorDiff = diff;
-            anchorIdx = i;
-        }
-    });
-
-    // Bias the window so current time is roughly 2 slots from the top
-    const LOOK_AHEAD = 2;
-    const start = Math.max(0, Math.min(anchorIdx - LOOK_AHEAD, hourly.length - VISIBLE_SLOTS));
-    const windowed = new Set(hourly.slice(start, start + VISIBLE_SLOTS).map((s) => s.time));
-
-    // Always include slots that have a moment scheduled
-    hourly.forEach((s) => {
-        if (s.moment) windowed.add(s.time);
-    });
-
-    return hourly.filter((s) => windowed.has(s.time));
+    return hourly.filter((s) => s.time >= cutoffTime || s.moment !== null);
 }
 
 /**
- * How many tomorrow slots to show to fill the remaining whitespace.
- * Only slots that have a moment are shown — empty tomorrow slots are skipped.
+ * Next-day slots: all hourly slots from wake through sleep.
+ * Empty slots beyond the first few are trimmed — we show up to NEXT_DAY_MAX
+ * contiguous slots from wake, always including slots that have a moment.
  */
-function getTomorrowPreviewSlots(todaySlots: TimeSlot[], nextDay: WeekDay): TimeSlot[] {
-    const remaining = VISIBLE_SLOTS - todaySlots.length;
-    if (remaining <= 0) return [];
+const NEXT_DAY_MAX = 6;
 
-    const hourly = nextDay.slots.filter((s) => s.time.endsWith(':00'));
-    // Only show slots that have something scheduled tomorrow
-    const withMoments = hourly.filter((s) => s.moment !== null);
-    return withMoments.slice(0, remaining);
+function getNextDaySlots(slots: TimeSlot[], config: CalendarConfig): TimeSlot[] {
+    const hourly = slots.filter(
+        (s) => s.time.endsWith(':00') && s.time >= config.wake_time && s.time < config.sleep_time,
+    );
+
+    // Find last slot index that has a moment
+    let lastMomentIdx = -1;
+    hourly.forEach((s, i) => { if (s.moment) lastMomentIdx = i; });
+
+    // Show up to NEXT_DAY_MAX slots, but always enough to include the last moment
+    const showUpTo = Math.max(NEXT_DAY_MAX, lastMomentIdx + 1);
+    return hourly.slice(0, showUpTo);
 }
 
 export default function DailyGrid({ day, nextDay, config, onToggleMoment, nextMomentKey }: Props) {
     const dateObj = parseISO(day.date);
-    const visibleSlots = getVisibleSlots(day.slots, day.isToday);
-    const tomorrowSlots = nextDay ? getTomorrowPreviewSlots(visibleSlots, nextDay) : [];
+    const visibleSlots = getTodaySlots(day.slots, config, day.isToday);
+    const nextDaySlots = nextDay ? getNextDaySlots(nextDay.slots, config) : [];
+    const showNextDay = nextDay && nextDaySlots.length > 0;
 
     return (
-        <section className="daily-grid">
-            <header className="daily-grid__header">
-                <span className="daily-grid__day-name">{day.dayName}</span>
-                <span className="daily-grid__date">{format(dateObj, 'd MMMM yyyy')}</span>
-                {day.isToday && <span className="daily-grid__today-badge">Today</span>}
-            </header>
+        <>
+            {/* ── Today ─────────────────────────────────────────────────────── */}
+            <section className="daily-grid">
+                <header className="daily-grid__header">
+                    <span className="daily-grid__day-name">{day.dayName}</span>
+                    <span className="daily-grid__date">{format(dateObj, 'd MMMM yyyy')}</span>
+                    {day.isToday && <span className="daily-grid__today-badge">Today</span>}
+                </header>
 
-            <div className="daily-grid__slots">
-                {visibleSlots.map((slot) => (
-                    <DailyTimeSlotCell
-                        key={`${day.date}-${slot.time}`}
-                        slot={slot}
-                        date={day.date}
-                        config={config}
-                        onToggleMoment={onToggleMoment}
-                        isToday={day.isToday}
-                        isNext={
-                            !!slot.moment &&
-                            nextMomentKey ===
-                            `${day.date}:${slot.time}:${slot.moment.id}`
-                        }
-                    />
-                ))}
-            </div>
+                <div className="daily-grid__slots">
+                    {visibleSlots.map((slot) => (
+                        <DailyTimeSlotCell
+                            key={`${day.date}-${slot.time}`}
+                            slot={slot}
+                            date={day.date}
+                            config={config}
+                            onToggleMoment={onToggleMoment}
+                            isToday={day.isToday}
+                            isNext={
+                                !!slot.moment &&
+                                nextMomentKey === `${day.date}:${slot.time}:${slot.moment.id}`
+                            }
+                        />
+                    ))}
+                </div>
+            </section>
 
-            {tomorrowSlots.length > 0 && nextDay && (
-                <div className="daily-grid__tomorrow">
-                    <div className="daily-grid__tomorrow-label">
-                        <span>Tomorrow · {format(parseISO(nextDay.date), 'd MMM')}</span>
-                    </div>
-                    <div className="daily-grid__slots daily-grid__slots--tomorrow">
-                        {tomorrowSlots.map((slot) => (
+            {/* ── Next day ──────────────────────────────────────────────────── */}
+            {showNextDay && nextDay && (
+                <section className="daily-grid daily-grid--next-day">
+                    <header className="daily-grid__header">
+                        <span className="daily-grid__day-name">{nextDay.dayName}</span>
+                        <span className="daily-grid__date">
+                            {format(parseISO(nextDay.date), 'd MMMM yyyy')}
+                        </span>
+                    </header>
+
+                    <div className="daily-grid__slots daily-grid__slots--next-day">
+                        {nextDaySlots.map((slot) => (
                             <DailyTimeSlotCell
                                 key={`${nextDay.date}-${slot.time}`}
                                 slot={slot}
@@ -114,8 +107,8 @@ export default function DailyGrid({ day, nextDay, config, onToggleMoment, nextMo
                             />
                         ))}
                     </div>
-                </div>
+                </section>
             )}
-        </section>
+        </>
     );
 }

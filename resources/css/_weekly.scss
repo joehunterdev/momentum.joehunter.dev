@@ -417,6 +417,7 @@ $border-light: #f3f4f6;
 .weekly-slot {
     display: flex;
     transition: background 0.1s;
+    touch-action: pan-y; // don't cancel horizontal child drags at this level
 
     // ── Mobile: horizontal row — time label left, content right ───────────
     flex-direction: row;
@@ -566,7 +567,7 @@ $border-light: #f3f4f6;
     flex-direction: column;
     width: 100%;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible; // allow swipe icon to translate outside card bounds
 
     // Top strip: bar (5/6) + score label (1/6)
     &__top {
@@ -825,6 +826,108 @@ $border-light: #f3f4f6;
     &--done {
         animation: slot-icon-flash 0.5s ease forwards;
     }
+
+    // Ghost placeholder — used in the ghost card when scheduling a new moment
+    &--ghost-placeholder {
+        border: 2px dashed var(--mm-primary, #6366f1);
+        background: rgba(99, 102, 241, 0.06);
+        color: var(--mm-primary, #6366f1);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer; // clickable — opens icon picker
+
+        &:hover {
+            background: rgba(99, 102, 241, 0.12);
+            transform: none;
+        }
+    }
+}
+
+// ─── Ghost quick-create: icon picker + name input ─────────────────────────────
+
+.ghost-icon-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.ghost-icon-trigger {
+    // inherits .slot-icon sizing via those classes
+    border: none;
+    padding: 0;
+    background: none;
+}
+
+.ghost-icon-picker {
+    position: absolute;
+    top: calc(100% + 0.375rem);
+    left: 0;
+    z-index: 100;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 0.5rem;
+    width: 14rem;
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.125rem;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        border: none;
+        background: none;
+        border-radius: 0.3rem;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.1s;
+
+        &:hover {
+            background: #f3f4f6;
+        }
+
+        &--active {
+            background: rgba(99, 102, 241, 0.12);
+            outline: 2px solid var(--mm-primary, #6366f1);
+        }
+    }
+}
+
+.ghost-name-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #374151;
+    padding: 0;
+
+    &::placeholder {
+        color: var(--mm-primary, #6366f1);
+        opacity: 0.6;
+        font-style: italic;
+    }
+
+    &:focus {
+        color: #111827;
+    }
+}
+
+.slot-moment-card--ghost-edit {
+    // override the ghost pulse/opacity on the editable card
+    opacity: 1 !important;
+    animation: none !important;
+    pointer-events: auto !important;
+    border: 1.5px dashed var(--mm-primary, #6366f1);
+    background: rgba(99, 102, 241, 0.04);
+    border-radius: 0.375rem;
 }
 
 // ─── Swipe-to-complete track ──────────────────────────────────────────────────
@@ -834,6 +937,8 @@ $border-light: #f3f4f6;
     display: inline-flex;
     align-items: center;
     border-radius: 0.5rem;
+    overflow: visible; // icon must be able to translate outside the track bounds
+    min-width: 2.25rem; // always at least as wide as the icon itself
 
     &__check {
         position: absolute;

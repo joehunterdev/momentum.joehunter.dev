@@ -5,6 +5,8 @@ interface SchedulingState {
     time: string;
     frequency: 'daily' | 'weekly' | 'custom';
     daysOfWeek: number[];
+    name: string;
+    icon: string | null;
 }
 
 interface Props {
@@ -13,6 +15,8 @@ interface Props {
     mode: 'overview' | 'configure';
     scheduling: SchedulingState | null;
     onStartScheduling: (date: string, time: string) => void;
+    onGhostNameChange: (name: string) => void;
+    onGhostIconChange: (icon: string | null) => void;
 }
 
 const VISIBLE_SLOTS = 6;
@@ -36,7 +40,7 @@ function computeWindowStart(days: WeekDay[]): number {
     return Math.max(0, Math.min(anchorIdx - half, allTimes.length - VISIBLE_SLOTS));
 }
 
-export default function WeeklyGrid({ days, config, mode, scheduling, onStartScheduling }: Props) {
+export default function WeeklyGrid({ days, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange }: Props) {
     const windowStart = computeWindowStart(days);
 
     return (
@@ -49,6 +53,8 @@ export default function WeeklyGrid({ days, config, mode, scheduling, onStartSche
                     mode={mode}
                     scheduling={scheduling}
                     onStartScheduling={onStartScheduling}
+                    onGhostNameChange={onGhostNameChange}
+                    onGhostIconChange={onGhostIconChange}
                     windowStart={windowStart}
                 />
             ))}
