@@ -22,6 +22,7 @@ class BaseUserSeeder extends Seeder
         $this->seedSuperAdmin();
         $this->seedAdmin();
         $this->seedTestUser();
+        $this->seedDemoUser();
     }
 
     private function seedSuperAdmin(): void
@@ -96,5 +97,29 @@ class BaseUserSeeder extends Seeder
         );
 
         $this->command->info("✅  Test User: {$email}");
+    }
+
+    private function seedDemoUser(): void
+    {
+        $email = env('DEMO_EMAIL');
+
+        if (! $email) {
+            return;
+        }
+
+        $password = env('DEMO_PASSWORD', 'password');
+
+        User::updateOrCreate(
+            ['email' => $email],
+            [
+                'first_name' => env('DEMO_FIRST_NAME', 'Demo'),
+                'last_name' => env('DEMO_LAST_NAME', 'User'),
+                'password' => bcrypt($password),
+                'role' => env('DEMO_ROLE', 'basic'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $this->command->info("✅  Demo User: {$email}");
     }
 }

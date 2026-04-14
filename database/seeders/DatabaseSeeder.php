@@ -16,8 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             BaseUserSeeder::class,
-            MomentSeeder::class,
             TestUserMomentSeeder::class,
+            DemoUserMomentSeeder::class,
         ]);
     }
 }
