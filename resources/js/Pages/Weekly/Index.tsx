@@ -15,12 +15,14 @@ export default function Index({ weekStart, weekEnd, config, days }: Props) {
     const [highlightTime, setHighlightTime] = useState<string | null>(null);
     const [modalDefaults, setModalDefaults] = useState<Partial<MomentFormData> | undefined>();
 
-    function handleAddMoment(_date: string, time: string, mode: 'once' | 'recurring') {
+    function handleAddMoment(date: string, time: string, mode: 'once' | 'recurring') {
         if (mode === 'recurring') {
             setHighlightTime(time);
             setModalDefaults({ frequency: 'weekly', days_of_week: [1, 2, 3, 4, 5], preferred_time: time });
         } else {
-            setModalDefaults({ preferred_time: time });
+            // ISO day of week: 1 = Monday … 7 = Sunday
+            const isoDay = new Date(date).getDay() || 7;
+            setModalDefaults({ frequency: 'custom', days_of_week: [isoDay], preferred_time: time });
         }
         setShowingModal(true);
     }

@@ -63,7 +63,7 @@ class MomentController extends Controller
             'temptation_bundle' => $data['temptation_bundle'] ?? null,
         ]);
 
-        $redirectTo = $request->input('_redirect', route('daily'));
+        $redirectTo = $request->input('_redirect', route('weekly'));
 
         return redirect()->to($redirectTo)->with('success', 'Moment created.');
     }

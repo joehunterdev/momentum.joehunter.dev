@@ -1,14 +1,29 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Props {
     isOpen: boolean;
+    anchorRef: React.RefObject<HTMLButtonElement | null>;
     onClose: () => void;
     onSelectOnce: () => void;
     onSelectRecurring: () => void;
 }
 
-export default function AddSlotPopover({ isOpen, onClose, onSelectOnce, onSelectRecurring }: Props) {
+export default function AddSlotPopover({ isOpen, anchorRef, onClose, onSelectOnce, onSelectRecurring }: Props) {
     const ref = useRef<HTMLDivElement>(null);
+    const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
+
+    useLayoutEffect(() => {
+        if (!isOpen || !anchorRef.current) {
+            return;
+        }
+
+        const rect = anchorRef.current.getBoundingClientRect();
+        setCoords({
+            top: rect.bottom + window.scrollY + 4,
+            left: rect.left + window.scrollX + rect.width / 2,
+        });
+    }, [isOpen, anchorRef]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -16,7 +31,10 @@ export default function AddSlotPopover({ isOpen, onClose, onSelectOnce, onSelect
         }
 
         function handleOutside(e: MouseEvent | TouchEvent) {
-            if (ref.current && !ref.current.contains(e.target as Node)) {
+            if (
+                ref.current && !ref.current.contains(e.target as Node) &&
+                anchorRef.current && !anchorRef.current.contains(e.target as Node)
+            ) {
                 onClose();
             }
         }
@@ -36,14 +54,19 @@ export default function AddSlotPopover({ isOpen, onClose, onSelectOnce, onSelect
             document.removeEventListener('touchstart', handleOutside);
             document.removeEventListener('keydown', handleEsc);
         };
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, anchorRef]);
 
-    if (!isOpen) {
+    if (!isOpen || !coords) {
         return null;
     }
 
-    return (
-        <div ref={ref} className="slot-popover" role="menu">
+    return createPortal(
+        <div
+            ref={ref}
+            className="slot-popover"
+            role="menu"
+            style={{ top: coords.top, left: coords.left }}
+        >
             <button
                 type="button"
                 className="slot-popover__option"
@@ -62,6 +85,7 @@ export default function AddSlotPopover({ isOpen, onClose, onSelectOnce, onSelect
                 <span aria-hidden>🔁</span>
                 Weekdays
             </button>
-        </div>
+        </div>,
+        document.body,
     );
 }

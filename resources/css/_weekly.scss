@@ -652,10 +652,8 @@ $border-light: #f3f4f6;
 
 .slot-popover {
     position: absolute;
-    top: calc(100% + 0.25rem);
-    left: 50%;
     transform: translateX(-50%);
-    z-index: 30;
+    z-index: 9999;
     min-width: 10rem;
     background: #fff;
     border: 1px solid #e5e7eb;

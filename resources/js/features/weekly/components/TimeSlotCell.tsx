@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { TimeSlot, WeeklyConfig } from '../types';
 import AddSlotPopover from './AddSlotPopover';
 import SlotMomentCard from './SlotMomentCard';
@@ -23,6 +23,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggle
     const [popoverOpen, setPopoverOpen] = useState(false);
     const [swipeProgress, setSwipeProgress] = useState(0);
     const [swipeDone, setSwipeDone] = useState(false);
+    const addBtnRef = useRef<HTMLButtonElement>(null);
     const ooo = !slot.moment && isOutOfOffice(slot.time, config);
     const isHighlighted = slot.time === highlightTime && !slot.moment && !isWeekend;
 
@@ -71,6 +72,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggle
                 ) : (
                     <>
                         <button
+                            ref={addBtnRef}
                             type="button"
                             className="weekly-slot__add-btn"
                             title={`Add moment at ${slot.time}`}
@@ -80,6 +82,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, onToggle
                         </button>
                         <AddSlotPopover
                             isOpen={popoverOpen}
+                            anchorRef={addBtnRef}
                             onClose={() => setPopoverOpen(false)}
                             onSelectOnce={() => onAddMoment(date, slot.time, 'once')}
                             onSelectRecurring={() => onAddMoment(date, slot.time, 'recurring')}

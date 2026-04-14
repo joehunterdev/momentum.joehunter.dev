@@ -673,7 +673,7 @@ createServer((page) => createInertiaApp({
 		"./Pages/Profile/Partials/DeleteUserForm.tsx": () => import("./assets/DeleteUserForm-DZQ3YPiW.js"),
 		"./Pages/Profile/Partials/UpdatePasswordForm.tsx": () => import("./assets/UpdatePasswordForm-CEEhcTha.js"),
 		"./Pages/Profile/Partials/UpdateProfileInformationForm.tsx": () => import("./assets/UpdateProfileInformationForm-D4RYFN7E.js"),
-		"./Pages/Weekly/Index.tsx": () => import("./assets/Index-Bc8f8mTA.js"),
+		"./Pages/Weekly/Index.tsx": () => import("./assets/Index-BFPgM8G2.js"),
 		"./Pages/Welcome.tsx": () => import("./assets/Welcome-DkbG60yS.js")
 	})),
 	setup: ({ App, props }) => {
