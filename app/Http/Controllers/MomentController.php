@@ -19,7 +19,7 @@ class MomentController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'color' => ['nullable', 'string', 'max:7'],
             'icon' => ['nullable', 'string', 'max:10'],
@@ -39,7 +39,7 @@ class MomentController extends Controller
         ]);
 
         $moment = $request->user()->moments()->create([
-            'name' => $data['name'],
+            'name' => $data['name'] ?? 'Untitled Moment',
             'description' => $data['description'] ?? null,
             'color' => $data['color'] ?? null,
             'icon' => $data['icon'] ?? null,

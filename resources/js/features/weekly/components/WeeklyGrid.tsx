@@ -1,10 +1,18 @@
 import type { WeekDay, WeeklyConfig } from '../types';
 import DaySection from './DaySection';
 
+interface SchedulingState {
+    time: string;
+    frequency: 'daily' | 'weekly' | 'custom';
+    daysOfWeek: number[];
+}
+
 interface Props {
     days: WeekDay[];
     config: WeeklyConfig;
-    onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
+    mode: 'overview' | 'configure';
+    scheduling: SchedulingState | null;
+    onStartScheduling: (date: string, time: string) => void;
 }
 
 const VISIBLE_SLOTS = 6;
@@ -28,7 +36,7 @@ function computeWindowStart(days: WeekDay[]): number {
     return Math.max(0, Math.min(anchorIdx - half, allTimes.length - VISIBLE_SLOTS));
 }
 
-export default function WeeklyGrid({ days, config, onAddMoment }: Props) {
+export default function WeeklyGrid({ days, config, mode, scheduling, onStartScheduling }: Props) {
     const windowStart = computeWindowStart(days);
 
     return (
@@ -38,7 +46,9 @@ export default function WeeklyGrid({ days, config, onAddMoment }: Props) {
                     key={day.date}
                     day={day}
                     config={config}
-                    onAddMoment={onAddMoment}
+                    mode={mode}
+                    scheduling={scheduling}
+                    onStartScheduling={onStartScheduling}
                     windowStart={windowStart}
                 />
             ))}

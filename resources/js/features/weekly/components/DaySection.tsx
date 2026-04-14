@@ -2,10 +2,18 @@ import { format, parseISO } from 'date-fns';
 import type { TimeSlot, WeekDay, WeeklyConfig } from '../types';
 import TimeSlotCell from './TimeSlotCell';
 
+interface SchedulingState {
+    time: string;
+    frequency: 'daily' | 'weekly' | 'custom';
+    daysOfWeek: number[];
+}
+
 interface Props {
     day: WeekDay;
     config: WeeklyConfig;
-    onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
+    mode: 'overview' | 'configure';
+    scheduling: SchedulingState | null;
+    onStartScheduling: (date: string, time: string) => void;
     windowStart: number;
 }
 
@@ -16,9 +24,15 @@ function getWindowedSlots(slots: TimeSlot[], windowStart: number): TimeSlot[] {
     return hourly.slice(windowStart, windowStart + VISIBLE_SLOTS);
 }
 
-export default function DaySection({ day, config, onAddMoment, windowStart }: Props) {
+/** JS getDay() 0=Sun → ISO 1=Mon … 7=Sun */
+function jsToIsoDay(d: number): number {
+    return d === 0 ? 7 : d;
+}
+
+export default function DaySection({ day, config, mode, scheduling, onStartScheduling, windowStart }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getWindowedSlots(day.slots, windowStart);
+    const dayIso = jsToIsoDay(dateObj.getDay());
 
     const sectionCls = [
         'weekly-day-section',
@@ -37,17 +51,30 @@ export default function DaySection({ day, config, onAddMoment, windowStart }: Pr
             </header>
 
             <div className="weekly-day-slots">
-                {visibleSlots.map((slot) => (
-                    <TimeSlotCell
-                        key={`${day.date}-${slot.time}`}
-                        slot={slot}
-                        date={day.date}
-                        config={config}
-                        onAddMoment={onAddMoment}
-                        isWeekend={day.isWeekend}
-                        isToday={day.isToday}
-                    />
-                ))}
+                {visibleSlots.map((slot) => {
+                    const schedulingThisDay =
+                        scheduling !== null &&
+                        slot.time === scheduling.time &&
+                        scheduling.daysOfWeek.includes(dayIso);
+
+                    const isGhost = schedulingThisDay && !slot.moment;
+                    const isConflict = schedulingThisDay && slot.moment !== null;
+
+                    return (
+                        <TimeSlotCell
+                            key={`${day.date}-${slot.time}`}
+                            slot={slot}
+                            date={day.date}
+                            config={config}
+                            mode={mode}
+                            isGhost={isGhost}
+                            isConflict={isConflict}
+                            onStartScheduling={onStartScheduling}
+                            isWeekend={day.isWeekend}
+                            isToday={day.isToday}
+                        />
+                    );
+                })}
             </div>
         </section>
     );

@@ -5,10 +5,11 @@ import TimeSlotCell from './TimeSlotCell';
 interface Props {
     day: WeekDay;
     config: WeeklyConfig;
-    onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
+    mode: 'overview' | 'configure';
+    onStartScheduling: (date: string, time: string) => void;
 }
 
-export default function DayRow({ day, config, onAddMoment }: Props) {
+export default function DayRow({ day, config, mode, onStartScheduling }: Props) {
     const rowClass = [
         'weekly-day-row',
         day.isToday ? 'weekly-day-row--today' : '',
@@ -39,7 +40,8 @@ export default function DayRow({ day, config, onAddMoment }: Props) {
                         slot={slot}
                         date={day.date}
                         config={config}
-                        onAddMoment={onAddMoment}
+                        mode={mode}
+                        onStartScheduling={onStartScheduling}
                     />
                 ))}
             </div>
