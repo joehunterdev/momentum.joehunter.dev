@@ -72,7 +72,7 @@ $border-light: #f3f4f6;
 
         &:hover {
             border-color: #9ca3af;
-            color: #111827;
+            color: #374151;
             background: #f9fafb;
         }
     }
@@ -330,7 +330,7 @@ $border-light: #f3f4f6;
     &__current-range {
         font-size: 0.9375rem;
         font-weight: 700;
-        color: #111827;
+        color: #374151;
         white-space: nowrap;
     }
 }
@@ -669,7 +669,7 @@ $border-light: #f3f4f6;
         min-width: 0;
         font-size: 0.8125rem;
         font-weight: 600;
-        color: #111827;
+        color: #374151;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -935,7 +935,7 @@ $border-light: #f3f4f6;
     }
 
     &:focus {
-        color: #111827;
+        color: #374151;
     }
 }
 

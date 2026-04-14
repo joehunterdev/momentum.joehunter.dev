@@ -17,4 +17,5 @@ export type PageProps<
     };
     ziggy: Config & { location: string };
     flash?: { success?: string; error?: string };
+    appVersion?: string;
 };

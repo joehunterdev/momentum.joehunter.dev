@@ -663,7 +663,7 @@ createServer((page) => createInertiaApp({
 		"./Pages/Auth/Register.tsx": () => import("./assets/Register-DsbtXjM1.js"),
 		"./Pages/Auth/ResetPassword.tsx": () => import("./assets/ResetPassword-DX2vWBzy.js"),
 		"./Pages/Auth/VerifyEmail.tsx": () => import("./assets/VerifyEmail-D_GEbXXS.js"),
-		"./Pages/Config/Edit.tsx": () => import("./assets/Edit-zijzavW9.js"),
+		"./Pages/Config/Edit.tsx": () => import("./assets/Edit-CNVvdX35.js"),
 		"./Pages/Content/Show.tsx": () => import("./assets/Show-B_PagCOZ.js"),
 		"./Pages/Daily/Index.tsx": () => import("./assets/Index-BeXqE2Rb.js"),
 		"./Pages/Dashboard.tsx": () => import("./assets/Dashboard-BwGZGyQ-.js"),
@@ -673,7 +673,7 @@ createServer((page) => createInertiaApp({
 		"./Pages/Profile/Partials/DeleteUserForm.tsx": () => import("./assets/DeleteUserForm-BPNRkrWL.js"),
 		"./Pages/Profile/Partials/UpdatePasswordForm.tsx": () => import("./assets/UpdatePasswordForm-CEEhcTha.js"),
 		"./Pages/Profile/Partials/UpdateProfileInformationForm.tsx": () => import("./assets/UpdateProfileInformationForm-D4RYFN7E.js"),
-		"./Pages/Weekly/Index.tsx": () => import("./assets/Index-Loty37WA.js"),
+		"./Pages/Weekly/Index.tsx": () => import("./assets/Index-BexbDJzh.js"),
 		"./Pages/Welcome.tsx": () => import("./assets/Welcome-DkbG60yS.js")
 	})),
 	setup: ({ App, props }) => {

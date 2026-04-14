@@ -1,6 +1,6 @@
 import { WEEK_DAYS } from '@/shared/constants/moments';
 
-type Frequency = 'daily' | 'weekly' | 'custom';
+type Frequency = 'daily' | 'weekly' | 'custom' | 'once';
 
 interface Props {
     time: string;
@@ -18,6 +18,7 @@ const FREQ_OPTIONS: { label: string; value: Frequency }[] = [
     { label: 'Daily', value: 'daily' },
     { label: 'Weekdays', value: 'weekly' },
     { label: 'Custom', value: 'custom' },
+    { label: 'Once', value: 'once' },
 ];
 
 const ALL_DAYS = WEEK_DAYS.map((d) => d.value) as number[];
@@ -37,6 +38,8 @@ export default function RecurrenceBar({
             onChange('daily', ALL_DAYS);
         } else if (freq === 'weekly') {
             onChange('weekly', WEEKDAYS);
+        } else if (freq === 'once') {
+            onChange('once', []);
         } else {
             onChange('custom', daysOfWeek);
         }
@@ -70,7 +73,7 @@ export default function RecurrenceBar({
                 ))}
             </div>
 
-            <div className="recurrence-bar__days" role="group" aria-label="Days of week">
+            <div className="recurrence-bar__days" role="group" aria-label="Days of week" aria-hidden={frequency === 'once'} style={frequency === 'once' ? { display: 'none' } : undefined}>
                 {WEEK_DAYS.map((day) => (
                     <button
                         key={day.value}

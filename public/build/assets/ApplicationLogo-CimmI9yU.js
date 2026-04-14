@@ -1,0 +1,1 @@
+import{t as e}from"./app-DAfanQD-.js";var t=e();function n({className:e}){return(0,t.jsx)(`img`,{src:`/logo_75.png`,alt:`Momentum`,className:e})}export{n as t};

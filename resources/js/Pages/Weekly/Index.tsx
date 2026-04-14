@@ -14,8 +14,9 @@ interface Props extends PageProps, WeeklyPageProps { }
 type WeekMode = 'overview' | 'configure';
 
 interface SchedulingState {
+    date: string;
     time: string;
-    frequency: 'daily' | 'weekly' | 'custom';
+    frequency: 'daily' | 'weekly' | 'custom' | 'once';
     daysOfWeek: number[];
     name: string;
     icon: string | null;
@@ -56,19 +57,18 @@ export default function Index({ weekStart, config, days }: Props) {
 
     // ── Schedule-first creation flow ──────────────────────────────────────────
     function handleStartScheduling(date: string, time: string) {
-        const isoDay = jsToIsoDay(new Date(date).getDay());
         setMode('configure');
         setScheduling({
+            date,
             time,
             frequency: 'weekly',
             daysOfWeek: [1, 2, 3, 4, 5], // default: weekdays
             name: '',
             icon: null,
         });
-        void isoDay; // used for context, not needed here
     }
 
-    function handleSchedulingChange(frequency: 'daily' | 'weekly' | 'custom', daysOfWeek: number[]) {
+    function handleSchedulingChange(frequency: 'daily' | 'weekly' | 'custom' | 'once', daysOfWeek: number[]) {
         setScheduling((prev) => prev ? { ...prev, frequency, daysOfWeek } : null);
     }
 
@@ -88,9 +88,10 @@ export default function Index({ weekStart, config, days }: Props) {
             {
                 name: scheduling.name.trim() || null,
                 frequency: scheduling.frequency,
-                days_of_week: scheduling.daysOfWeek,
+                days_of_week: scheduling.frequency !== 'once' ? scheduling.daysOfWeek : null,
                 preferred_time: scheduling.time,
                 icon: scheduling.icon,
+                scheduled_date: scheduling.frequency === 'once' ? scheduling.date : null,
                 _redirect: route('weekly'),
             },
             {
@@ -108,8 +109,12 @@ export default function Index({ weekStart, config, days }: Props) {
     // ── Conflict count ────────────────────────────────────────────────────────
     const conflictCount = scheduling
         ? days.reduce((count, day) => {
-            const iso = jsToIsoDay(new Date(day.date).getDay());
-            if (!scheduling.daysOfWeek.includes(iso)) { return count; }
+            if (scheduling.frequency === 'once') {
+                if (day.date !== scheduling.date) { return count; }
+            } else {
+                const iso = jsToIsoDay(new Date(day.date).getDay());
+                if (!scheduling.daysOfWeek.includes(iso)) { return count; }
+            }
             const hasConflict = day.slots.some(
                 (s) => s.time === scheduling.time && s.moment !== null,
             );

@@ -3,8 +3,9 @@ import type { TimeSlot, WeekDay, WeeklyConfig } from '../types';
 import TimeSlotCell from './TimeSlotCell';
 
 interface SchedulingState {
+    date: string;
     time: string;
-    frequency: 'daily' | 'weekly' | 'custom';
+    frequency: 'daily' | 'weekly' | 'custom' | 'once';
     daysOfWeek: number[];
     name: string;
     icon: string | null;
@@ -59,7 +60,9 @@ export default function DaySection({ day, config, mode, scheduling, onStartSched
                     const schedulingThisDay =
                         scheduling !== null &&
                         slot.time === scheduling.time &&
-                        scheduling.daysOfWeek.includes(dayIso);
+                        (scheduling.frequency === 'once'
+                            ? day.date === scheduling.date
+                            : scheduling.daysOfWeek.includes(dayIso));
 
                     const isGhost = schedulingThisDay && !slot.moment;
                     const isConflict = schedulingThisDay && slot.moment !== null;
