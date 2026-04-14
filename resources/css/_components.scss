@@ -125,7 +125,7 @@
     padding: 16px 20px;
     background: transparent;
     border: none;
-    color: var(--mm-text);
+    color: #111827;
     font-weight: 600;
     cursor: pointer;
     transition: background var(--mm-duration) ease;
@@ -328,7 +328,7 @@
   &__title {
     font-size: 1rem;
     font-weight: 600;
-    color: var(--mm-text, #111827);
+    color: #111827;
     flex: 1;
   }
 

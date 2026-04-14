@@ -6,47 +6,19 @@ interface Props {
     day: WeekDay;
     config: WeeklyConfig;
     onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
+    windowStart: number;
 }
 
 const VISIBLE_SLOTS = 6;
 
-/**
- * Filter to on-the-hour slots only, then window to VISIBLE_SLOTS.
- * Today: centred on the current hour. Other days: from wake time.
- */
-function getWindowedSlots(slots: TimeSlot[], isToday: boolean): TimeSlot[] {
+function getWindowedSlots(slots: TimeSlot[], windowStart: number): TimeSlot[] {
     const hourly = slots.filter((s) => s.time.endsWith(':00'));
-
-    if (hourly.length <= VISIBLE_SLOTS) {
-        return hourly;
-    }
-
-    if (!isToday) {
-        return hourly.slice(0, VISIBLE_SLOTS);
-    }
-
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
-
-    let nearestIdx = 0;
-    let nearestDiff = Infinity;
-    hourly.forEach((s, i) => {
-        const [h] = s.time.split(':').map(Number);
-        const diff = Math.abs(h * 60 - nowMins);
-        if (diff < nearestDiff) {
-            nearestDiff = diff;
-            nearestIdx = i;
-        }
-    });
-
-    const half = Math.floor(VISIBLE_SLOTS / 2);
-    const start = Math.max(0, Math.min(nearestIdx - half, hourly.length - VISIBLE_SLOTS));
-
-    return hourly.slice(start, start + VISIBLE_SLOTS);
+    return hourly.slice(windowStart, windowStart + VISIBLE_SLOTS);
 }
 
-export default function DaySection({ day, config, onAddMoment }: Props) {
+export default function DaySection({ day, config, onAddMoment, windowStart }: Props) {
     const dateObj = parseISO(day.date);
-    const visibleSlots = getWindowedSlots(day.slots, day.isToday);
+    const visibleSlots = getWindowedSlots(day.slots, windowStart);
 
     const sectionCls = [
         'weekly-day-section',

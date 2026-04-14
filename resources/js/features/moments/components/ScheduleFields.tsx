@@ -77,7 +77,7 @@ export default function ScheduleFields({
                     type="time"
                     value={preferredTime}
                     onChange={(e) => onChange('preferred_time', e.target.value)}
-                    className="mt-1 block border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="mm-input mt-1 block border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
                 <InputError message={errors.preferred_time} className="mt-1" />
             </div>

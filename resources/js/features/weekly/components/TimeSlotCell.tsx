@@ -19,11 +19,11 @@ function isOutOfOffice(time: string, config: WeeklyConfig): boolean {
 export default function TimeSlotCell({ slot, date, config, onAddMoment, isWeekend, isToday }: Props) {
     const [popoverOpen, setPopoverOpen] = useState(false);
     const addBtnRef = useRef<HTMLButtonElement>(null);
-    const ooo = !slot.moment && isOutOfOffice(slot.time, config);
+    const ooo = isOutOfOffice(slot.time, config);
 
     const cls = [
         'weekly-slot',
-        ooo ? 'weekly-slot--ooo' : '',
+        ooo && !slot.moment ? 'weekly-slot--ooo' : '',
         isWeekend ? 'weekly-slot--weekend' : '',
         isToday ? 'weekly-slot--today' : '',
         !slot.moment && !ooo ? 'weekly-slot--empty' : '',
@@ -37,8 +37,6 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, isWeeken
             <div className="weekly-slot__content" style={{ position: 'relative' }}>
                 {slot.moment ? (
                     <SlotMomentCard moment={slot.moment} />
-                ) : ooo ? (
-                    <span className="weekly-slot__ooo-dot" aria-hidden />
                 ) : (
                     <>
                         <button
