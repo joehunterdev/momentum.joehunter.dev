@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns';
-import type { CalendarConfig, WeekDay } from '@/shared/components/calendar';
+import type { CalendarConfig, TimeSlot, WeekDay } from '@/shared/components/calendar';
 import DailyTimeSlotCell from './DailyTimeSlotCell';
 
 interface Props {
@@ -9,13 +9,50 @@ interface Props {
     nextMomentKey?: string | null;
 }
 
+const VISIBLE_SLOTS = 8;
+
 /**
- * Renders the full slot list for a single day.
- * On-the-hour slots that have a moment are always shown.
- * All 30-min slots are included (not windowed — daily view shows everything).
+ * Keep only on-the-hour slots, then window to VISIBLE_SLOTS centred near
+ * the current time (today) or from wake time (past/future days).
+ * Slots with a moment are always included regardless of the window.
  */
+function getVisibleSlots(slots: TimeSlot[], isToday: boolean): TimeSlot[] {
+    const hourly = slots.filter((s) => s.time.endsWith(':00'));
+
+    if (!isToday || hourly.length <= VISIBLE_SLOTS) {
+        return hourly.slice(0, VISIBLE_SLOTS);
+    }
+
+    const nowMins = new Date().getHours() * 60 + new Date().getMinutes();
+
+    // Find the slot closest to now
+    let anchorIdx = 0;
+    let anchorDiff = Infinity;
+    hourly.forEach((s, i) => {
+        const [h] = s.time.split(':').map(Number);
+        const diff = Math.abs(h * 60 - nowMins);
+        if (diff < anchorDiff) {
+            anchorDiff = diff;
+            anchorIdx = i;
+        }
+    });
+
+    // Bias the window so current time is roughly 2 slots from the top
+    const LOOK_AHEAD = 2;
+    const start = Math.max(0, Math.min(anchorIdx - LOOK_AHEAD, hourly.length - VISIBLE_SLOTS));
+    const windowed = new Set(hourly.slice(start, start + VISIBLE_SLOTS).map((s) => s.time));
+
+    // Always include slots that have a moment scheduled
+    hourly.forEach((s) => {
+        if (s.moment) windowed.add(s.time);
+    });
+
+    return hourly.filter((s) => windowed.has(s.time));
+}
+
 export default function DailyGrid({ day, config, onToggleMoment, nextMomentKey }: Props) {
     const dateObj = parseISO(day.date);
+    const visibleSlots = getVisibleSlots(day.slots, day.isToday);
 
     return (
         <section className="daily-grid">
@@ -26,7 +63,7 @@ export default function DailyGrid({ day, config, onToggleMoment, nextMomentKey }
             </header>
 
             <div className="daily-grid__slots">
-                {day.slots.map((slot) => (
+                {visibleSlots.map((slot) => (
                     <DailyTimeSlotCell
                         key={`${day.date}-${slot.time}`}
                         slot={slot}

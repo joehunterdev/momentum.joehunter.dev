@@ -1,24 +1,26 @@
 import { router } from '@inertiajs/react';
-import SlotMomentIcon from './SlotMomentIcon';
 import type { SlotMoment } from '../types';
 
 interface Props {
     moment: SlotMoment;
-    date: string;
-    isNext?: boolean;
-    onToggle: (momentId: number, instanceId: number | null, date: string) => void;
-    onSwipeProgress?: (progress: number) => void;
 }
 
-export default function SlotMomentCard({ moment, date, isNext, onToggle, onSwipeProgress }: Props) {
+const STATUS_DOT: Record<string, string> = {
+    completed: 'slot-moment-card__status--completed',
+    missed: 'slot-moment-card__status--missed',
+    pending: 'slot-moment-card__status--pending',
+};
+
+export default function SlotMomentCard({ moment }: Props) {
     return (
-        <div className={`slot-moment-card${isNext ? ' slot-moment-card--next' : ''}`}>
+        <div className="slot-moment-card">
             <div className="slot-moment-card__row">
-                <SlotMomentIcon
-                    moment={moment}
-                    date={date}
-                    onToggle={onToggle}
-                    onSwipeProgress={onSwipeProgress}
+                <span
+                    className={[
+                        'slot-moment-card__status',
+                        moment.status ? (STATUS_DOT[moment.status] ?? '') : 'slot-moment-card__status--future',
+                    ].join(' ')}
+                    aria-hidden
                 />
                 <div className="slot-moment-card__body">
                     <span className="slot-moment-card__name">{moment.name}</span>
