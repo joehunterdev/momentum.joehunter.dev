@@ -7,7 +7,14 @@ interface Props {
     slot: TimeSlot;
     date: string;
     config: WeeklyConfig;
-    onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
+    mode: 'overview' | 'configure';
+    isGhost?: boolean;
+    isConflict?: boolean;
+    onStartScheduling: (date: string, time: string) => void;
+    onGhostNameChange: (name: string) => void;
+    onGhostIconChange: (icon: string | null) => void;
+    ghostName: string;
+    ghostIcon: string | null;
     isWeekend?: boolean;
     isToday?: boolean;
 }
@@ -16,7 +23,21 @@ function isOutOfOffice(time: string, config: WeeklyConfig): boolean {
     return time < config.office_start || time >= config.office_end;
 }
 
-export default function TimeSlotCell({ slot, date, config, onAddMoment, isWeekend, isToday }: Props) {
+export default function TimeSlotCell({
+    slot,
+    date,
+    config,
+    mode,
+    isGhost,
+    isConflict,
+    onStartScheduling,
+    onGhostNameChange,
+    onGhostIconChange,
+    ghostName,
+    ghostIcon,
+    isWeekend,
+    isToday,
+}: Props) {
     const [popoverOpen, setPopoverOpen] = useState(false);
     const addBtnRef = useRef<HTMLButtonElement>(null);
     const ooo = isOutOfOffice(slot.time, config);
@@ -26,17 +47,64 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, isWeeken
         ooo && !slot.moment ? 'weekly-slot--ooo' : '',
         isWeekend ? 'weekly-slot--weekend' : '',
         isToday ? 'weekly-slot--today' : '',
-        !slot.moment && !ooo ? 'weekly-slot--empty' : '',
+        !slot.moment && !ooo && mode === 'configure' ? 'weekly-slot--empty' : '',
+        isConflict ? 'weekly-slot--conflict' : '',
     ]
         .filter(Boolean)
         .join(' ');
 
+    // ── Overview mode ─────────────────────────────────────────────────────────
+    if (mode === 'overview') {
+        const emptyClickable = !slot.moment && !ooo;
+        return (
+            <div
+                className={[
+                    cls,
+                    emptyClickable ? 'weekly-slot--overview-empty' : '',
+                ].filter(Boolean).join(' ')}
+                onClick={emptyClickable ? () => onStartScheduling(date, slot.time) : undefined}
+                role={emptyClickable ? 'button' : undefined}
+                tabIndex={emptyClickable ? 0 : undefined}
+                onKeyDown={emptyClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onStartScheduling(date, slot.time); } : undefined}
+            >
+                <span className="weekly-slot__time">{slot.time}</span>
+                <div className="weekly-slot__content">
+                    {slot.moment && <SlotMomentCard moment={slot.moment} variant="overview" />}
+                </div>
+            </div>
+        );
+    }
+
+    // ── Configure mode ────────────────────────────────────────────────────────
     return (
         <div className={cls}>
             <span className="weekly-slot__time">{slot.time}</span>
             <div className="weekly-slot__content" style={{ position: 'relative' }}>
-                {slot.moment ? (
-                    <SlotMomentCard moment={slot.moment} />
+                {isGhost ? (
+                    <SlotMomentCard
+                        moment={{
+                            id: 0,
+                            name: ghostName || 'New Moment',
+                            description: null,
+                            status: null,
+                            color: null,
+                            icon: ghostIcon,
+                            frequency: null,
+                            consistency: null,
+                            instance_id: null,
+                            implementation_intention: null,
+                            habit_stack_after: null,
+                            environment_prompt: null,
+                        }}
+                        variant="ghost"
+                        onGhostNameChange={onGhostNameChange}
+                        onGhostIconChange={onGhostIconChange}
+                    />
+                ) : slot.moment ? (
+                    <>
+                        <SlotMomentCard moment={slot.moment} variant="configure" />
+                        {isConflict && <span className="weekly-slot__conflict-badge" title="Scheduling conflict">⚠️</span>}
+                    </>
                 ) : (
                     <>
                         <button
@@ -44,7 +112,7 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, isWeeken
                             type="button"
                             className="weekly-slot__add-btn"
                             title={`Add moment at ${slot.time}`}
-                            onClick={() => setPopoverOpen(true)}
+                            onClick={() => onStartScheduling(date, slot.time)}
                         >
                             +
                         </button>
@@ -52,8 +120,8 @@ export default function TimeSlotCell({ slot, date, config, onAddMoment, isWeeken
                             isOpen={popoverOpen}
                             anchorRef={addBtnRef}
                             onClose={() => setPopoverOpen(false)}
-                            onSelectOnce={() => onAddMoment(date, slot.time, 'once')}
-                            onSelectRecurring={() => onAddMoment(date, slot.time, 'recurring')}
+                            onSelectOnce={() => { setPopoverOpen(false); onStartScheduling(date, slot.time); }}
+                            onSelectRecurring={() => { setPopoverOpen(false); onStartScheduling(date, slot.time); }}
                         />
                     </>
                 )}

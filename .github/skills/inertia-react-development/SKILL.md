@@ -359,3 +359,5 @@ Server-side patterns (Inertia::render, props, middleware) are covered in inertia
 - Not handling the `undefined` state of deferred props before data loads
 - Using `<form>` without preventing default submission (use `<Form>` component or `e.preventDefault()`)
 - Forgetting to check if `<Form>` component is available in your Inertia version
+
+

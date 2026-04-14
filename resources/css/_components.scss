@@ -125,7 +125,7 @@
     padding: 16px 20px;
     background: transparent;
     border: none;
-    color: #111827;
+    color: #374151;
     font-weight: 600;
     cursor: pointer;
     transition: background var(--mm-duration) ease;
@@ -147,7 +147,7 @@
   background: #fff !important;
   border: 1px solid #d1d5db !important;
   border-radius: 0 !important;
-  color: #111827 !important;
+  color: #374151 !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
   &::placeholder {
@@ -325,10 +325,89 @@
     gap: 1rem;
   }
 
+  &__header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  &__delete-link {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #ef4444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__confirm-delete {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.75rem 1.5rem 1.5rem;
+  }
+
+  &__confirm-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  &__confirm-body {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  &__confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+
+  &__confirm-cancel {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    background: #f3f4f6;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #e5e7eb;
+    }
+  }
+
+  &__confirm-destroy {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background: #ef4444;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: #dc2626;
+    }
+  }
+
   &__title {
     font-size: 1rem;
     font-weight: 600;
-    color: #111827;
+    color: #374151;
     flex: 1;
   }
 
@@ -440,7 +519,7 @@
     width: 100%;
     padding: 0.4375rem 0.75rem;
     font-size: 0.875rem;
-    color: #111827;
+    color: #374151;
     border: 1px solid #d1d5db;
     border-radius: 0;
     margin-bottom: 0.625rem;

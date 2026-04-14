@@ -1,13 +1,5 @@
 
-## Content Plan
-Aim is to prep a content page and repowise best for discorvery in search ngines
-
-so primarily want to advertise my sercies as a developer my homepage joehunter.es So the readme repo must be good its going public soon
-
-then add some static seo content pages about the site in both enlñight and spanish. needs to be seo friendly, could maby read from a static json for now that generates iether blade views or readct templates depending on ssr capabilityies. 
-
-Take the below content launch text and lets generate a bunch of different static ish pages to launhc content, preferabley like dry using logic template text in folders or with routing
-
+git merge feature
 
 
 ## 15 Content Launch
