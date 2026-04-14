@@ -13,6 +13,7 @@ use Illuminate\Database\Seeder;
  *
  * Optional .env vars:
  *   ADMIN_FIRST_NAME, ADMIN_LAST_NAME, ADMIN_EMAIL, ADMIN_PASSWORD
+ *   BASIC_FIRST_NAME, BASIC_LAST_NAME, BASIC_EMAIL, BASIC_PASSWORD
  */
 class BaseUserSeeder extends Seeder
 {
@@ -20,6 +21,7 @@ class BaseUserSeeder extends Seeder
     {
         $this->seedSuperAdmin();
         $this->seedAdmin();
+        $this->seedTestUser();
     }
 
     private function seedSuperAdmin(): void
@@ -70,5 +72,29 @@ class BaseUserSeeder extends Seeder
         );
 
         $this->command->info("✅  Admin: {$email}");
+    }
+
+    private function seedTestUser(): void
+    {
+        $email = env('BASIC_EMAIL');
+
+        if (! $email) {
+            return;
+        }
+
+        $password = env('BASIC_PASSWORD', 'password');
+
+        User::updateOrCreate(
+            ['email' => $email],
+            [
+                'first_name' => env('BASIC_FIRST_NAME', 'Test'),
+                'last_name' => env('BASIC_LAST_NAME', 'User'),
+                'password' => bcrypt($password),
+                'role' => env('BASIC_ROLE', 'basic'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $this->command->info("✅  Test User: {$email}");
     }
 }

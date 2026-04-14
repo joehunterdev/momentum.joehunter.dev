@@ -28,13 +28,13 @@ export default function ScheduleFields({
         <div className="space-y-4">
             <div>
                 <InputLabel value="Frequency" />
-                <div className="mt-1 inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+                                <div className="mt-1 inline-flex border border-gray-200 bg-gray-50 p-1">
                     {SCHEDULE_FREQUENCIES.map((freq) => (
                         <button
                             key={freq.value}
                             type="button"
                             onClick={() => onChange('frequency', freq.value)}
-                            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-all ${frequency === freq.value
+                                                        className={`px-4 py-1.5 text-sm font-medium transition-all ${frequency === freq.value
                                 ? 'bg-white text-indigo-600 shadow-sm'
                                 : 'text-gray-500 hover:text-gray-700'
                                 }`}
@@ -77,7 +77,7 @@ export default function ScheduleFields({
                     type="time"
                     value={preferredTime}
                     onChange={(e) => onChange('preferred_time', e.target.value)}
-                    className="mt-1 block rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                        className="mt-1 block border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 />
                 <InputError message={errors.preferred_time} className="mt-1" />
             </div>

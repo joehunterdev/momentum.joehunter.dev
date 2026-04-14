@@ -42,11 +42,11 @@ export default function MomentForm({ moment, defaultValues, onSubmit, submitLabe
                 const isOpen = openSection === section.id;
 
                 return (
-                    <div key={section.id} className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                    <div key={section.id} className="overflow-hidden border border-gray-200 bg-white">
                         <button
                             type="button"
                             onClick={() => setOpenSection(isOpen ? '' : section.id)}
-                            className="flex w-full items-center justify-between px-5 py-4 text-left font-medium text-gray-800 hover:bg-gray-50"
+                            className="flex w-full items-center justify-between px-5 py-4 text-left font-medium text-gray-900 hover:bg-gray-50"
                         >
                             <span className="flex items-center gap-2">
                                 <span>{section.emoji}</span>

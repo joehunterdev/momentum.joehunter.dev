@@ -6,10 +6,9 @@ interface Props {
     day: WeekDay;
     config: WeeklyConfig;
     onAddMoment: (date: string, time: string, mode: 'once' | 'recurring') => void;
-    onToggleMoment: (momentId: number, instanceId: number | null, date: string) => void;
 }
 
-export default function DayRow({ day, config, onAddMoment, onToggleMoment }: Props) {
+export default function DayRow({ day, config, onAddMoment }: Props) {
     const rowClass = [
         'weekly-day-row',
         day.isToday ? 'weekly-day-row--today' : '',
@@ -41,7 +40,6 @@ export default function DayRow({ day, config, onAddMoment, onToggleMoment }: Pro
                         date={day.date}
                         config={config}
                         onAddMoment={onAddMoment}
-                        onToggleMoment={onToggleMoment}
                     />
                 ))}
             </div>
