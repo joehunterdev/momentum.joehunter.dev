@@ -20,8 +20,8 @@
 - Instructions prefer icons or font aweome over svg <svg className="icon-picker__trigger-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
 
 - [ ]  Laravel Spatie data
-- [] Create test user data for test seeded data only
-
+- [] Create test user data for test simulated seeded data only
+- [] One time fixes and highlight the importance of this 
 ## Todo
 The await fetch i think could be made to be a reusable hook or similar, what is best conisdering my architecture
 E:\www\momentum.joehunter.dev\resources\js\Pages\Weekly\Index.tsx 

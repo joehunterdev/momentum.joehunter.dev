@@ -3,6 +3,7 @@ import FlashMessage from '@/shared/components/FlashMessage';
 import { ConfigForm } from '@/features/config';
 import type { UserConfig } from '@/features/config';
 import { Head } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import type { PageProps } from '@/types';
 
 interface Props extends PageProps {
@@ -10,13 +11,20 @@ interface Props extends PageProps {
 }
 
 export default function Edit({ config }: Props) {
+    const { appVersion } = usePage<PageProps>().props;
+
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold text-gray-800">Config</h2>
+                <h2 className="text-xl font-semibold text-gray-800">
+                    Config
+                    {appVersion && (
+                        <span className="ml-2 text-sm font-normal text-gray-400">v{appVersion}</span>
+                    )}
+                </h2>
             }
         >
-            <Head title="Config" />
+            <Head title={`Config${appVersion ? ` v${appVersion}` : ''}`} />
             <FlashMessage />
 
             <div className="py-8">

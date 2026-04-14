@@ -24,7 +24,7 @@ class Moment extends Model
     ];
 
     protected $casts = [
-        'is_active'  => 'boolean',
+        'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
 
@@ -69,10 +69,11 @@ class Moment extends Model
         }
 
         return match ($schedule->frequency) {
-            'daily'  => true,
+            'daily' => true,
             'weekly',
             'custom' => in_array($date->dayOfWeekIso, $schedule->days_of_week ?? [], strict: true),
-            default  => false,
+            'once' => $schedule->scheduled_date !== null && $date->toDateString() === $schedule->scheduled_date,
+            default => false,
         };
     }
 }

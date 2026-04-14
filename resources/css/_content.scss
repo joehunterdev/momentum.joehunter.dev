@@ -75,7 +75,7 @@
         font-size: 0.8rem;
         font-weight: 600;
         text-decoration: none;
-        color: #111827;
+        color: #374151;
         transition: color 0.15s ease;
 
         &:hover {
@@ -84,7 +84,7 @@
 
         &--primary {
             background: #00e5aa;
-            color: #111827;
+            color: #374151;
             border-radius: 0;
         }
     }
@@ -115,7 +115,7 @@
         font-size: clamp(2rem, 5vw, 3rem);
         font-weight: 800;
         line-height: 1.08;
-        color: #111827;
+        color: #374151;
         margin-bottom: 1rem;
     }
 
@@ -146,7 +146,7 @@
     &__section-heading {
         font-size: 1.35rem;
         font-weight: 700;
-        color: #111827;
+        color: #374151;
         margin-bottom: 0.75rem;
     }
 
@@ -185,7 +185,7 @@
     &__feature-title {
         font-size: 1rem;
         font-weight: 700;
-        color: #111827;
+        color: #374151;
         margin-bottom: 0.35rem;
     }
 
@@ -209,7 +209,7 @@
         font-weight: 700;
         text-decoration: none;
         background: #00e5aa;
-        color: #111827;
+        color: #374151;
         border-radius: 0;
 
         @include mm-drop-border(var(--mm-drop-purple));

@@ -25,6 +25,254 @@ $slot-h: 5rem;
 $border: #e5e7eb;
 $border-light: #f3f4f6;
 
+// ─── Weekly Header (DateSelectorBar + mode toggle) ────────────────────────────
+
+.weekly-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-width: 0;
+    gap: 0.75rem;
+    overflow: hidden;
+
+    // The DateSelectorBar takes all remaining space but must not overflow
+    > :first-child {
+        flex: 1 1 0;
+        min-width: 0;
+        overflow: hidden;
+    }
+}
+
+.weekly-header__mode-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.625rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    border-radius: 0;
+    transition: all 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+        border-color: var(--mm-primary, #6366f1);
+        color: var(--mm-primary, #6366f1);
+        background: rgba(99, 102, 241, 0.04);
+    }
+
+    &--done {
+        color: #374151;
+        font-weight: 600;
+
+        &:hover {
+            border-color: #9ca3af;
+            color: #374151;
+            background: #f9fafb;
+        }
+    }
+}
+
+// ─── Recurrence Bar ────────────────────────────────────────────────────────────
+
+.recurrence-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.625rem 1rem;
+    background: #fff;
+    border-bottom: 2px solid var(--mm-primary, #6366f1);
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    &__time {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--mm-primary, #6366f1);
+        min-width: 2.75rem;
+    }
+
+    &__freq-group {
+        display: inline-flex;
+        border: 1px solid #e5e7eb;
+        background: #f9fafb;
+        padding: 2px;
+        gap: 0;
+    }
+
+    &__freq-btn {
+        padding: 0.3rem 0.625rem;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #6b7280;
+        transition: all 0.15s;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+
+        &--active {
+            background: #fff;
+            color: var(--mm-primary, #6366f1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        }
+    }
+
+    &__days {
+        display: flex;
+        gap: 0.2rem;
+    }
+
+    &__day-pill {
+        width: 1.625rem;
+        height: 1.625rem;
+        border-radius: 50%;
+        border: 1.5px solid #d1d5db;
+        background: none;
+        font-size: 0.625rem;
+        font-weight: 700;
+        color: #6b7280;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        padding: 0;
+
+        &--active {
+            background: var(--mm-primary, #6366f1);
+            border-color: var(--mm-primary, #6366f1);
+            color: #fff;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        &:not(:disabled):hover:not(.recurrence-bar__day-pill--active) {
+            border-color: var(--mm-primary, #6366f1);
+            color: var(--mm-primary, #6366f1);
+        }
+    }
+
+    &__conflicts {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: #f59e0b;
+        white-space: nowrap;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.375rem;
+        margin-left: auto;
+    }
+
+    &__confirm {
+        padding: 0.35rem 0.875rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: var(--mm-primary, #6366f1);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s;
+        letter-spacing: 0.02em;
+
+        &:hover {
+            background: #4f46e5;
+        }
+    }
+
+    &__cancel {
+        padding: 0.35rem 0.625rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: none;
+        border: 1px solid #d1d5db;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.15s;
+
+        &:hover {
+            border-color: #9ca3af;
+            color: #374151;
+        }
+    }
+}
+
+// ─── Ghost card ────────────────────────────────────────────────────────────────
+
+.slot-moment-card--ghost {
+    opacity: 0.5;
+    pointer-events: none;
+    animation: ghostPulse 2s ease-in-out infinite;
+
+    .slot-moment-card__row {
+        border: 2px dashed var(--mm-primary, #6366f1);
+        border-radius: 2px;
+    }
+
+    .slot-moment-card__name--ghost {
+        color: var(--mm-primary, #6366f1);
+        font-style: italic;
+    }
+}
+
+@keyframes ghostPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.25;
+    }
+}
+
+// ─── Conflict indicator ────────────────────────────────────────────────────────
+
+.weekly-slot--conflict {
+    border-left: 3px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.weekly-slot__conflict-badge {
+    font-size: 0.75rem;
+    position: absolute;
+    top: 0.2rem;
+    right: 0.25rem;
+}
+
+// ─── Overview empty slot — clickable to enter configure mode ─────────────────
+
+.weekly-slot--overview-empty {
+    cursor: pointer;
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.04);
+
+        .weekly-slot__time {
+            color: var(--mm-primary, #6366f1);
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--mm-primary, #6366f1);
+        outline-offset: -2px;
+    }
+}
+
 // ─── Week Selector Bar ────────────────────────────────────────────────────────
 
 .week-selector {
@@ -33,10 +281,12 @@ $border-light: #f3f4f6;
     align-items: stretch;
     gap: 0;
     width: 100%;
+    min-width: 0;
     height: 2.75rem;
     border-top: 1px solid #e5e7eb;
     border-bottom: 1px solid #e5e7eb;
     background: #fff;
+    overflow: hidden;
 
     &__btn {
         display: flex;
@@ -80,7 +330,7 @@ $border-light: #f3f4f6;
     &__current-range {
         font-size: 0.9375rem;
         font-weight: 700;
-        color: #111827;
+        color: #374151;
         white-space: nowrap;
     }
 }
@@ -92,6 +342,7 @@ $border-light: #f3f4f6;
     flex-direction: column;
     gap: 0.5rem;
     background: $border-light;
+    overflow: hidden;
 
     @media (min-width: 640px) {
         border: 1px solid $border;
@@ -185,6 +436,7 @@ $border-light: #f3f4f6;
 .weekly-slot {
     display: flex;
     transition: background 0.1s;
+    touch-action: pan-y; // don't cancel horizontal child drags at this level
 
     // ── Mobile: horizontal row — time label left, content right ───────────
     flex-direction: row;
@@ -334,7 +586,7 @@ $border-light: #f3f4f6;
     flex-direction: column;
     width: 100%;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible; // allow swipe icon to translate outside card bounds
 
     // Top strip: bar (5/6) + score label (1/6)
     &__top {
@@ -417,7 +669,7 @@ $border-light: #f3f4f6;
         min-width: 0;
         font-size: 0.8125rem;
         font-weight: 600;
-        color: #111827;
+        color: #374151;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -593,6 +845,108 @@ $border-light: #f3f4f6;
     &--done {
         animation: slot-icon-flash 0.5s ease forwards;
     }
+
+    // Ghost placeholder — used in the ghost card when scheduling a new moment
+    &--ghost-placeholder {
+        border: 2px dashed var(--mm-primary, #6366f1);
+        background: rgba(99, 102, 241, 0.06);
+        color: var(--mm-primary, #6366f1);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer; // clickable — opens icon picker
+
+        &:hover {
+            background: rgba(99, 102, 241, 0.12);
+            transform: none;
+        }
+    }
+}
+
+// ─── Ghost quick-create: icon picker + name input ─────────────────────────────
+
+.ghost-icon-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.ghost-icon-trigger {
+    // inherits .slot-icon sizing via those classes
+    border: none;
+    padding: 0;
+    background: none;
+}
+
+.ghost-icon-picker {
+    position: absolute;
+    top: calc(100% + 0.375rem);
+    left: 0;
+    z-index: 100;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 0.5rem;
+    width: 14rem;
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.125rem;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        border: none;
+        background: none;
+        border-radius: 0.3rem;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.1s;
+
+        &:hover {
+            background: #f3f4f6;
+        }
+
+        &--active {
+            background: rgba(99, 102, 241, 0.12);
+            outline: 2px solid var(--mm-primary, #6366f1);
+        }
+    }
+}
+
+.ghost-name-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #374151;
+    padding: 0;
+
+    &::placeholder {
+        color: var(--mm-primary, #6366f1);
+        opacity: 0.6;
+        font-style: italic;
+    }
+
+    &:focus {
+        color: #374151;
+    }
+}
+
+.slot-moment-card--ghost-edit {
+    // override the ghost pulse/opacity on the editable card
+    opacity: 1 !important;
+    animation: none !important;
+    pointer-events: auto !important;
+    border: 1.5px dashed var(--mm-primary, #6366f1);
+    background: rgba(99, 102, 241, 0.04);
+    border-radius: 0.375rem;
 }
 
 // ─── Swipe-to-complete track ──────────────────────────────────────────────────
@@ -602,6 +956,8 @@ $border-light: #f3f4f6;
     display: inline-flex;
     align-items: center;
     border-radius: 0.5rem;
+    overflow: visible; // icon must be able to translate outside the track bounds
+    min-width: 2.25rem; // always at least as wide as the icon itself
 
     &__check {
         position: absolute;

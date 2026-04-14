@@ -12,11 +12,13 @@ class MomentSchedule extends Model
         'frequency',
         'days_of_week',
         'preferred_time',
+        'scheduled_date',
     ];
 
     protected $casts = [
-        'days_of_week'   => 'array',
+        'days_of_week' => 'array',
         'preferred_time' => 'string',
+        'scheduled_date' => 'string',
     ];
 
     public function moment(): BelongsTo

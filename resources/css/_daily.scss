@@ -61,7 +61,7 @@
     &__day-name {
         font-size: 1rem;
         font-weight: 600;
-        color: #111827;
+        color: #374151;
     }
 
     &__date {
@@ -85,32 +85,20 @@
         display: flex;
         flex-direction: column;
 
-        &--tomorrow {
-            opacity: 0.45;
+        &--next-day {
+            opacity: 0.5;
             pointer-events: none;
         }
     }
 
-    &__tomorrow {
-        border-top: 1px dashed #e5e7eb;
-    }
+    // Next-day section sits below today as a separate card
+    &--next-day {
+        margin-top: 1.25rem;
+        border-top: 2px dashed #e5e7eb;
+        padding-top: 0.25rem;
 
-    &__tomorrow-label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1.25rem;
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: #9ca3af;
-
-        &::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #f3f4f6;
+        .daily-grid__header {
+            padding-top: 0.875rem;
         }
     }
 }
@@ -125,7 +113,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    opacity: 0.4;
+    opacity: 0.55;
     transition: opacity 0.15s ease;
 
     &:hover,

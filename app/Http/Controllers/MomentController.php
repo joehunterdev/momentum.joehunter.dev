@@ -19,16 +19,17 @@ class MomentController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'color' => ['nullable', 'string', 'max:7'],
             'icon' => ['nullable', 'string', 'max:10'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             // Schedule
-            'frequency' => ['nullable', 'in:daily,weekly,custom'],
+            'frequency' => ['nullable', 'in:daily,weekly,custom,once'],
             'days_of_week' => ['nullable', 'array'],
             'days_of_week.*' => ['integer', 'between:1,7'],
             'preferred_time' => ['nullable', 'date_format:H:i'],
+            'scheduled_date' => ['nullable', 'date'],
             // Cue
             'implementation_intention' => ['nullable', 'string', 'max:255'],
             'habit_stack_after' => ['nullable', 'string', 'max:255'],
@@ -39,7 +40,7 @@ class MomentController extends Controller
         ]);
 
         $moment = $request->user()->moments()->create([
-            'name' => $data['name'],
+            'name' => $data['name'] ?? 'Untitled Moment',
             'description' => $data['description'] ?? null,
             'color' => $data['color'] ?? null,
             'icon' => $data['icon'] ?? null,
@@ -50,6 +51,7 @@ class MomentController extends Controller
             'frequency' => $data['frequency'] ?? 'daily',
             'days_of_week' => $data['days_of_week'] ?? null,
             'preferred_time' => $data['preferred_time'] ?? null,
+            'scheduled_date' => $data['scheduled_date'] ?? null,
         ]);
 
         $moment->cue()->create([
@@ -91,10 +93,11 @@ class MomentController extends Controller
             'is_active' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             // Schedule
-            'frequency' => ['nullable', 'in:daily,weekly,custom'],
+            'frequency' => ['nullable', 'in:daily,weekly,custom,once'],
             'days_of_week' => ['nullable', 'array'],
             'days_of_week.*' => ['integer', 'between:1,7'],
             'preferred_time' => ['nullable', 'date_format:H:i'],
+            'scheduled_date' => ['nullable', 'date'],
             // Cue
             'implementation_intention' => ['nullable', 'string', 'max:255'],
             'habit_stack_after' => ['nullable', 'string', 'max:255'],
@@ -119,6 +122,7 @@ class MomentController extends Controller
                 'frequency' => $data['frequency'] ?? 'daily',
                 'days_of_week' => $data['days_of_week'] ?? null,
                 'preferred_time' => $data['preferred_time'] ?? null,
+                'scheduled_date' => $data['scheduled_date'] ?? null,
             ]
         );
 
