@@ -11,6 +11,7 @@ class DailyPageData extends Data
     public function __construct(
         public string $date,
         public WeekDayData $day,
+        public ?WeekDayData $nextDay,
         public UserConfigData $config,
         public int $completedCount,
         public int $totalCount,

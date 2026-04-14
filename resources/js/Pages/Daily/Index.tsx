@@ -6,7 +6,7 @@ import type { PageProps } from '@/types';
 
 interface Props extends PageProps, App.Data.DailyPageData { }
 
-export default function Index({ date, day, config, completedCount, totalCount }: Props) {
+export default function Index({ date, day, nextDay, config, completedCount, totalCount }: Props) {
     async function handleToggleMoment(
         momentId: number,
         _instanceId: number | null,
@@ -62,6 +62,7 @@ export default function Index({ date, day, config, completedCount, totalCount }:
                 <div className="mx-auto max-w-2xl sm:px-6 lg:px-8">
                     <DailyGrid
                         day={day}
+                        nextDay={nextDay}
                         config={config}
                         onToggleMoment={handleToggleMoment}
                         nextMomentKey={nextMomentKey}

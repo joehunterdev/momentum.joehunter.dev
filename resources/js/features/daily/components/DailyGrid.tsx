@@ -4,6 +4,7 @@ import DailyTimeSlotCell from './DailyTimeSlotCell';
 
 interface Props {
     day: WeekDay;
+    nextDay?: WeekDay | null;
     config: CalendarConfig;
     onToggleMoment: (momentId: number, instanceId: number | null, date: string) => void;
     nextMomentKey?: string | null;
@@ -50,9 +51,24 @@ function getVisibleSlots(slots: TimeSlot[], isToday: boolean): TimeSlot[] {
     return hourly.filter((s) => windowed.has(s.time));
 }
 
-export default function DailyGrid({ day, config, onToggleMoment, nextMomentKey }: Props) {
+/**
+ * How many tomorrow slots to show to fill the remaining whitespace.
+ * Only slots that have a moment are shown — empty tomorrow slots are skipped.
+ */
+function getTomorrowPreviewSlots(todaySlots: TimeSlot[], nextDay: WeekDay): TimeSlot[] {
+    const remaining = VISIBLE_SLOTS - todaySlots.length;
+    if (remaining <= 0) return [];
+
+    const hourly = nextDay.slots.filter((s) => s.time.endsWith(':00'));
+    // Only show slots that have something scheduled tomorrow
+    const withMoments = hourly.filter((s) => s.moment !== null);
+    return withMoments.slice(0, remaining);
+}
+
+export default function DailyGrid({ day, nextDay, config, onToggleMoment, nextMomentKey }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getVisibleSlots(day.slots, day.isToday);
+    const tomorrowSlots = nextDay ? getTomorrowPreviewSlots(visibleSlots, nextDay) : [];
 
     return (
         <section className="daily-grid">
@@ -79,6 +95,27 @@ export default function DailyGrid({ day, config, onToggleMoment, nextMomentKey }
                     />
                 ))}
             </div>
+
+            {tomorrowSlots.length > 0 && nextDay && (
+                <div className="daily-grid__tomorrow">
+                    <div className="daily-grid__tomorrow-label">
+                        <span>Tomorrow · {format(parseISO(nextDay.date), 'd MMM')}</span>
+                    </div>
+                    <div className="daily-grid__slots daily-grid__slots--tomorrow">
+                        {tomorrowSlots.map((slot) => (
+                            <DailyTimeSlotCell
+                                key={`${nextDay.date}-${slot.time}`}
+                                slot={slot}
+                                date={nextDay.date}
+                                config={config}
+                                onToggleMoment={() => { }}
+                                isToday={false}
+                                isNext={false}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
         </section>
     );
 }
