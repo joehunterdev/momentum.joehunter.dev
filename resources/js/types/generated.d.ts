@@ -5,6 +5,13 @@ declare namespace App {
             habit_stack_after: string | null;
             environment_prompt: string | null;
         };
+        export type DailyPageData = {
+            date: string;
+            day: App.Data.WeekDayData;
+            config: App.Data.UserConfigData;
+            completedCount: number;
+            totalCount: number;
+        };
         export type MomentData = {
             id: number;
             name: string;

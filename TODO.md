@@ -2,7 +2,6 @@
 - [] Configure base user
 - [] Verify hot reload
 - [] Test build and env
-
 - [] Moments 
     - [] Moments should really just be a modal popup or similar
     - [] Create
@@ -21,7 +20,7 @@
 - Instructions prefer icons or font aweome over svg <svg className="icon-picker__trigger-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
 
 - [ ]  Laravel Spatie data
-
+- [] Create test user data for test seeded data only
 
 ## Todo
 The await fetch i think could be made to be a reusable hook or similar, what is best conisdering my architecture

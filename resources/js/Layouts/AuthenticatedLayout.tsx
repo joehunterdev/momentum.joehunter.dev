@@ -27,12 +27,12 @@ export default function Authenticated({
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                {/* <NavLink
+                                <NavLink
                                     href={route('daily')}
                                     active={route().current('daily')}
                                 >
                                     Daily
-                                </NavLink> */}
+                                </NavLink>
                                 <NavLink
                                     href={route('weekly')}
                                     active={route().current('weekly')}
@@ -143,12 +143,12 @@ export default function Authenticated({
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">
-                        {/* <ResponsiveNavLink
+                        <ResponsiveNavLink
                             href={route('daily')}
                             active={route().current('daily')}
                         >
                             Daily
-                        </ResponsiveNavLink> */}
+                        </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('weekly')}
                             active={route().current('weekly')}

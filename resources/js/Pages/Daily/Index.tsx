@@ -1,100 +1,73 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import EmptyState from '@/shared/components/EmptyState';
-import FlashMessage from '@/shared/components/FlashMessage';
-import { formatDate } from '@/shared/utils/dates';
+import { DailyGrid, DailyProgressBar } from '@/features/daily';
 import { Head, router } from '@inertiajs/react';
-import { useState } from 'react';
-import { MomentCard } from '@/features/daily';
-import { MomentModal } from '@/features/moments';
-import type { DailyMoment } from '@/features/daily';
-import type { MomentFormData } from '@/features/moments';
-import { useMomentForm } from '@/features/moments';
+import { DateSelectorBar } from '@/shared/components/calendar';
 import type { PageProps } from '@/types';
 
-interface Props extends PageProps {
-    date: string;
-    moments: DailyMoment[];
-}
+interface Props extends PageProps, App.Data.DailyPageData { }
 
-export default function Index({ date, moments: initialMoments }: Props) {
-    const [moments, setMoments] = useState<DailyMoment[]>(initialMoments);
-    const [showingModal, setShowingModal] = useState(false);
+export default function Index({ date, day, config, completedCount, totalCount }: Props) {
+    async function handleToggleMoment(
+        momentId: number,
+        _instanceId: number | null,
+        date: string,
+    ) {
+        const token =
+            (
+                document.querySelector(
+                    'meta[name="csrf-token"]',
+                ) as HTMLMetaElement | null
+            )?.content ?? '';
 
-    function handleToggled(id: number, completedAt: string | null, instanceId: number | null) {
-        setMoments((prev) =>
-            prev.map((m) =>
-                m.id === id ? { ...m, completed_at: completedAt, instance_id: instanceId } : m,
-            ),
-        );
-    }
-
-    function handleModalSubmit(_data: MomentFormData, form: ReturnType<typeof useMomentForm>) {
-        form.post(route('moments.store'), {
-            onSuccess: () => setShowingModal(false),
-            onError: () => { },
+        await fetch(route('moments.toggle', { moment: momentId }), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({ date }),
         });
+
+        router.reload({ only: ['day', 'completedCount', 'totalCount'] });
     }
 
-    const completedCount = moments.filter((m) => m.completed_at !== null).length;
-    const totalCount = moments.length;
+    // Key = "date:time:momentId" — first pending moment of the day
+    const nextMomentKey = (() => {
+        for (const slot of day.slots) {
+            if (slot.moment && slot.moment.status !== 'completed') {
+                return `${day.date}:${slot.time}:${slot.moment.id}`;
+            }
+        }
+        return null;
+    })();
 
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex items-baseline justify-between">
-                    <h2 className="text-xl font-semibold text-gray-800">{formatDate(date)}</h2>
+                <div className="daily-header">
+                    <DateSelectorBar mode="day" date={date} />
                     {totalCount > 0 && (
-                        <span className="text-sm text-gray-500">
-                            {completedCount}/{totalCount} done
-                        </span>
+                        <DailyProgressBar
+                            completedCount={completedCount}
+                            totalCount={totalCount}
+                        />
                     )}
                 </div>
             }
         >
             <Head title="Daily" />
-            <FlashMessage />
 
-            <div className="py-8">
-                <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-                    {moments.length === 0 ? (
-                        <EmptyState
-                            title="No moments for today"
-                            description="Add your first habit moment to start building your streak."
-                            actionLabel="+ Add Moment"
-                            onAction={() => setShowingModal(true)}
-                        />
-                    ) : (
-                        <>
-                            <div className="space-y-3">
-                                {moments.map((moment) => (
-                                    <MomentCard
-                                        key={moment.id}
-                                        moment={moment}
-                                        date={date}
-                                        onToggled={handleToggled}
-                                    />
-                                ))}
-                            </div>
-
-                            <div className="mt-8 flex justify-center">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowingModal(true)}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-dashed border-indigo-300 px-5 py-2.5 text-sm font-medium text-indigo-600 transition hover:border-indigo-500 hover:bg-indigo-50"
-                                >
-                                    <span>+</span> New Moment
-                                </button>
-                            </div>
-                        </>
-                    )}
+            <div className="py-0 sm:py-6">
+                <div className="mx-auto max-w-2xl sm:px-6 lg:px-8">
+                    <DailyGrid
+                        day={day}
+                        config={config}
+                        onToggleMoment={handleToggleMoment}
+                        nextMomentKey={nextMomentKey}
+                    />
                 </div>
             </div>
-
-            <MomentModal
-                show={showingModal}
-                onClose={() => setShowingModal(false)}
-                onSubmit={handleModalSubmit}
-            />
         </AuthenticatedLayout>
     );
 }

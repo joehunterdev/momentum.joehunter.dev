@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\ContentController;
-// use App\Http\Controllers\DailyController;
+use App\Http\Controllers\DailyController;
 use App\Http\Controllers\MomentController;
 use App\Http\Controllers\MomentInstanceController;
 use App\Http\Controllers\ProfileController;
@@ -64,7 +64,7 @@ XML;
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // ─── App ─────────────────────────────────────────────────────────────────
-    // Route::get('/daily', [DailyController::class, 'index'])->name('daily');
+    Route::get('/daily', [DailyController::class, 'index'])->name('daily');
     Route::get('/weekly', [WeeklyController::class, 'index'])->name('weekly');
 
     Route::resource('moments', MomentController::class)

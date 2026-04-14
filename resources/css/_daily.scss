@@ -1,0 +1,108 @@
+// Daily view styles
+// Slot structure reuses .weekly-slot and related classes from _weekly.scss
+
+// ── Header ───────────────────────────────────────────────────────────────────
+
+.daily-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+// ── Progress bar ─────────────────────────────────────────────────────────────
+
+.daily-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    &__bar {
+        flex: 1;
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        background: linear-gradient(90deg, #6366f1 0%, #22d3ee 100%);
+        border-radius: 9999px;
+        transition: width 0.4s ease;
+    }
+
+    &__label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        white-space: nowrap;
+    }
+}
+
+// ── Grid ─────────────────────────────────────────────────────────────────────
+
+.daily-grid {
+    background: #fff;
+    border-radius: 0.75rem;
+    overflow: hidden;
+
+    @media (min-width: 640px) {
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    }
+
+    &__header {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem 0.75rem;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    &__day-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    &__date {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    &__today-badge {
+        margin-left: auto;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #6366f1;
+        background: #eef2ff;
+        border-radius: 9999px;
+        padding: 0.15rem 0.5rem;
+    }
+
+    &__slots {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+// ── Edit button on weekly slot moment card ────────────────────────────────────
+
+.slot-moment-card__edit-btn {
+    flex-shrink: 0;
+    padding: 0.25rem;
+    font-size: 0.85rem;
+    line-height: 1;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+        opacity: 1;
+        outline: none;
+    }
+}
