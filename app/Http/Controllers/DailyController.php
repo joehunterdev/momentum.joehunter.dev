@@ -50,7 +50,7 @@ class DailyController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $slots = $this->calendar->buildTimeSlots($wakeTime, $sleepTime);
+        $slots = $this->calendar->buildTimeSlots($wakeTime, $sleepTime, intervalMinutes: 20);
         $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($date));
 
         $day = $this->calendar->buildWeekDayData(
@@ -61,6 +61,7 @@ class DailyController extends Controller
             isToday: $isToday,
             consistencyWindow: $consistencyWindow,
             today: $today,
+            intervalMinutes: 20,
         );
 
         $completedCount = collect($day->slots)
@@ -85,6 +86,7 @@ class DailyController extends Controller
                 isToday: false,
                 consistencyWindow: $consistencyWindow,
                 today: $today,
+                intervalMinutes: 20,
             );
         }
 

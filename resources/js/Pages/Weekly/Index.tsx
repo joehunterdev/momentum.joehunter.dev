@@ -5,18 +5,21 @@ import { WeeklyGrid, FrequencyBar } from '@/features/weekly';
 import type { SchedulingState, WeeklyPageProps } from '@/features/weekly';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
-import { DateSelectorBar } from '@/shared/components/calendar';
+import { CalendarNav, jsToIsoDay } from '@/shared/components/calendar';
+import {
+    addWeeks,
+    endOfISOWeek,
+    format,
+    parseISO,
+    startOfISOWeek,
+    subWeeks,
+} from 'date-fns';
 import { WEEK_DAYS } from '@/shared/constants/moments';
 import type { PageProps } from '@/types';
 
 interface Props extends PageProps, WeeklyPageProps { }
 
 type WeekMode = 'overview' | 'configure';
-
-/** Convert JS getDay() (0=Sun) to ISO day (1=Mon … 7=Sun) */
-function jsToIsoDay(d: number): number {
-    return d === 0 ? 7 : d;
-}
 
 export default function Index({ weekStart, config, days }: Props) {
 
@@ -116,11 +119,26 @@ export default function Index({ weekStart, config, days }: Props) {
     // ── Consistent day-pill labels for FrequencyBar ──────────────────────────
     const dayLabels = WEEK_DAYS.map((d) => d.label);
 
+    const currentWeekStart = startOfISOWeek(parseISO(weekStart));
+    const prevWeekStart = subWeeks(currentWeekStart, 1);
+    const nextWeekStart = addWeeks(currentWeekStart, 1);
+
+    function weekLabel(start: Date): string {
+        return `${format(start, 'd MMM')} \u2013 ${format(endOfISOWeek(start), 'd MMM')}`;
+    }
+
     return (
         <AuthenticatedLayout
             header={
                 <div className="weekly-header">
-                    <DateSelectorBar mode="week" weekStart={weekStart} />
+                    <CalendarNav
+                        prevLabel={weekLabel(prevWeekStart)}
+                        currentLabel={weekLabel(currentWeekStart)}
+                        nextLabel={weekLabel(nextWeekStart)}
+                        prevParam={{ week: format(prevWeekStart, 'yyyy-MM-dd') }}
+                        nextParam={{ week: format(nextWeekStart, 'yyyy-MM-dd') }}
+                        routeName="weekly"
+                    />
                     {mode === 'overview' ? (
                         <button
                             type="button"

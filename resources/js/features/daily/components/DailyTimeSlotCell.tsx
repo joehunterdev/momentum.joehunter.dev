@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar';
+import { isOutOfOffice } from '@/shared/components/calendar';
 import DailySlotCard from './DailySlotCard';
 
 interface Props {
@@ -9,10 +10,6 @@ interface Props {
     onToggleMoment: (momentId: number, instanceId: number | null, date: string) => void;
     isToday?: boolean;
     isNext?: boolean;
-}
-
-function isOutOfOffice(time: string, config: CalendarConfig): boolean {
-    return time < config.office_start || time >= config.office_end;
 }
 
 export default function DailyTimeSlotCell({
