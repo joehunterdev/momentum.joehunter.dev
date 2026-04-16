@@ -258,9 +258,30 @@ $border-light: #f3f4f6;
 
 .weekly-slot--overview-empty {
     cursor: pointer;
+    border: 1.5px dashed #d1d5db;
+    position: relative;
+
+    &::after {
+        content: '+';
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #d1d5db;
+        line-height: 1;
+        pointer-events: none;
+        transition: color 0.15s;
+    }
 
     &:hover {
         background: rgba(99, 102, 241, 0.04);
+        border-color: var(--mm-primary, #6366f1);
+
+        &::after {
+            color: var(--mm-primary, #6366f1);
+        }
 
         .weekly-slot__time {
             color: var(--mm-primary, #6366f1);
