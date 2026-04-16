@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import type { TimeSlot, WeeklyConfig } from '../types';
+import { isOutOfOffice } from '@/shared/components/calendar';
 import AddSlotPopover from './AddSlotPopover';
 import SlotMomentCard from './SlotMomentCard';
 
@@ -17,10 +18,6 @@ interface Props {
     ghostIcon: string | null;
     isWeekend?: boolean;
     isToday?: boolean;
-}
-
-function isOutOfOffice(time: string, config: WeeklyConfig): boolean {
-    return time < config.office_start || time >= config.office_end;
 }
 
 export default function TimeSlotCell({

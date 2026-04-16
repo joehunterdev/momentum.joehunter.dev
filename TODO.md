@@ -17,6 +17,7 @@
 - [x] Test remote:cmd get that working
 - [] SSH Deploy in git actions
 - [] Have simple versoin feature either maby best in package json or similar to easily modify version and make it visible
+- [] Consider whatsapp style sideswipe
 - Instructions prefer icons or font aweome over svg <svg className="icon-picker__trigger-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
 
 - [ ]  Laravel Spatie data

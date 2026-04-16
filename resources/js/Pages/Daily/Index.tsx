@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DailyGrid, DailyProgressBar } from '@/features/daily';
 import { Head, router } from '@inertiajs/react';
-import { DateSelectorBar } from '@/shared/components/calendar';
+import { CalendarNav } from '@/shared/components/calendar';
+import { addDays, format, parseISO, subDays } from 'date-fns';
 import type { PageProps } from '@/types';
 
 interface Props extends PageProps, App.Data.DailyPageData { }
@@ -42,11 +43,22 @@ export default function Index({ date, day, nextDay, config, completedCount, tota
         return null;
     })();
 
+    const currentDate = parseISO(date);
+    const prevDate = subDays(currentDate, 1);
+    const nextDate = addDays(currentDate, 1);
+
     return (
         <AuthenticatedLayout
             header={
                 <div className="daily-header">
-                    <DateSelectorBar mode="day" date={date} />
+                    <CalendarNav
+                        prevLabel={format(prevDate, 'EEE d MMM')}
+                        currentLabel={format(currentDate, 'EEE d MMM')}
+                        nextLabel={format(nextDate, 'EEE d MMM')}
+                        prevParam={{ date: format(prevDate, 'yyyy-MM-dd') }}
+                        nextParam={{ date: format(nextDate, 'yyyy-MM-dd') }}
+                        routeName="daily"
+                    />
                     {totalCount > 0 && (
                         <DailyProgressBar
                             completedCount={completedCount}

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Data\MonthlyDayData;
+use App\Data\MonthlyMomentData;
 use App\Data\SlotMomentData;
 use App\Data\TimeSlotData;
 use App\Data\WeekDayData;
@@ -13,45 +15,55 @@ use Illuminate\Support\Collection;
 class CalendarService
 {
     /**
-     * Build an array of 'H:i' strings from wake to sleep in 30-min increments.
+     * Build an array of 'H:i' strings from wake to sleep in $intervalMinutes increments.
      *
      * @return string[]
      */
-    public function buildTimeSlots(string $wakeTime, string $sleepTime): array
+    public function buildTimeSlots(string $wakeTime, string $sleepTime, int $intervalMinutes = 30): array
     {
         $slots = [];
 
         $current = Carbon::createFromTimeString($wakeTime);
-        $current->minute($current->minute < 30 ? 0 : 30)->second(0);
+        $remainder = $current->minute % $intervalMinutes;
+        $current->minute($remainder === 0 ? $current->minute : $current->minute - $remainder)->second(0);
 
         $end = Carbon::createFromTimeString($sleepTime);
-        if ($end->second > 0 || ($end->minute > 0 && $end->minute % 30 !== 0)) {
-            $end->minute($end->minute < 30 ? 30 : 0);
-            if ($end->minute === 0) {
-                $end->addHour();
+        $endRemainder = $end->minute % $intervalMinutes;
+        if ($end->second > 0 || $endRemainder !== 0) {
+            $end->minute($end->minute - $endRemainder + $intervalMinutes);
+            if ($end->minute >= 60) {
+                $end->addHour()->minute($end->minute - 60);
             }
             $end->second(0);
         }
 
         while ($current->lte($end)) {
             $slots[] = $current->format('H:i');
-            $current->addMinutes(30);
+            $current->addMinutes($intervalMinutes);
         }
 
         return $slots;
     }
 
     /**
-     * Snap a time string (HH:mm or HH:mm:ss) to the nearest 30-min slot boundary.
+     * Snap a time string (HH:mm or HH:mm:ss) to the nearest $intervalMinutes slot boundary.
      */
-    public function snapToSlot(string $time): string
+    public function snapToSlot(string $time, int $intervalMinutes = 30): string
     {
         $carbon = Carbon::createFromTimeString($time);
-        $snapped = $carbon->minute < 15
-            ? $carbon->copy()->minute(0)->second(0)
-            : ($carbon->minute < 45
-                ? $carbon->copy()->minute(30)->second(0)
-                : $carbon->copy()->addHour()->minute(0)->second(0));
+        $half = (int) ($intervalMinutes / 2);
+        $remainder = $carbon->minute % $intervalMinutes;
+
+        if ($remainder < $half) {
+            $snapped = $carbon->copy()->minute($carbon->minute - $remainder)->second(0);
+        } else {
+            $next = $carbon->minute - $remainder + $intervalMinutes;
+            if ($next >= 60) {
+                $snapped = $carbon->copy()->addHour()->minute(0)->second(0);
+            } else {
+                $snapped = $carbon->copy()->minute($next)->second(0);
+            }
+        }
 
         return $snapped->format('H:i');
     }
@@ -85,7 +97,7 @@ class CalendarService
         }
 
         $completed = $moment->instances->filter(
-            fn ($i) => $i->date->toDateString() >= $windowStart->toDateString()
+            fn($i) => $i->date->toDateString() >= $windowStart->toDateString()
                 && $i->date->toDateString() <= $today->toDateString()
                 && $i->completed_at !== null
         )->count();
@@ -104,7 +116,7 @@ class CalendarService
         Carbon $consistencyWindow,
         Carbon $today,
     ): SlotMomentData {
-        $instance = $match->instances->first(fn ($i) => $i->date->toDateString() === $dateStr);
+        $instance = $match->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
         // TODO: missed, pending,passed need their own enum both front and back
         $status = match (true) {
             $instance?->completed_at !== null => 'completed',
@@ -145,16 +157,17 @@ class CalendarService
         bool $isToday,
         Carbon $consistencyWindow,
         Carbon $today,
+        int $intervalMinutes = 30,
     ): WeekDayData {
         $dateStr = $date->toDateString();
 
-        $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $consistencyWindow, $today) {
-            $match = $dayMoments->first(function (Moment $m) use ($slotTime) {
+        $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $consistencyWindow, $today, $intervalMinutes) {
+            $match = $dayMoments->first(function (Moment $m) use ($slotTime, $intervalMinutes) {
                 if (! $m->schedule?->preferred_time) {
                     return false;
                 }
 
-                return $this->snapToSlot($m->schedule->preferred_time) === $slotTime;
+                return $this->snapToSlot($m->schedule->preferred_time, $intervalMinutes) === $slotTime;
             });
 
             if (! $match) {
@@ -173,6 +186,56 @@ class CalendarService
             isToday: $isToday,
             isWeekend: $date->isWeekend(),
             slots: $daySlots,
+        );
+    }
+
+    /**
+     * Build a MonthlyDayData for a single calendar date (no time slots — just moment summaries).
+     *
+     * @param  Collection<int, Moment>  $dayMoments
+     */
+    public function buildMonthDayData(
+        Carbon $date,
+        Collection $dayMoments,
+        bool $isPast,
+        bool $isToday,
+        bool $isCurrentMonth,
+        Carbon $today,
+        int $intervalMinutes = 20,
+    ): MonthlyDayData {
+        $dateStr = $date->toDateString();
+
+        $moments = $dayMoments->map(function (Moment $m) use ($dateStr, $isPast, $isToday) {
+            $instance = $m->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
+
+            $status = match (true) {
+                $instance?->completed_at !== null => 'completed',
+                $isPast => 'missed',
+                $isToday => 'pending',
+                default => null,
+            };
+
+            return new MonthlyMomentData(
+                id: $m->id,
+                name: $m->name,
+                icon: $m->icon,
+                color: $m->color,
+                status: $status,
+            );
+        })->values()->all();
+
+        $completedCount = collect($moments)->filter(fn($m) => $m->status === 'completed')->count();
+        $totalCount = count($moments);
+
+        return new MonthlyDayData(
+            date: $dateStr,
+            dayName: $date->format('l'),
+            isToday: $isToday,
+            isWeekend: $date->isWeekend(),
+            isCurrentMonth: $isCurrentMonth,
+            moments: $moments,
+            completedCount: $completedCount,
+            totalCount: $totalCount,
         );
     }
 }

@@ -2,58 +2,9 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import { CalendarViewToggle } from '@/shared/components/calendar';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
-
-/** Calendar / list icon pair shown in the mobile nav bar */
-function ViewToggle() {
-    const isDaily = route().current('daily');
-    const isWeekly = route().current('weekly');
-
-    return (
-        <div className="me-1 flex items-center gap-1 sm:hidden">
-            {/* Daily — single-day calendar icon */}
-            <Link
-                href={route('daily')}
-                className={[
-                    'rounded-md p-2 transition-colors',
-                    isDaily
-                        ? 'text-indigo-600'
-                        : 'text-gray-400 hover:text-gray-600',
-                ].join(' ')}
-                aria-label="Daily view"
-                title="Daily"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-            </Link>
-
-            {/* Weekly — grid icon */}
-            <Link
-                href={route('weekly')}
-                className={[
-                    'rounded-md p-2 transition-colors',
-                    isWeekly
-                        ? 'text-indigo-600'
-                        : 'text-gray-400 hover:text-gray-600',
-                ].join(' ')}
-                aria-label="Weekly view"
-                title="Weekly"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <rect x="3" y="3" width="7" height="7" />
-                    <rect x="14" y="3" width="7" height="7" />
-                    <rect x="3" y="14" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" />
-                </svg>
-            </Link>
-        </div>
-    );
-}
 
 export default function Authenticated({
     header,
@@ -88,6 +39,12 @@ export default function Authenticated({
                                     active={route().current('weekly')}
                                 >
                                     Weekly
+                                </NavLink>
+                                <NavLink
+                                    href={route('monthly')}
+                                    active={route().current('monthly')}
+                                >
+                                    Monthly
                                 </NavLink>
                                 <NavLink
                                     href={route('config.edit')}
@@ -144,7 +101,7 @@ export default function Authenticated({
                         </div>
 
                         <div className="-me-2 flex items-center sm:hidden">
-                            <ViewToggle />
+                            <CalendarViewToggle />
                             <button
                                 onClick={() =>
                                     setShowingNavigationDropdown(
@@ -205,6 +162,12 @@ export default function Authenticated({
                             active={route().current('weekly')}
                         >
                             Weekly
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('monthly')}
+                            active={route().current('monthly')}
+                        >
+                            Monthly
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('config.edit')}

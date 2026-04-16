@@ -1,15 +1,7 @@
 import { format, parseISO } from 'date-fns';
-import type { TimeSlot, WeekDay, WeeklyConfig } from '../types';
+import type { SchedulingState, TimeSlot, WeekDay, WeeklyConfig } from '../types';
+import { jsToIsoDay } from '@/shared/components/calendar';
 import TimeSlotCell from './TimeSlotCell';
-
-interface SchedulingState {
-    date: string;
-    time: string;
-    frequency: 'daily' | 'weekly' | 'custom' | 'once';
-    daysOfWeek: number[];
-    name: string;
-    icon: string | null;
-}
 
 interface Props {
     day: WeekDay;
@@ -27,11 +19,6 @@ const VISIBLE_SLOTS = 6;
 function getWindowedSlots(slots: TimeSlot[], windowStart: number): TimeSlot[] {
     const hourly = slots.filter((s) => s.time.endsWith(':00'));
     return hourly.slice(windowStart, windowStart + VISIBLE_SLOTS);
-}
-
-/** JS getDay() 0=Sun → ISO 1=Mon … 7=Sun */
-function jsToIsoDay(d: number): number {
-    return d === 0 ? 7 : d;
 }
 
 export default function DaySection({ day, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange, windowStart }: Props) {

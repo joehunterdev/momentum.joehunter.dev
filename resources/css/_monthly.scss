@@ -1,0 +1,184 @@
+// ─── Monthly View ──────────────────────────────────────────────────────────────
+//
+// LAYOUT — 7-column calendar grid (Mon–Sun)
+//
+//   ┌─────┬─────┬─────┬─────┬─────┬─────┬─────┐
+//   │ Mon │ Tue │ Wed │ Thu │ Fri │ Sat │ Sun │  ← column headers
+//   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+//   │  27 │  28 │  29 │  30 │   1 │   2 │   3 │
+//   │  🏃 │     │  📚 │     │     │     │     │
+//   ├─────┼─────┼─────┼─────┼─────┼─────┼─────┤
+//   │  …  │  …  │  …  │  …  │  …  │  …  │  …  │
+//   └─────┴─────┴─────┴─────┴─────┴─────┴─────┘
+
+$monthly-border: #e5e7eb;
+$monthly-cell-min-h: 5rem;
+
+// ─── Outer grid container ────────────────────────────────────────────────────
+
+.monthly-grid {
+    background: #fff;
+    border-radius: 0.75rem;
+    overflow: hidden;
+
+    @media (min-width: 640px) {
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    }
+
+    &__headers {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        border-bottom: 1px solid $monthly-border;
+    }
+
+    &__col-header {
+        padding: 0.5rem 0;
+        text-align: center;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #9ca3af;
+    }
+
+    &__cells {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+}
+
+// ─── Individual day cell ─────────────────────────────────────────────────────
+
+.monthly-day-cell {
+    min-height: $monthly-cell-min-h;
+    padding: 0.375rem 0.5rem;
+    border-right: 1px solid $monthly-border;
+    border-bottom: 1px solid $monthly-border;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    cursor: default;
+
+    // Remove right border on last column
+    &:nth-child(7n) {
+        border-right: none;
+    }
+
+    // Clickable variant
+    &[role='button'] {
+        cursor: pointer;
+        transition: background 0.1s;
+
+        &:hover {
+            background: #f9fafb;
+        }
+    }
+
+    // ── Modifiers ────────────────────────────────────────────────────────────
+
+    &--today {
+        background: rgba(99, 102, 241, 0.04);
+
+        .monthly-day-cell__date-num {
+            color: var(--mm-primary);
+            font-weight: 700;
+        }
+    }
+
+    &--weekend {
+        background: #fafafa;
+    }
+
+    &--faded {
+        opacity: 0.35;
+    }
+
+    // ── Date number ───────────────────────────────────────────────────────────
+
+    &__date-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #374151;
+        border-radius: 9999px;
+        line-height: 1;
+        flex-shrink: 0;
+
+        // Completion ring variants
+        &--complete {
+            background: var(--mm-accent, #10b981);
+            color: #fff;
+        }
+
+        &--partial {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--mm-primary, #6366f1);
+        }
+
+        &--none {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+    }
+
+    // ── Moment pip list ───────────────────────────────────────────────────────
+
+    &__moments {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.1875rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    &__pip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        line-height: 1;
+
+        &--completed .monthly-day-cell__pip-dot {
+            background: var(--mm-accent, #10b981);
+        }
+
+        &--missed .monthly-day-cell__pip-dot {
+            background: #ef4444;
+            opacity: 0.6;
+        }
+
+        &--pending .monthly-day-cell__pip-dot {
+            background: var(--mm-primary, #6366f1);
+            opacity: 0.5;
+        }
+
+        &--future .monthly-day-cell__pip-dot {
+            background: #d1d5db;
+        }
+    }
+
+    &__pip-icon {
+        font-size: 0.875rem;
+        line-height: 1;
+    }
+
+    &__pip-dot {
+        display: block;
+        width: 0.375rem;
+        height: 0.375rem;
+        border-radius: 9999px;
+    }
+
+    &__overflow {
+        font-size: 0.625rem;
+        color: #9ca3af;
+        display: inline-flex;
+        align-items: center;
+        line-height: 1;
+    }
+}

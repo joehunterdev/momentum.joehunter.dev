@@ -6,10 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    @php
-        $appVersion = json_decode(file_get_contents(base_path('package.json')), true)['version'] ?? null;
-    @endphp
-    <title inertia>{{ config('app.name', 'Momentum') }}{{ $appVersion ? ' v' . $appVersion : '' }}</title>
+    <title inertia>{{ config('app.name', 'Momentum') }}{{ config('app.version') ? ' v' . config('app.version') : '' }}
+    </title>
     <meta name="description" content="Momentum — build lasting habits, track streaks, and stay consistent every day.">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#604C81">

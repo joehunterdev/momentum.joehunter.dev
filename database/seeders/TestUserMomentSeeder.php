@@ -21,7 +21,7 @@ class TestUserMomentSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = env('BASIC_EMAIL');
+        $email = config('users.basic.email');
 
         if (! $email) {
             $this->command->warn('⚠️  BASIC_EMAIL not set in .env — skipping test user moments');

@@ -30,18 +30,16 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $packageJson = json_decode(file_get_contents(base_path('package.json')), true);
-
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn() => [
+            'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'appVersion' => $packageJson['version'] ?? null,
+            'appVersion' => config('app.version'),
         ];
     }
 }
