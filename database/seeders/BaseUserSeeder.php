@@ -27,7 +27,7 @@ class BaseUserSeeder extends Seeder
 
     private function seedSuperAdmin(): void
     {
-        $email = env('SUPER_ADMIN_EMAIL');
+        $email = config('users.super_admin.email');
 
         if (! $email) {
             $this->command->warn('⚠️  SUPER_ADMIN_EMAIL not set in .env — skipping super admin');
@@ -35,13 +35,13 @@ class BaseUserSeeder extends Seeder
             return;
         }
 
-        $password = env('SUPER_ADMIN_PASSWORD', 'password');
+        $password = config('users.super_admin.password');
 
         User::updateOrCreate(
             ['email' => $email],
             [
-                'first_name' => env('SUPER_ADMIN_FIRST_NAME', 'Super'),
-                'last_name' => env('SUPER_ADMIN_LAST_NAME', 'Admin'),
+                'first_name' => config('users.super_admin.first_name'),
+                'last_name' => config('users.super_admin.last_name'),
                 'password' => bcrypt($password),
                 'role' => 'super_admin',
                 'email_verified_at' => now(),
@@ -53,19 +53,19 @@ class BaseUserSeeder extends Seeder
 
     private function seedAdmin(): void
     {
-        $email = env('ADMIN_EMAIL');
+        $email = config('users.admin.email');
 
         if (! $email) {
             return;
         }
 
-        $password = env('ADMIN_PASSWORD', 'password');
+        $password = config('users.admin.password');
 
         User::updateOrCreate(
             ['email' => $email],
             [
-                'first_name' => env('ADMIN_FIRST_NAME', 'Admin'),
-                'last_name' => env('ADMIN_LAST_NAME', 'User'),
+                'first_name' => config('users.admin.first_name'),
+                'last_name' => config('users.admin.last_name'),
                 'password' => bcrypt($password),
                 'role' => 'admin',
                 'email_verified_at' => now(),
@@ -77,21 +77,21 @@ class BaseUserSeeder extends Seeder
 
     private function seedTestUser(): void
     {
-        $email = env('BASIC_EMAIL');
+        $email = config('users.basic.email');
 
         if (! $email) {
             return;
         }
 
-        $password = env('BASIC_PASSWORD', 'password');
+        $password = config('users.basic.password');
 
         User::updateOrCreate(
             ['email' => $email],
             [
-                'first_name' => env('BASIC_FIRST_NAME', 'Test'),
-                'last_name' => env('BASIC_LAST_NAME', 'User'),
+                'first_name' => config('users.basic.first_name'),
+                'last_name' => config('users.basic.last_name'),
                 'password' => bcrypt($password),
-                'role' => env('BASIC_ROLE', 'basic'),
+                'role' => config('users.basic.role'),
                 'email_verified_at' => now(),
             ]
         );
@@ -101,21 +101,21 @@ class BaseUserSeeder extends Seeder
 
     private function seedDemoUser(): void
     {
-        $email = env('DEMO_EMAIL');
+        $email = config('users.demo.email');
 
         if (! $email) {
             return;
         }
 
-        $password = env('DEMO_PASSWORD', 'password');
+        $password = config('users.demo.password');
 
         User::updateOrCreate(
             ['email' => $email],
             [
-                'first_name' => env('DEMO_FIRST_NAME', 'Demo'),
-                'last_name' => env('DEMO_LAST_NAME', 'User'),
+                'first_name' => config('users.demo.first_name'),
+                'last_name' => config('users.demo.last_name'),
                 'password' => bcrypt($password),
-                'role' => env('DEMO_ROLE', 'basic'),
+                'role' => config('users.demo.role'),
                 'email_verified_at' => now(),
             ]
         );

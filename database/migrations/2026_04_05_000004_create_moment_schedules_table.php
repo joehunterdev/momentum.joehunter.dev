@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Frequency;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,10 +12,10 @@ return new class extends Migration
         Schema::create('moment_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('moment_id')->unique()->constrained()->cascadeOnDelete();
-            $table->enum('frequency', ['daily', 'weekly', 'custom', 'once'])->default('daily');
-            $table->json('days_of_week')->nullable(); // e.g. [1,2,3,4,5]
+            $table->enum('frequency', Frequency::values())->default(Frequency::Daily->value);
+            $table->json('days_of_week')->nullable();
             $table->time('preferred_time')->nullable();
-            $table->date('scheduled_date')->nullable(); // for frequency=once
+            $table->date('scheduled_date')->nullable();
             $table->timestamps();
         });
     }

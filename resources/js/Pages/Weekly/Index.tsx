@@ -1,8 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { WeeklyGrid, RecurrenceBar } from '@/features/weekly';
-import type { WeeklyPageProps } from '@/features/weekly';
+import { WeeklyGrid, FrequencyBar } from '@/features/weekly';
+import type { SchedulingState, WeeklyPageProps } from '@/features/weekly';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
 import { DateSelectorBar } from '@/shared/components/calendar';
@@ -12,15 +12,6 @@ import type { PageProps } from '@/types';
 interface Props extends PageProps, WeeklyPageProps { }
 
 type WeekMode = 'overview' | 'configure';
-
-interface SchedulingState {
-    date: string;
-    time: string;
-    frequency: 'daily' | 'weekly' | 'custom' | 'once';
-    daysOfWeek: number[];
-    name: string;
-    icon: string | null;
-}
 
 /** Convert JS getDay() (0=Sun) to ISO day (1=Mon … 7=Sun) */
 function jsToIsoDay(d: number): number {
@@ -68,7 +59,7 @@ export default function Index({ weekStart, config, days }: Props) {
         });
     }
 
-    function handleSchedulingChange(frequency: 'daily' | 'weekly' | 'custom' | 'once', daysOfWeek: number[]) {
+    function handleSchedulingChange(frequency: App.Enums.Frequency, daysOfWeek: number[]) {
         setScheduling((prev) => prev ? { ...prev, frequency, daysOfWeek } : null);
     }
 
@@ -122,7 +113,7 @@ export default function Index({ weekStart, config, days }: Props) {
         }, 0)
         : 0;
 
-    // ── Consistent day-pill labels for RecurrenceBar ──────────────────────────
+    // ── Consistent day-pill labels for FrequencyBar ──────────────────────────
     const dayLabels = WEEK_DAYS.map((d) => d.label);
 
     return (
@@ -154,7 +145,7 @@ export default function Index({ weekStart, config, days }: Props) {
             <Head title="Weekly" />
 
             {mode === 'configure' && scheduling && (
-                <RecurrenceBar
+                <FrequencyBar
                     time={scheduling.time}
                     frequency={scheduling.frequency}
                     daysOfWeek={scheduling.daysOfWeek}

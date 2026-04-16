@@ -24,7 +24,7 @@ class MomentSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::where('email', env('SUPER_ADMIN_EMAIL'))->firstOrFail();
+        $user = User::where('email', config('users.super_admin.email'))->firstOrFail();
 
         $dataPath = database_path('data/moments-data.json');
         $moments = json_decode(file_get_contents($dataPath), true);

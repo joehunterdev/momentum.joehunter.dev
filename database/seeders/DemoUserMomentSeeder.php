@@ -21,7 +21,7 @@ class DemoUserMomentSeeder extends Seeder
 {
     public function run(): void
     {
-        $email = env('DEMO_EMAIL');
+        $email = config('users.demo.email');
 
         if (! $email) {
             $this->command->warn('⚠️  DEMO_EMAIL not set in .env — skipping demo user moments');

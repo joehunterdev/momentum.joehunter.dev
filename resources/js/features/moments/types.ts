@@ -16,7 +16,7 @@ export interface MomentFormData {
     sort_order: number;
     is_active: boolean;
     // Schedule
-    frequency: 'daily' | 'weekly' | 'custom';
+    frequency: App.Enums.Frequency;
     days_of_week: number[];
     preferred_time: string;
     // Cue

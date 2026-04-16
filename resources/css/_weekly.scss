@@ -78,9 +78,9 @@ $border-light: #f3f4f6;
     }
 }
 
-// ─── Recurrence Bar ────────────────────────────────────────────────────────────
+// ─── Frequency Bar ────────────────────────────────────────────────────────────
 
-.recurrence-bar {
+.frequency-bar {
     display: flex;
     align-items: center;
     gap: 0.625rem;
@@ -158,7 +158,7 @@ $border-light: #f3f4f6;
             cursor: not-allowed;
         }
 
-        &:not(:disabled):hover:not(.recurrence-bar__day-pill--active) {
+        &:not(:disabled):hover:not(.frequency-bar__day-pill--active) {
             border-color: var(--mm-primary, #6366f1);
             color: var(--mm-primary, #6366f1);
         }

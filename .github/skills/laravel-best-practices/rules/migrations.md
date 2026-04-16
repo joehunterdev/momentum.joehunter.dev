@@ -2,7 +2,7 @@
 
 ## Generate Migrations with Artisan
 
-Always use `php artisan make:migration` for consistent naming and timestamps.
+Always use `php artisan make:migration` for consistent naming and timestamps. 
 
 Incorrect (manually created file):
 ```php
@@ -12,9 +12,16 @@ Incorrect (manually created file):
 Correct (Artisan-generated):
 ```bash
 php artisan make:migration create_posts_table
-php artisan make:migration add_slug_to_posts_table
-```
 
+```
+## Updateing Migrations with Artisan
+
+Always update and existing migration dont add to existing migration
+*** Dont do this **
+```bash
+php artisan make:add_posts_to_create_posts_table
+
+```
 ## Use `constrained()` for Foreign Keys
 
 Automatic naming and referential integrity.

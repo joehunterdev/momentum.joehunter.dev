@@ -1,14 +1,5 @@
-import type { WeekDay, WeeklyConfig } from '../types';
+import type { SchedulingState, WeekDay, WeeklyConfig } from '../types';
 import DaySection from './DaySection';
-
-interface SchedulingState {
-    date: string;
-    time: string;
-    frequency: 'daily' | 'weekly' | 'custom' | 'once';
-    daysOfWeek: number[];
-    name: string;
-    icon: string | null;
-}
 
 interface Props {
     days: WeekDay[];

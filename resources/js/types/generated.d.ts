@@ -73,6 +73,6 @@ declare namespace App {
         };
     }
     namespace Enums {
-        export type Frequency = "daily" | "weekly" | "custom";
+        export type Frequency = "daily" | "weekly" | "custom" | "once";
     }
 }

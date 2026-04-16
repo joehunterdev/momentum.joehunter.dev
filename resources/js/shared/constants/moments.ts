@@ -2,7 +2,7 @@
  * Shared constants for moment-related UI.
  * Used by ScheduleFields, ColorPicker, MomentForm, ConfigForm.
  */
-
+//TODO: unify with color palette in Tailwind config
 export const MOMENT_COLOR_PALETTE: string[] = [
     '#3B82F6', // blue
     '#8B5CF6', // purple
@@ -16,6 +16,7 @@ export const MOMENT_COLOR_PALETTE: string[] = [
     '#F97316', // orange
 ];
 
+// TODO: Can be in enums or dto laravel side
 export const WEEK_DAYS = [
     { label: 'M', value: 1, full: 'Monday' },
     { label: 'T', value: 2, full: 'Tuesday' },
@@ -26,6 +27,7 @@ export const WEEK_DAYS = [
     { label: 'S', value: 7, full: 'Sunday' },
 ] as const;
 
+//TODO: Could be refactored to enums
 export const SCHEDULE_FREQUENCIES = [
     { label: 'Daily', value: 'daily' },
     { label: 'Weekly', value: 'weekly' },

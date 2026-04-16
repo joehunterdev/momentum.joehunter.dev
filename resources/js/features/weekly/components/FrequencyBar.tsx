@@ -1,20 +1,18 @@
 import { WEEK_DAYS } from '@/shared/constants/moments';
 
-type Frequency = 'daily' | 'weekly' | 'custom' | 'once';
-
 interface Props {
     time: string;
-    frequency: Frequency;
+    frequency: App.Enums.Frequency;
     daysOfWeek: number[];
     /** Optional override labels for day pills — defaults to WEEK_DAYS constants */
     dayLabels?: string[];
     conflictCount?: number;
-    onChange: (frequency: Frequency, days: number[]) => void;
+    onChange: (frequency: App.Enums.Frequency, days: number[]) => void;
     onConfirm: () => void;
     onCancel: () => void;
 }
 
-const FREQ_OPTIONS: { label: string; value: Frequency }[] = [
+const FREQ_OPTIONS: { label: string; value: App.Enums.Frequency }[] = [
     { label: 'Daily', value: 'daily' },
     { label: 'Weekdays', value: 'weekly' },
     { label: 'Custom', value: 'custom' },
@@ -24,7 +22,7 @@ const FREQ_OPTIONS: { label: string; value: Frequency }[] = [
 const ALL_DAYS = WEEK_DAYS.map((d) => d.value) as number[];
 const WEEKDAYS = [1, 2, 3, 4, 5];
 
-export default function RecurrenceBar({
+export default function FrequencyBar({
     time,
     frequency,
     daysOfWeek,
@@ -33,7 +31,7 @@ export default function RecurrenceBar({
     onConfirm,
     onCancel,
 }: Props) {
-    function handleFrequency(freq: Frequency) {
+    function handleFrequency(freq: App.Enums.Frequency) {
         if (freq === 'daily') {
             onChange('daily', ALL_DAYS);
         } else if (freq === 'weekly') {
@@ -54,17 +52,17 @@ export default function RecurrenceBar({
     }
 
     return (
-        <div className="recurrence-bar">
-            <span className="recurrence-bar__time">{time}</span>
+        <div className="frequency-bar">
+            <span className="frequency-bar__time">{time}</span>
 
-            <div className="recurrence-bar__freq-group" role="group" aria-label="Frequency">
+            <div className="frequency-bar__freq-group" role="group" aria-label="Frequency">
                 {FREQ_OPTIONS.map((opt) => (
                     <button
                         key={opt.value}
                         type="button"
                         className={[
-                            'recurrence-bar__freq-btn',
-                            frequency === opt.value ? 'recurrence-bar__freq-btn--active' : '',
+                            'frequency-bar__freq-btn',
+                            frequency === opt.value ? 'frequency-bar__freq-btn--active' : '',
                         ].filter(Boolean).join(' ')}
                         onClick={() => handleFrequency(opt.value)}
                     >
@@ -73,14 +71,14 @@ export default function RecurrenceBar({
                 ))}
             </div>
 
-            <div className="recurrence-bar__days" role="group" aria-label="Days of week" aria-hidden={frequency === 'once'} style={frequency === 'once' ? { display: 'none' } : undefined}>
+            <div className="frequency-bar__days" role="group" aria-label="Days of week" aria-hidden={frequency === 'once'} style={frequency === 'once' ? { display: 'none' } : undefined}>
                 {WEEK_DAYS.map((day) => (
                     <button
                         key={day.value}
                         type="button"
                         className={[
-                            'recurrence-bar__day-pill',
-                            daysOfWeek.includes(day.value) ? 'recurrence-bar__day-pill--active' : '',
+                            'frequency-bar__day-pill',
+                            daysOfWeek.includes(day.value) ? 'frequency-bar__day-pill--active' : '',
                         ].filter(Boolean).join(' ')}
                         aria-label={day.full}
                         aria-pressed={daysOfWeek.includes(day.value)}
@@ -93,16 +91,16 @@ export default function RecurrenceBar({
             </div>
 
             {conflictCount > 0 && (
-                <span className="recurrence-bar__conflicts" title={`${conflictCount} time slot(s) already have a moment`}>
+                <span className="frequency-bar__conflicts" title={`${conflictCount} time slot(s) already have a moment`}>
                     ⚠️ {conflictCount} conflict{conflictCount > 1 ? 's' : ''}
                 </span>
             )}
 
-            <div className="recurrence-bar__actions">
-                <button type="button" className="recurrence-bar__cancel" onClick={onCancel}>
+            <div className="frequency-bar__actions">
+                <button type="button" className="frequency-bar__cancel" onClick={onCancel}>
                     ✕
                 </button>
-                <button type="button" className="recurrence-bar__confirm" onClick={onConfirm}>
+                <button type="button" className="frequency-bar__confirm" onClick={onConfirm}>
                     ✓ Confirm
                 </button>
             </div>
