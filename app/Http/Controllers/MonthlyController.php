@@ -22,7 +22,7 @@ class MonthlyController extends Controller
         $today = Carbon::today();
 
         $monthAnchor = $request->filled('month')
-            ? Carbon::parse($request->input('month').'-01')
+            ? Carbon::parse($request->input('month') . '-01')
             : $today->copy()->startOfMonth();
 
         $monthStart = $monthAnchor->copy()->startOfMonth();
@@ -43,7 +43,7 @@ class MonthlyController extends Controller
             ->where('is_active', true)
             ->with([
                 'schedule',
-                'instances' => fn ($q) => $q->whereBetween('date', [
+                'instances' => fn($q) => $q->whereBetween('date', [
                     $gridStart->toDateString(),
                     $gridEnd->toDateString(),
                 ]),
@@ -59,7 +59,7 @@ class MonthlyController extends Controller
             $isToday = $cursor->equalTo($today);
             $isCurrentMonth = $cursor->month === $monthStart->month;
 
-            $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($cursor));
+            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($cursor));
 
             $days[] = $this->calendar->buildMonthDayData(
                 date: $cursor,

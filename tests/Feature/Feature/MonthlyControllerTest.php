@@ -23,13 +23,14 @@ class MonthlyControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('monthly'))
             ->assertOk()
-            ->assertInertia(fn ($page) => $page
-                ->component('Monthly/Index')
-                ->has('month')
-                ->has('monthStart')
-                ->has('monthEnd')
-                ->has('days')
-                ->has('config')
+            ->assertInertia(
+                fn($page) => $page
+                    ->component('Monthly/Index')
+                    ->has('month')
+                    ->has('monthStart')
+                    ->has('monthEnd')
+                    ->has('days')
+                    ->has('config')
             );
     }
 
@@ -40,11 +41,12 @@ class MonthlyControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('monthly', ['month' => '2026-03']))
             ->assertOk()
-            ->assertInertia(fn ($page) => $page
-                ->component('Monthly/Index')
-                ->where('month', '2026-03')
-                ->where('monthStart', '2026-03-01')
-                ->where('monthEnd', '2026-03-31')
+            ->assertInertia(
+                fn($page) => $page
+                    ->component('Monthly/Index')
+                    ->where('month', '2026-03')
+                    ->where('monthStart', '2026-03-01')
+                    ->where('monthEnd', '2026-03-31')
             );
     }
 
@@ -56,11 +58,12 @@ class MonthlyControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('monthly', ['month' => '2026-05']))
             ->assertOk()
-            ->assertInertia(fn ($page) => $page
-                ->component('Monthly/Index')
-                ->where('monthStart', '2026-05-01')
-                ->where(fn ($props) => collect($props['days'])->first()['date'] === '2026-04-27')
-                ->where(fn ($props) => ! collect($props['days'])->first()['isCurrentMonth'])
+            ->assertInertia(
+                fn($page) => $page
+                    ->component('Monthly/Index')
+                    ->where('monthStart', '2026-05-01')
+                    ->where(fn($props) => collect($props['days'])->first()['date'] === '2026-04-27')
+                    ->where(fn($props) => ! collect($props['days'])->first()['isCurrentMonth'])
             );
     }
 
@@ -71,18 +74,21 @@ class MonthlyControllerTest extends TestCase
         $this->actingAs($user)
             ->get(route('monthly'))
             ->assertOk()
-            ->assertInertia(fn ($page) => $page
-                ->component('Monthly/Index')
-                ->has('days.0', fn ($day) => $day
-                    ->has('date')
-                    ->has('dayName')
-                    ->has('isToday')
-                    ->has('isWeekend')
-                    ->has('isCurrentMonth')
-                    ->has('moments')
-                    ->has('completedCount')
-                    ->has('totalCount')
-                )
+            ->assertInertia(
+                fn($page) => $page
+                    ->component('Monthly/Index')
+                    ->has(
+                        'days.0',
+                        fn($day) => $day
+                            ->has('date')
+                            ->has('dayName')
+                            ->has('isToday')
+                            ->has('isWeekend')
+                            ->has('isCurrentMonth')
+                            ->has('moments')
+                            ->has('completedCount')
+                            ->has('totalCount')
+                    )
             );
     }
 }

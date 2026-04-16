@@ -25,7 +25,7 @@ $slot-h: 5rem;
 $border: #e5e7eb;
 $border-light: #f3f4f6;
 
-// ─── Weekly Header (DateSelectorBar + mode toggle) ────────────────────────────
+// ─── Weekly Header (CalendarNav + mode toggle) ───────────────────────────────
 
 .weekly-header {
     display: flex;
@@ -36,7 +36,7 @@ $border-light: #f3f4f6;
     gap: 0.75rem;
     overflow: hidden;
 
-    // The DateSelectorBar takes all remaining space but must not overflow
+    // CalendarNav takes all remaining space but must not overflow
     > :first-child {
         flex: 1 1 0;
         min-width: 0;

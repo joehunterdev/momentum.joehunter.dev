@@ -1,19 +1,39 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import { CalendarNav } from '@/shared/components/calendar';
+import { MonthlyGrid } from '@/features/monthly';
+import { addMonths, format, parseISO, subMonths } from 'date-fns';
 import type { PageProps } from '@/types';
 
-interface Props extends PageProps, App.Data.MonthlyPageData {}
+interface Props extends PageProps, App.Data.MonthlyPageData { }
 
-export default function Index({ month, monthStart, monthEnd, days, config }: Props) {
+export default function Index({ month, monthStart, days }: Props) {
+    const current = parseISO(monthStart);
+    const prev = subMonths(current, 1);
+    const next = addMonths(current, 1);
+
+    function handleDayClick(date: string) {
+        router.visit(route('daily', { date }));
+    }
+
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout
+            header={
+                <CalendarNav
+                    prevLabel={format(prev, 'MMMM yyyy')}
+                    currentLabel={format(current, 'MMMM yyyy')}
+                    nextLabel={format(next, 'MMMM yyyy')}
+                    prevParam={{ month: format(prev, 'yyyy-MM') }}
+                    nextParam={{ month: format(next, 'yyyy-MM') }}
+                    routeName="monthly"
+                />
+            }
+        >
             <Head title="Monthly" />
 
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
-                    <p className="text-center text-gray-400 py-12">
-                        Monthly view coming soon — {month}
-                    </p>
+                    <MonthlyGrid days={days} onDayClick={handleDayClick} />
                 </div>
             </div>
         </AuthenticatedLayout>
