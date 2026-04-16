@@ -5,6 +5,7 @@ use App\Http\Controllers\ContentController;
 use App\Http\Controllers\DailyController;
 use App\Http\Controllers\MomentController;
 use App\Http\Controllers\MomentInstanceController;
+use App\Http\Controllers\MonthlyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WeeklyController;
 use Illuminate\Support\Facades\Route;
@@ -66,6 +67,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ─── App ─────────────────────────────────────────────────────────────────
     Route::get('/daily', [DailyController::class, 'index'])->name('daily');
     Route::get('/weekly', [WeeklyController::class, 'index'])->name('weekly');
+    Route::get('/monthly', [MonthlyController::class, 'index'])->name('monthly');
 
     Route::resource('moments', MomentController::class)
         ->only(['create', 'store', 'edit', 'update', 'destroy']);
@@ -82,4 +84,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

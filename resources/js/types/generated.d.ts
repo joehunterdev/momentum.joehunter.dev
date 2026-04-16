@@ -30,6 +30,30 @@ declare namespace App {
             days_of_week: number[] | null;
             preferred_time: string | null;
         };
+        export type MonthlyDayData = {
+            date: string;
+            dayName: string;
+            isToday: boolean;
+            isWeekend: boolean;
+            isCurrentMonth: boolean;
+            moments: App.Data.MonthlyMomentData[];
+            completedCount: number;
+            totalCount: number;
+        };
+        export type MonthlyMomentData = {
+            id: number;
+            name: string;
+            icon: string | null;
+            color: string | null;
+            status: string | null;
+        };
+        export type MonthlyPageData = {
+            month: string;
+            monthStart: string;
+            monthEnd: string;
+            config: App.Data.UserConfigData;
+            days: App.Data.MonthlyDayData[];
+        };
         export type RewardData = {
             description: string | null;
             temptation_bundle: string | null;

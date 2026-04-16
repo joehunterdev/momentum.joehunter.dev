@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Data\MonthlyDayData;
+use App\Data\MonthlyMomentData;
 use App\Data\SlotMomentData;
 use App\Data\TimeSlotData;
 use App\Data\WeekDayData;
@@ -184,6 +186,56 @@ class CalendarService
             isToday: $isToday,
             isWeekend: $date->isWeekend(),
             slots: $daySlots,
+        );
+    }
+
+    /**
+     * Build a MonthlyDayData for a single calendar date (no time slots — just moment summaries).
+     *
+     * @param  Collection<int, Moment>  $dayMoments
+     */
+    public function buildMonthDayData(
+        Carbon $date,
+        Collection $dayMoments,
+        bool $isPast,
+        bool $isToday,
+        bool $isCurrentMonth,
+        Carbon $today,
+        int $intervalMinutes = 20,
+    ): MonthlyDayData {
+        $dateStr = $date->toDateString();
+
+        $moments = $dayMoments->map(function (Moment $m) use ($dateStr, $isPast, $isToday) {
+            $instance = $m->instances->first(fn ($i) => $i->date->toDateString() === $dateStr);
+
+            $status = match (true) {
+                $instance?->completed_at !== null => 'completed',
+                $isPast => 'missed',
+                $isToday => 'pending',
+                default => null,
+            };
+
+            return new MonthlyMomentData(
+                id: $m->id,
+                name: $m->name,
+                icon: $m->icon,
+                color: $m->color,
+                status: $status,
+            );
+        })->values()->all();
+
+        $completedCount = collect($moments)->filter(fn ($m) => $m->status === 'completed')->count();
+        $totalCount = count($moments);
+
+        return new MonthlyDayData(
+            date: $dateStr,
+            dayName: $date->format('l'),
+            isToday: $isToday,
+            isWeekend: $date->isWeekend(),
+            isCurrentMonth: $isCurrentMonth,
+            moments: $moments,
+            completedCount: $completedCount,
+            totalCount: $totalCount,
         );
     }
 }
