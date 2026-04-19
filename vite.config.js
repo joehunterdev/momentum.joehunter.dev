@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
     server: {
-        host: 'momentum.joehunter.local',
+        host: 'momentum.joehunter.localhost',
     },
     plugins: [
         laravel({

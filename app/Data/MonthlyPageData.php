@@ -15,5 +15,7 @@ class MonthlyPageData extends Data
         public UserConfigData $config,
         /** @var MonthlyDayData[] */
         public array $days,
+        /** @var MonthlyScheduleRowData[] */
+        public array $scheduleRows,
     ) {}
 }

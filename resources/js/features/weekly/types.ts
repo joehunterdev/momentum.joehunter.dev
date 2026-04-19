@@ -12,7 +12,7 @@ export type WeeklyPageProps = App.Data.WeeklyPageData;
 
 export interface SchedulingState {
     date: string;
-    time: string;
+    time: string | null;
     frequency: App.Enums.Frequency;
     daysOfWeek: number[];
     name: string;

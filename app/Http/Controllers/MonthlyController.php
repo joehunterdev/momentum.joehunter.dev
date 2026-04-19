@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\MomentData;
 use App\Data\MonthlyPageData;
+use App\Data\MonthlyScheduleRowData;
 use App\Data\UserConfigData;
 use App\Models\Moment;
 use App\Models\UserConfig;
@@ -22,7 +24,7 @@ class MonthlyController extends Controller
         $today = Carbon::today();
 
         $monthAnchor = $request->filled('month')
-            ? Carbon::parse($request->input('month') . '-01')
+            ? Carbon::parse($request->input('month').'-01')
             : $today->copy()->startOfMonth();
 
         $monthStart = $monthAnchor->copy()->startOfMonth();
@@ -43,7 +45,7 @@ class MonthlyController extends Controller
             ->where('is_active', true)
             ->with([
                 'schedule',
-                'instances' => fn($q) => $q->whereBetween('date', [
+                'instances' => fn ($q) => $q->whereBetween('date', [
                     $gridStart->toDateString(),
                     $gridEnd->toDateString(),
                 ]),
@@ -59,7 +61,7 @@ class MonthlyController extends Controller
             $isToday = $cursor->equalTo($today);
             $isCurrentMonth = $cursor->month === $monthStart->month;
 
-            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($cursor));
+            $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($cursor));
 
             $days[] = $this->calendar->buildMonthDayData(
                 date: $cursor,
@@ -73,6 +75,35 @@ class MonthlyController extends Controller
             $cursor->addDay();
         }
 
+        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $scheduleRows = [];
+
+        foreach (range(1, 7) as $iso) {
+            $rowMoments = $moments->filter(function (Moment $m) use ($iso) {
+                $schedule = $m->schedule;
+
+                if (! $schedule) {
+                    return true; // no schedule = daily
+                }
+
+                return match ($schedule->frequency) {
+                    'daily' => true,
+                    'weekly' => $iso >= 1 && $iso <= 5,
+                    'custom' => in_array($iso, $schedule->days_of_week ?? [], strict: true),
+                    default => false,
+                };
+            })
+                ->map(fn (Moment $m) => MomentData::fromModel($m))
+                ->values()
+                ->all();
+
+            $scheduleRows[] = new MonthlyScheduleRowData(
+                isoDayNumber: $iso,
+                dayLabel: $dayNames[$iso - 1],
+                moments: $rowMoments,
+            );
+        }
+
         $pageData = new MonthlyPageData(
             month: $monthStart->format('Y-m'),
             monthStart: $monthStart->toDateString(),
@@ -84,6 +115,7 @@ class MonthlyController extends Controller
                 office_end: substr($officeEnd, 0, 5),
             ),
             days: $days,
+            scheduleRows: $scheduleRows,
         );
 
         return Inertia::render('Monthly/Index', $pageData);

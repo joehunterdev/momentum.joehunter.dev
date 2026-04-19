@@ -31,6 +31,7 @@ class MonthlyControllerTest extends TestCase
                     ->has('monthEnd')
                     ->has('days')
                     ->has('config')
+                    ->has('scheduleRows')
             );
     }
 
@@ -62,8 +63,13 @@ class MonthlyControllerTest extends TestCase
                 fn($page) => $page
                     ->component('Monthly/Index')
                     ->where('monthStart', '2026-05-01')
-                    ->where(fn($props) => collect($props['days'])->first()['date'] === '2026-04-27')
-                    ->where(fn($props) => ! collect($props['days'])->first()['isCurrentMonth'])
+                    ->has(
+                        'days',
+                        fn($days) => $days
+                            ->where('date', '2026-04-27')
+                            ->where('isCurrentMonth', false)
+                            ->etc()
+                    )
             );
     }
 
@@ -88,6 +94,34 @@ class MonthlyControllerTest extends TestCase
                             ->has('moments')
                             ->has('completedCount')
                             ->has('totalCount')
+                    )
+            );
+    }
+
+    public function test_monthly_schedule_rows_have_correct_shape(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('monthly'))
+            ->assertOk()
+            ->assertInertia(
+                fn($page) => $page
+                    ->component('Monthly/Index')
+                    ->has('scheduleRows', 7)
+                    ->has(
+                        'scheduleRows.0',
+                        fn($row) => $row
+                            ->where('isoDayNumber', 1)
+                            ->where('dayLabel', 'Monday')
+                            ->has('moments')
+                    )
+                    ->has(
+                        'scheduleRows.6',
+                        fn($row) => $row
+                            ->where('isoDayNumber', 7)
+                            ->where('dayLabel', 'Sunday')
+                            ->has('moments')
                     )
             );
     }

@@ -53,6 +53,12 @@ declare namespace App {
             monthEnd: string;
             config: App.Data.UserConfigData;
             days: App.Data.MonthlyDayData[];
+            scheduleRows: App.Data.MonthlyScheduleRowData[];
+        };
+        export type MonthlyScheduleRowData = {
+            isoDayNumber: number;
+            dayLabel: string;
+            moments: App.Data.MomentData[];
         };
         export type RewardData = {
             description: string | null;

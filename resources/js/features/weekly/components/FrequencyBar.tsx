@@ -1,7 +1,7 @@
 import { WEEK_DAYS } from '@/shared/constants/moments';
 
 interface Props {
-    time: string;
+    time?: string | null;
     frequency: App.Enums.Frequency;
     daysOfWeek: number[];
     /** Optional override labels for day pills — defaults to WEEK_DAYS constants */
@@ -53,7 +53,7 @@ export default function FrequencyBar({
 
     return (
         <div className="frequency-bar">
-            <span className="frequency-bar__time">{time}</span>
+            {time && <span className="frequency-bar__time">{time}</span>}
 
             <div className="frequency-bar__freq-group" role="group" aria-label="Frequency">
                 {FREQ_OPTIONS.map((opt) => (

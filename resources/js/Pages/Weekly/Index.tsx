@@ -51,12 +51,15 @@ export default function Index({ weekStart, config, days }: Props) {
 
     // ── Schedule-first creation flow ──────────────────────────────────────────
     function handleStartScheduling(date: string, time: string) {
+        const clickedIso = jsToIsoDay(new Date(date).getDay());
+        const isWeekday = clickedIso >= 1 && clickedIso <= 5;
+
         setMode('configure');
         setScheduling({
             date,
             time,
             frequency: 'weekly',
-            daysOfWeek: [1, 2, 3, 4, 5], // default: weekdays
+            daysOfWeek: isWeekday ? [1, 2, 3, 4, 5] : [clickedIso], // include clicked day
             name: '',
             icon: null,
         });

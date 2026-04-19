@@ -667,15 +667,15 @@ createServer((page) => createInertiaApp({
 		"./Pages/Content/Show.tsx": () => import("./assets/Show-B_PagCOZ.js"),
 		"./Pages/Daily/Index.tsx": () => import("./assets/Index-SFjGmi-x.js"),
 		"./Pages/Dashboard.tsx": () => import("./assets/Dashboard-DO-RIcUz.js"),
-		"./Pages/Moments/Create.tsx": () => import("./assets/Create-DqzrRe6o.js"),
-		"./Pages/Moments/Edit.tsx": () => import("./assets/Edit-BVdEBax7.js"),
-		"./Pages/Monthly/Index.tsx": () => import("./assets/Index-a3ih3CvJ.js"),
-		"./Pages/Profile/Edit.tsx": () => import("./assets/Edit-ByGvtpcH.js"),
-		"./Pages/Profile/Partials/DeleteUserForm.tsx": () => import("./assets/DeleteUserForm-BCceXCHE.js"),
-		"./Pages/Profile/Partials/UpdatePasswordForm.tsx": () => import("./assets/UpdatePasswordForm-DK8JRcmM.js"),
-		"./Pages/Profile/Partials/UpdateProfileInformationForm.tsx": () => import("./assets/UpdateProfileInformationForm-CcCPTonr.js"),
-		"./Pages/Weekly/Index.tsx": () => import("./assets/Index-CEIxazsw.js"),
-		"./Pages/Welcome.tsx": () => import("./assets/Welcome-Be-6Qhid.js")
+		"./Pages/Moments/Create.tsx": () => import("./assets/Create-ki7Cjlnh.js"),
+		"./Pages/Moments/Edit.tsx": () => import("./assets/Edit-BP6ph9BP.js"),
+		"./Pages/Monthly/Index.tsx": () => import("./assets/Index-BkT7UIxM.js"),
+		"./Pages/Profile/Edit.tsx": () => import("./assets/Edit-D8Oc6A5U.js"),
+		"./Pages/Profile/Partials/DeleteUserForm.tsx": () => import("./assets/DeleteUserForm-Cy1nI77m.js"),
+		"./Pages/Profile/Partials/UpdatePasswordForm.tsx": () => import("./assets/UpdatePasswordForm-bEnN9QhG.js"),
+		"./Pages/Profile/Partials/UpdateProfileInformationForm.tsx": () => import("./assets/UpdateProfileInformationForm-BMIQ37a7.js"),
+		"./Pages/Weekly/Index.tsx": () => import("./assets/Index-Czr4S-nM.js"),
+		"./Pages/Welcome.tsx": () => import("./assets/Welcome-BgldsP2c.js")
 	})),
 	setup: ({ App, props }) => {
 		global.route = (name, params, absolute) => B(name, params, absolute, {

@@ -589,7 +589,7 @@
     width: 2.5rem;
     height: 2.5rem;
     font-size: 1.25rem;
-    border-radius: 0.375rem;
+    border-radius: 0;
     border: 2px solid transparent;
     background: none;
     cursor: pointer;
@@ -689,7 +689,7 @@
     }
 
     &--prev {
-      border-radius: 0.375rem 0 0 0.375rem;
+      border-radius: 0;
       border-right: none;
 
       .calendar-nav__label::before {
@@ -698,7 +698,7 @@
     }
 
     &--next {
-      border-radius: 0 0.375rem 0.375rem 0;
+      border-radius: 0;
       border-left: none;
 
       .calendar-nav__label::after {
@@ -748,7 +748,7 @@
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    border-radius: 0.375rem;
+    border-radius: 0;
     color: #9ca3af;
     transition: color 0.12s, background 0.12s;
 

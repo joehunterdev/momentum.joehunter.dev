@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
 import type { SlotMoment } from '../types';
 import SlotMomentIcon from './SlotMomentIcon';
@@ -20,7 +21,32 @@ export default function SlotMomentCard({
     onGhostIconChange,
 }: Props) {
     const [pickerOpen, setPickerOpen] = useState(false);
+    const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
     const iconBtnRef = useRef<HTMLButtonElement>(null);
+
+    useEffect(() => {
+        if (!pickerOpen || !iconBtnRef.current) { return; }
+        const rect = iconBtnRef.current.getBoundingClientRect();
+        const pickerWidth = 224; // 14rem at 16px
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const top = spaceBelow >= 260 ? rect.bottom + 6 : rect.top - 266;
+        let left = rect.left;
+        if (left + pickerWidth > window.innerWidth - 8) {
+            left = window.innerWidth - pickerWidth - 8;
+        }
+        setPickerStyle({ position: 'fixed', top, left, width: pickerWidth, zIndex: 9999 });
+    }, [pickerOpen]);
+
+    useEffect(() => {
+        if (!pickerOpen) { return; }
+        const close = (e: MouseEvent) => {
+            if (iconBtnRef.current && !iconBtnRef.current.contains(e.target as Node)) {
+                setPickerOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', close);
+        return () => document.removeEventListener('mousedown', close);
+    }, [pickerOpen]);
 
     const cardCls = [
         'slot-moment-card',
@@ -46,8 +72,8 @@ export default function SlotMomentCard({
                             {moment.icon ?? '+'}
                         </button>
 
-                        {pickerOpen && (
-                            <div className="ghost-icon-picker" role="dialog" aria-label="Pick an icon">
+                        {pickerOpen && createPortal(
+                            <div className="ghost-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
                                 <div className="ghost-icon-picker__grid">
                                     {MOMENT_ICONS.map((opt) => (
                                         <button
@@ -67,7 +93,8 @@ export default function SlotMomentCard({
                                         </button>
                                     ))}
                                 </div>
-                            </div>
+                            </div>,
+                            document.body,
                         )}
                     </div>
 
