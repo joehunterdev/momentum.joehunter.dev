@@ -10,18 +10,18 @@
   --mm-danger: #EF4444;
   --mm-warning: #F59E0B;
 
-  // ─── Surfaces (dark mode default) ───
-  --mm-bg: #0F172A;
-  --mm-bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
-  --mm-surface: #1E293B;
-  --mm-surface-hover: #334155;
-  --mm-surface-border: rgba(99, 102, 241, 0.15);
-  --mm-glass: rgba(30, 41, 59, 0.7);
+  // ─── Surfaces ───
+  --mm-bg: #F1F5F9;
+  --mm-bg-gradient: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #F8FAFC 100%);
+  --mm-surface: #FFFFFF;
+  --mm-surface-hover: #F1F5F9;
+  --mm-surface-border: rgba(99, 102, 241, 0.12);
+  --mm-glass: rgba(255, 255, 255, 0.85);
 
   // ─── Text ───
-  --mm-text: #F1F5F9;
-  --mm-text-muted: #94A3B8;
-  --mm-text-dimmed: #64748B;
+  --mm-text: #0F172A;
+  --mm-text-muted: #475569;
+  --mm-text-dimmed: #94A3B8;
 
   // ─── Streak ───
   --mm-streak-color: #F59E0B;
@@ -38,8 +38,8 @@
   --mm-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   // ─── Shadows ───
-  --mm-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --mm-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --mm-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --mm-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --mm-shadow-glow: 0 4px 20px var(--mm-accent-glow);
 
   // ─── Transitions ───
@@ -48,17 +48,17 @@
   --mm-duration-slow: 400ms;
 }
 
-// ─── Light mode override (post-MVP) ───
-[data-theme="light"] {
-  --mm-bg: #F8FAFC;
-  --mm-bg-gradient: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #F8FAFC 100%);
-  --mm-surface: #FFFFFF;
-  --mm-surface-hover: #F1F5F9;
-  --mm-surface-border: rgba(99, 102, 241, 0.1);
-  --mm-glass: rgba(255, 255, 255, 0.8);
-  --mm-text: #0F172A;
-  --mm-text-muted: #475569;
-  --mm-text-dimmed: #94A3B8;
-  --mm-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --mm-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+// ─── Dark mode (future) ───
+[data-theme="dark"] {
+  --mm-bg: #0F172A;
+  --mm-bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+  --mm-surface: #1E293B;
+  --mm-surface-hover: #334155;
+  --mm-surface-border: rgba(99, 102, 241, 0.15);
+  --mm-glass: rgba(30, 41, 59, 0.7);
+  --mm-text: #F1F5F9;
+  --mm-text-muted: #94A3B8;
+  --mm-text-dimmed: #64748B;
+  --mm-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --mm-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
 }

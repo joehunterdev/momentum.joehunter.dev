@@ -1,5 +1,29 @@
 // _components.scss — reusable component patterns
 
+// ─── Layout root, nav & header ───
+.mm-layout-root {
+  background: var(--mm-bg-gradient);
+  color: var(--mm-text);
+}
+
+.mm-layout-nav {
+  background: var(--mm-surface);
+  border-bottom: 1px solid var(--mm-surface-border);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.mm-layout-header {
+  background: var(--mm-surface);
+  border-bottom: 1px solid var(--mm-surface-border);
+  box-shadow: var(--mm-shadow-sm);
+
+  // Inner padding wrapper (Tailwind class still applies inside)
+  .mx-auto {
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+}
+
 // ─── Glass card ───
 .mm-card {
   background: var(--mm-glass);

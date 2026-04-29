@@ -15,3 +15,129 @@
     transition: width var(--mm-duration-slow) var(--mm-ease);
   }
 }
+
+// ─── Moments index page ───────────────────────────────────────────────────────
+
+.moments-index-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--mm-text);
+    margin: 0;
+  }
+
+  &__create {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: var(--mm-primary);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background var(--mm-duration) var(--mm-ease);
+
+    &:hover {
+      background: var(--mm-primary-dark);
+    }
+  }
+}
+
+.moments-index-empty {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--mm-text-muted);
+
+  &__text {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+
+  &__link {
+    color: var(--mm-primary-light);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      color: var(--mm-primary);
+    }
+  }
+}
+
+.moments-index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  &__item {
+    background: var(--mm-glass);
+    border: 1px solid var(--mm-surface-border);
+    backdrop-filter: blur(12px);
+    transition: border-color var(--mm-duration) var(--mm-ease),
+      background var(--mm-duration) var(--mm-ease);
+
+    &:hover {
+      border-color: var(--mm-primary);
+      background: var(--mm-surface-hover);
+    }
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    font-size: 1.375rem;
+    background: var(--mm-surface);
+    border: 1px solid var(--mm-surface-border);
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--mm-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__schedule {
+    font-size: 0.8125rem;
+    color: var(--mm-text-muted);
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    color: var(--mm-text-dimmed);
+    line-height: 1;
+  }
+}
