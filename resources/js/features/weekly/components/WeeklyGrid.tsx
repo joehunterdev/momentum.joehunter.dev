@@ -1,4 +1,4 @@
-import type { SchedulingState, WeekDay, WeeklyConfig } from '../types';
+import type { WeekDay, WeeklyConfig } from '../types';
 import { computeWindowStart } from '@/shared/components/calendar';
 import DaySection from './DaySection';
 
@@ -7,14 +7,10 @@ const VISIBLE_SLOTS = 6;
 interface Props {
     days: WeekDay[];
     config: WeeklyConfig;
-    mode: 'overview' | 'configure';
-    scheduling: SchedulingState | null;
-    onStartScheduling: (date: string, time: string) => void;
-    onGhostNameChange: (name: string) => void;
-    onGhostIconChange: (icon: string | null) => void;
+    onAddMoment: (date: string, time: string) => void;
 }
 
-export default function WeeklyGrid({ days, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange }: Props) {
+export default function WeeklyGrid({ days, config, onAddMoment }: Props) {
     const allTimes = Array.from(
         new Set(days.flatMap((d) => d.slots.map((s) => s.time).filter((t) => t.endsWith(':00'))))
     ).sort();
@@ -27,11 +23,7 @@ export default function WeeklyGrid({ days, config, mode, scheduling, onStartSche
                     key={day.date}
                     day={day}
                     config={config}
-                    mode={mode}
-                    scheduling={scheduling}
-                    onStartScheduling={onStartScheduling}
-                    onGhostNameChange={onGhostNameChange}
-                    onGhostIconChange={onGhostIconChange}
+                    onAddMoment={onAddMoment}
                     windowStart={windowStart}
                 />
             ))}
