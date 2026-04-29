@@ -42,7 +42,7 @@ class TestUserMomentSeeder extends Seeder
 
         $count = $this->importer->import(
             user: $user,
-            jsonPath: database_path('data/moments-data.json'),
+            jsonPath: database_path('data/my-moments-data.json'),
         );
 
         $this->command->info("✅  Test user moments seeded: {$count} moments for {$email}");

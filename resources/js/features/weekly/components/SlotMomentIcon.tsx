@@ -11,7 +11,6 @@ interface Props {
 }
 
 export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress, isStatic = false }: Props) {
-    const isCompleted = moment.status === 'completed';
     const isPast = moment.status === 'completed' || moment.status === 'missed';
 
     // 0 = frictionless (perfect habit), 1 = maximum resistance (new/failing habit)
@@ -19,7 +18,7 @@ export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress
         ? Math.max(0, Math.min(1, 1 - moment.consistency / 100))
         : 1;
 
-    const { dragX, dragProgress, isDragging, isDone, handlers } = useSwipeComplete({
+    const { dragX, dragProgress: _dragProgress, holdProgress, isDragging, isDone, handlers } = useSwipeComplete({
         onComplete: () => onToggle(moment.id, moment.instance_id, date),
         onProgressChange: onSwipeProgress,
         resistanceFactor: isPast ? 0.5 : resistanceFactor,
@@ -32,12 +31,11 @@ export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress
 
     const swipeClass = !isStatic && (isDone
         ? 'slot-icon--done'
-        : isDragging || dragX > 0
-            ? 'slot-icon--swiping'
-            : '');
-
-    // Hue-rotate from neutral → green (120deg) as drag progresses
-    const hueRotate = dragProgress > 0 ? `hue-rotate(${dragProgress * 120}deg)` : undefined;
+        : holdProgress > 0
+            ? 'slot-icon--holding'
+            : isDragging || dragX > 0
+                ? 'slot-icon--swiping'
+                : '');
 
     return (
         <div
@@ -51,8 +49,8 @@ export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress
                     ? undefined
                     : {
                         transform: `translateX(${dragX}px)`,
-                        filter: hueRotate,
-                        cursor: 'grab',
+                        cursor: isDragging ? 'grabbing' : 'grab',
+                        ['--hold-progress' as string]: holdProgress,
                     }
                 }
                 {...(!isStatic ? handlers : {})}

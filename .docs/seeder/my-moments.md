@@ -16,7 +16,6 @@ Be able to add reminders when things are coming up  02/03/26 so this is my vehic
 i also want a two week reminder
 To pay taxes
 3 de junio - 30 de junio 2026: Atención presencial en oficinas (previa cita desde el 29 de mayo).
-
 Pay day roughly last thurs of the month
 
 

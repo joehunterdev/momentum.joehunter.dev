@@ -899,11 +899,13 @@ $border-light: #f3f4f6;
     border-radius: 0;
     font-size: 1.125rem;
     border: 2px solid transparent;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: box-shadow 0.15s ease; // NO transform transition — kills drag smoothness
     position: relative;
     z-index: 1;
     touch-action: pan-y; // allow vertical scroll, intercept horizontal drag
     user-select: none;
+    // Suppress transform transition during drag — applied only on non-drag states
+    will-change: transform;
 
     &:hover {
         transform: scale(1.05);
@@ -933,12 +935,34 @@ $border-light: #f3f4f6;
     }
 
     &--swiping {
-        box-shadow: 2px 0 8px rgba(16, 185, 129, 0.25);
-        border-color: rgba(16, 185, 129, 0.5);
+        box-shadow: 2px 0 6px rgba(0, 0, 0, 0.12);
+        transition: none; // no transition during active drag
+    }
+
+    // Hold-to-confirm zone: ring fills as user holds at threshold
+    &--holding {
+        border-color: rgba(16, 185, 129, 0.85);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2), 2px 0 8px rgba(16, 185, 129, 0.3);
+        transition: none;
+
+        // Conic-gradient confirmation ring
+        &::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 4px;
+            background: conic-gradient(rgba(16, 185, 129, 0.9) calc(var(--hold-progress, 0) * 360deg),
+                    rgba(16, 185, 129, 0.15) 0);
+            mask: radial-gradient(farthest-side,
+                    transparent calc(100% - 3px),
+                    #000 calc(100% - 3px));
+            pointer-events: none;
+            z-index: 2;
+        }
     }
 
     &--done {
-        animation: slot-icon-flash 0.5s ease forwards;
+        animation: slot-icon-shake 0.45s ease forwards;
     }
 
     // Ghost placeholder — used in the ghost card when scheduling a new moment
@@ -1112,21 +1136,33 @@ $border-light: #f3f4f6;
     }
 }
 
-@keyframes slot-icon-flash {
+@keyframes slot-icon-shake {
     0% {
-        background: rgba(16, 185, 129, 0.4);
-        border-color: rgba(16, 185, 129, 0.8);
-        transform: scale(1.15);
+        transform: translateX(0);
     }
 
-    60% {
-        background: rgba(16, 185, 129, 0.15);
-        border-color: rgba(16, 185, 129, 0.4);
-        transform: scale(1);
+    15% {
+        transform: translateX(-6px);
+    }
+
+    35% {
+        transform: translateX(5px);
+    }
+
+    55% {
+        transform: translateX(-4px);
+    }
+
+    70% {
+        transform: translateX(3px);
+    }
+
+    85% {
+        transform: translateX(-2px);
     }
 
     100% {
-        transform: scale(1);
+        transform: translateX(0);
     }
 }
 

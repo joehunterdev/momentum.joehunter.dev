@@ -1,53 +1,61 @@
 import { useCallback, useRef, useState } from 'react';
 
-const BASE_THRESHOLD = 80;   // px for a perfect/high-consistency habit
-const MAX_THRESHOLD = 240;  // px cap for a new/failing habit
-const MAX_DRAG = 280;        // px cap on visual translation
+const BASE_THRESHOLD = 80;   // px for a perfect habit (resistanceFactor = 0)
+const MAX_THRESHOLD = 240;   // px cap for a new/failing habit (resistanceFactor = 1)
+const MAX_DRAG = 300;        // hard px cap on visual translation
+const MAX_HOLD_MS = 700;     // ms the user must hold at threshold (scales with resistance)
 
 interface UseSwipeCompleteOptions {
     onComplete: () => void;
-    onProgressChange?: (progress: number) => void; // 0–1, drives row highlight
+    onProgressChange?: (progress: number) => void;
     disabled?: boolean;
-    threshold?: number;       // hard override (skips resistance calculation)
     resistanceFactor?: number; // 0 (frictionless) → 1 (maximum resistance)
 }
 
-interface UseSwipeCompleteResult {
+export interface UseSwipeCompleteResult {
     dragX: number;
-    dragProgress: number; // 0–1
+    dragProgress: number; // 0–1, drag position relative to threshold
+    holdProgress: number; // 0–1, hold-to-confirm fill (only > 0 when at threshold)
     isDragging: boolean;
     isDone: boolean;
     handlers: {
         onPointerDown: (e: React.PointerEvent) => void;
+        onPointerMove: (e: React.PointerEvent) => void;
+        onPointerUp: (e: React.PointerEvent) => void;
+        onPointerCancel: (e: React.PointerEvent) => void;
     };
 }
 
-/** Ease-out curve: fast start, decelerates toward threshold. Exponent grows with resistance. */
+/**
+ * Ease-out: fast start, decelerates toward threshold.
+ * Higher resistanceFactor = heavier deceleration curve.
+ */
 function applyEasing(raw: number, threshold: number, resistanceFactor: number): number {
     const t = Math.min(raw / threshold, 1);
-    const exponent = 1 + resistanceFactor * 2; // 1 (no friction) → 3 (heavy friction)
-    return threshold * (1 - Math.pow(1 - t, exponent));
+    const exponent = 1 + resistanceFactor * 2; // 1 → 3
+    const eased = threshold * (1 - Math.pow(1 - t, exponent));
+    // Beyond threshold: map additional travel linearly with heavy damping
+    const overflow = Math.max(0, raw - threshold) * 0.15;
+    return eased + overflow;
 }
 
-/** Decay dragX toward 0 with a spring, giving a snap-back feel on failed drag. */
-function springDecay(
-    current: number,
-    setter: (v: number) => void,
-): void {
+/** RAF-based spring snap-back. Returns a cancel fn. */
+function springDecay(startVal: number, setter: (v: number) => void): () => void {
+    let current = startVal;
+    let rafId = 0;
     const step = () => {
-        const next = current * 0.65;
-        if (Math.abs(next) < 0.5) {
+        current *= 0.65;
+        if (Math.abs(current) < 0.5) {
             setter(0);
             return;
         }
-        setter(next);
-        current = next;
-        requestAnimationFrame(step);
+        setter(current);
+        rafId = requestAnimationFrame(step);
     };
-    requestAnimationFrame(step);
+    rafId = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafId);
 }
 
-/** Haptic pulse — silently ignored on desktop or unsupported devices. */
 function vibrate(pattern: number | number[]) {
     try { navigator.vibrate?.(pattern); } catch { /* noop */ }
 }
@@ -56,92 +64,150 @@ export function useSwipeComplete({
     onComplete,
     onProgressChange,
     disabled = false,
-    threshold: thresholdOverride,
     resistanceFactor = 0,
 }: UseSwipeCompleteOptions): UseSwipeCompleteResult {
-    const threshold = thresholdOverride
-        ?? BASE_THRESHOLD + resistanceFactor * (MAX_THRESHOLD - BASE_THRESHOLD);
+    const threshold = BASE_THRESHOLD + resistanceFactor * (MAX_THRESHOLD - BASE_THRESHOLD);
+    const holdDuration = resistanceFactor * MAX_HOLD_MS;
 
     const [dragX, setDragX] = useState(0);
     const [dragProgress, setDragProgress] = useState(0);
+    const [holdProgress, setHoldProgress] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
     const [isDone, setIsDone] = useState(false);
 
+    // All mutable drag state lives in refs — never stale inside handlers
     const startX = useRef(0);
     const triggered = useRef(false);
     const halfPulsed = useRef(false);
-    const elementRef = useRef<EventTarget | null>(null);
-    const lastRawDelta = useRef(0);
+    const inHoldZone = useRef(false);
+    const holdRafId = useRef(0);
+    const holdStartTime = useRef(0);
+    const currentEased = useRef(0);
+    const cancelDecay = useRef<(() => void) | null>(null);
+    const capturedElement = useRef<Element | null>(null);
+    const capturedPointerId = useRef<number>(-1);
 
-    const onPointerMove = useCallback((e: PointerEvent) => {
+    const stopHold = useCallback(() => {
+        cancelAnimationFrame(holdRafId.current);
+        inHoldZone.current = false;
+        holdStartTime.current = 0;
+        setHoldProgress(0);
+    }, []);
+
+    const triggerComplete = useCallback(() => {
+        if (triggered.current) return;
+        triggered.current = true;
+        vibrate([30, 10, 30]);
+        capturedElement.current?.releasePointerCapture(capturedPointerId.current);
+        capturedElement.current = null;
+        setIsDone(true);
+        setDragX(0);
+        setDragProgress(0);
+        setHoldProgress(0);
+        setIsDragging(false);
+        inHoldZone.current = false;
+        onProgressChange?.(0);
+        onComplete();
+        setTimeout(() => setIsDone(false), 600);
+    }, [onComplete, onProgressChange]);
+
+    const onPointerDown = useCallback((e: React.PointerEvent) => {
+        if (disabled) return;
+        e.preventDefault();
+        cancelDecay.current?.();
+        cancelDecay.current = null;
+        const el = e.currentTarget as Element;
+        el.setPointerCapture(e.pointerId);
+        capturedElement.current = el;
+        capturedPointerId.current = e.pointerId;
+        startX.current = e.clientX;
+        triggered.current = false;
+        halfPulsed.current = false;
+        inHoldZone.current = false;
+        currentEased.current = 0;
+        setIsDragging(true);
+        setDragX(0);
+        setDragProgress(0);
+        setHoldProgress(0);
+    }, [disabled]);
+
+    const onPointerMove = useCallback((e: React.PointerEvent) => {
+        if (triggered.current) return;
+        if (!(e.currentTarget as Element).hasPointerCapture(e.pointerId)) return;
+
         const rawDelta = Math.max(0, Math.min(e.clientX - startX.current, MAX_DRAG));
-        lastRawDelta.current = rawDelta;
-
-        const easedDelta = applyEasing(rawDelta, threshold, resistanceFactor);
+        const eased = applyEasing(rawDelta, threshold, resistanceFactor);
         const progress = Math.min(rawDelta / threshold, 1);
 
-        setDragX(easedDelta);
+        currentEased.current = eased;
+        setDragX(eased);
         setDragProgress(progress);
         onProgressChange?.(progress);
 
-        // Haptic at 50% travel
         if (progress >= 0.5 && !halfPulsed.current) {
             halfPulsed.current = true;
             vibrate(10);
         }
 
-        if (rawDelta >= threshold && !triggered.current) {
-            triggered.current = true;
-            vibrate([30, 10, 30]);
+        const atThreshold = rawDelta >= threshold;
 
-            setIsDone(true);
-            setDragX(0);
-            setDragProgress(0);
-            setIsDragging(false);
-            onProgressChange?.(0);
+        if (atThreshold && !inHoldZone.current) {
+            inHoldZone.current = true;
+            holdStartTime.current = performance.now();
 
-            if (elementRef.current) {
-                (elementRef.current as Element).releasePointerCapture((e as PointerEvent).pointerId);
+            if (holdDuration <= 0) {
+                triggerComplete();
+                return;
             }
-            document.removeEventListener('pointermove', onPointerMove);
-            document.removeEventListener('pointerup', onPointerUp);
 
-            onComplete();
-            setTimeout(() => setIsDone(false), 600);
+            const tick = () => {
+                if (!inHoldZone.current) return;
+                const hp = Math.min((performance.now() - holdStartTime.current) / holdDuration, 1);
+                setHoldProgress(hp);
+                if (hp >= 1) {
+                    triggerComplete();
+                } else {
+                    holdRafId.current = requestAnimationFrame(tick);
+                }
+            };
+            holdRafId.current = requestAnimationFrame(tick);
+
+        } else if (!atThreshold && inHoldZone.current) {
+            stopHold();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [onComplete, onProgressChange, threshold, resistanceFactor]);
+    }, [threshold, resistanceFactor, holdDuration, onProgressChange, triggerComplete, stopHold]);
 
-    const onPointerUp = useCallback(() => {
+    const onPointerUp = useCallback((e: React.PointerEvent) => {
+        if (!(e.currentTarget as Element).hasPointerCapture(e.pointerId)) return;
+        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
+        capturedElement.current = null;
+        stopHold();
         setIsDragging(false);
         setDragProgress(0);
+        setHoldProgress(0);
         onProgressChange?.(0);
         triggered.current = false;
         halfPulsed.current = false;
-        document.removeEventListener('pointermove', onPointerMove);
-        document.removeEventListener('pointerup', onPointerUp);
+        cancelDecay.current = springDecay(currentEased.current, setDragX);
+    }, [stopHold, onProgressChange]);
 
-        // Spring snap-back instead of instant reset
-        springDecay(lastRawDelta.current, setDragX);
-        lastRawDelta.current = 0;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [onPointerMove, onProgressChange]);
-
-    const onPointerDown = useCallback((e: React.PointerEvent) => {
-        if (disabled) return;
-
-        startX.current = e.clientX;
+    const onPointerCancel = useCallback((_e: React.PointerEvent) => {
+        stopHold();
+        cancelDecay.current?.();
+        capturedElement.current = null;
+        setIsDragging(false);
+        setDragX(0);
+        setDragProgress(0);
+        setHoldProgress(0);
         triggered.current = false;
-        halfPulsed.current = false;
-        lastRawDelta.current = 0;
-        elementRef.current = e.currentTarget;
-        (e.currentTarget as Element).setPointerCapture(e.pointerId);
+    }, [stopHold]);
 
-        setIsDragging(true);
-        document.addEventListener('pointermove', onPointerMove);
-        document.addEventListener('pointerup', onPointerUp);
-    }, [disabled, onPointerMove, onPointerUp]);
-
-    return { dragX, dragProgress, isDragging, isDone, handlers: { onPointerDown } };
+    return {
+        dragX,
+        dragProgress,
+        holdProgress,
+        isDragging,
+        isDone,
+        handlers: { onPointerDown, onPointerMove, onPointerUp, onPointerCancel },
+    };
 }
-
