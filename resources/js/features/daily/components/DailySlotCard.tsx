@@ -9,15 +9,19 @@ interface Props {
     isNext?: boolean;
     onToggle: (momentId: number, instanceId: number | null, date: string) => void;
     onSwipeProgress?: (progress: number) => void;
+    swipeProgress?: number;
 }
 
 /**
  * Daily variant of the slot moment card.
  * Shows consistency bar, swipeable icon, name, and a rotating detail ticker.
  */
-export default function DailySlotCard({ moment, date, isNext, onToggle, onSwipeProgress }: Props) {
+export default function DailySlotCard({ moment, date, isNext, onToggle, onSwipeProgress, swipeProgress = 0 }: Props) {
     return (
-        <div className={`slot-moment-card${isNext ? ' slot-moment-card--next' : ''}`}>
+        <div
+            className={`slot-moment-card${isNext ? ' slot-moment-card--next' : ''}`}
+            style={{ '--drag-progress': swipeProgress } as React.CSSProperties}
+        >
             {moment.consistency !== null && (
                 <div className="slot-moment-card__top">
                     <ConsistencyBar score={moment.consistency} />

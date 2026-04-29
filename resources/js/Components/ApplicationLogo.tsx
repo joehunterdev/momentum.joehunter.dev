@@ -1,7 +1,7 @@
 export default function ApplicationLogo({ className }: { className?: string }) {
     return (
         <img
-            src="/logo_75.png"
+            src="/logo.png"
             alt="Momentum"
             className={className}
         />

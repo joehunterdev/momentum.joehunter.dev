@@ -1,0 +1,67 @@
+{
+    "slug": "how-momentum-works",
+    "locale": "en",
+    "alternate": { "es": "como-funciona-momentum" },
+    "seo": {
+        "title": "How Momentum Works — Do It, Review It, Configure It",
+        "description": "Momentum is built around three clear layers: Daily for acting on habits, Weekly and Monthly for reviewing patterns, and Moments for configuring everything. Learn the philosophy.",
+        "keywords": "habit tracker philosophy, daily habit action, weekly habit review, habit configuration, momentum habit app"
+    },
+    "hero": {
+        "badge": "Philosophy",
+        "headline": "Three layers. One system.",
+        "subline": "Most habit apps blur the line between doing, reviewing, and planning. Momentum keeps them separate — because each one demands a different mindset."
+    },
+    "sections": [
+        {
+            "type": "principles",
+            "heading": "The three layers of Momentum",
+            "items": [
+                {
+                    "icon": "⚡",
+                    "title": "Daily — Do it",
+                    "description": "The Daily view is your execution layer. Nothing to configure, nothing to plan — just your habits in time slots, one after the other. Swipe to complete. Move on. The goal is zero friction between intention and action."
+                },
+                {
+                    "icon": "📅",
+                    "title": "Weekly & Monthly — Review it",
+                    "description": "The Weekly and Monthly views are your insight layer. Consistency scores, streaks, gaps, and patterns across days and weeks. You’re not here to do anything — you’re here to see what’s working and what isn’t."
+                },
+                {
+                    "icon": "⚙️",
+                    "title": "Moments — Configure it",
+                    "description": "The Moments area is your planning layer. Create habits, set recurrence, attach cues and rewards, define your environment. You only come here when you want to change something. The rest of the time, it stays out of your way."
+                }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "Why separation matters",
+            "body": "When an app asks you to configure a habit at the same time it’s asking you to complete one, it creates cognitive load at exactly the wrong moment. Momentum deliberately separates these modes. When you open the Daily view at 07:00, your only job is to act. When you open Weekly on Sunday evening, your only job is to reflect. When you sit down to plan next month’s habits, you go to Moments. Each context is protected."
+        },
+        {
+            "type": "text",
+            "heading": "Built around how habits actually form",
+            "body": "Habit research is clear: consistency beats intensity, and environment design beats willpower. The Daily view removes every possible friction from the completion act. The Weekly and Monthly views give you the data to spot where consistency is breaking down. And Moments lets you redesign the system — adjust timing, add cues, reframe rewards — when the evidence says something isn’t working. This is the feedback loop that makes habits stick."
+        },
+        {
+            "type": "text",
+            "heading": "The configure-once principle",
+            "body": "A well-configured Moment should need no thought during execution. You set it up once in the Moments area — the name, the schedule, the cue, the reward — and then it just appears in your Daily view at the right time. The system remembers so you don’t have to. This is the same principle behind James Clear’s \u2018decision elimination\u2019 — the best habit system is the one that requires the fewest decisions at the moment of action."
+        },
+        {
+            "type": "features",
+            "heading": "What each layer gives you",
+            "items": [
+                { "icon": "🎯", "title": "Focus", "description": "Daily strips away everything except what you need to do right now. No menus, no settings, no distractions." },
+                { "icon": "📈", "title": "Clarity", "description": "Weekly and Monthly show you the truth about your habits — not how you feel about them, but what the data actually says." },
+                { "icon": "🔧", "title": "Control", "description": "Moments gives you full control over the system without letting that control bleed into your execution time." },
+                { "icon": "🔄", "title": "Iteration", "description": "Review what’s working, adjust what isn’t, and let the Daily view execute the new version. The loop is fast and intentional." }
+            ]
+        }
+    ],
+    "cta": {
+        "text": "Start building your system",
+        "href": "/register"
+    }
+}

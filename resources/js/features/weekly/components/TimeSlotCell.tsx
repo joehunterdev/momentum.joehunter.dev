@@ -60,7 +60,13 @@ export default function TimeSlotCell({
                     emptyClickable ? 'weekly-slot--overview-empty' : '',
                 ].filter(Boolean).join(' ')}
             >
-                <span className="weekly-slot__time">{slot.time}</span>
+                <span
+                    className={`weekly-slot__time${emptyClickable ? ' weekly-slot__time--clickable' : ''}`}
+                    onClick={emptyClickable ? () => onStartScheduling(date, slot.time) : undefined}
+                    title={emptyClickable ? `Add moment at ${slot.time}` : undefined}
+                >
+                    {slot.time}
+                </span>
                 <div className="weekly-slot__content">
                     {slot.moment
                         ? <SlotMomentCard moment={slot.moment} variant="overview" />
@@ -82,9 +88,16 @@ export default function TimeSlotCell({
     }
 
     // ── Configure mode ────────────────────────────────────────────────────────
+    const configEmptyClickable = !slot.moment && !isGhost && !ooo;
     return (
         <div className={cls}>
-            <span className="weekly-slot__time">{slot.time}</span>
+            <span
+                className={`weekly-slot__time${configEmptyClickable ? ' weekly-slot__time--clickable' : ''}`}
+                onClick={configEmptyClickable ? () => onStartScheduling(date, slot.time) : undefined}
+                title={configEmptyClickable ? `Add moment at ${slot.time}` : undefined}
+            >
+                {slot.time}
+            </span>
             <div className="weekly-slot__content" style={{ position: 'relative' }}>
                 {isGhost ? (
                     <SlotMomentCard

@@ -12,8 +12,8 @@
         "environment_prompt": "Glass of water left on the kitchen counter the night before",
         "reward_description": "Enjoy my coffee knowing I've already done something good",
         "temptation_bundle": "Only check my phone after finishing the glass",
-        "completion_rate_start": 0.4,
-        "completion_rate_end": 0.9
+        "completion_rate_start": 0.88,
+        "completion_rate_end": 0.97
     },
     {
         "name": "Meditate",
@@ -28,7 +28,7 @@
         "environment_prompt": "Meditation cushion placed in front of the desk chair each evening",
         "reward_description": "Enjoy a mindful first sip of coffee after the session",
         "temptation_bundle": "Only put headphones on for focus music after meditating",
-        "completion_rate_start": 0.3,
+        "completion_rate_start": 0.70,
         "completion_rate_end": 0.85
     },
     {
@@ -44,8 +44,8 @@
         "environment_prompt": "Gym bag packed the night before and placed by the front door",
         "reward_description": "Post-workout protein shake and a hot shower",
         "temptation_bundle": "Only listen to my favourite podcast while on the treadmill warm-up",
-        "completion_rate_start": 0.5,
-        "completion_rate_end": 0.8
+        "completion_rate_start": 0.50,
+        "completion_rate_end": 0.65
     },
     {
         "name": "Read",
@@ -126,5 +126,53 @@
         "temptation_bundle": "Only watch Sunday evening TV after the review is done",
         "completion_rate_start": 0.4,
         "completion_rate_end": 0.75
+    },
+    {
+        "name": "Cold shower",
+        "description": "End shower with 60 seconds of cold water",
+        "icon": "🚿",
+        "color": "#0EA5E9",
+        "frequency": "daily",
+        "days_of_week": null,
+        "preferred_time": "07:45",
+        "implementation_intention": "When I finish my morning shower, I will turn the dial to cold and stay under for 60 seconds before stepping out",
+        "habit_stack_after": "After morning shower, before getting dressed",
+        "environment_prompt": "Sticky note on the shower dial as a reminder",
+        "reward_description": "The energy rush and mental clarity that follows",
+        "temptation_bundle": "Only listen to hype music during the cold burst",
+        "completion_rate_start": 0.05,
+        "completion_rate_end": 0.18
+    },
+    {
+        "name": "Evening stretch",
+        "description": "10 minutes of full-body stretching before bed",
+        "icon": "🧘‍♂️",
+        "color": "#A855F7",
+        "frequency": "daily",
+        "days_of_week": null,
+        "preferred_time": "21:30",
+        "implementation_intention": "When I change into pyjamas, I will roll out the mat and stretch for 10 minutes before getting into bed",
+        "habit_stack_after": "After changing for bed, before reading",
+        "environment_prompt": "Yoga mat unrolled next to the bed each morning",
+        "reward_description": "Getting into bed feeling genuinely relaxed",
+        "temptation_bundle": "Only put on sleep sounds after stretching is done",
+        "completion_rate_start": 0.10,
+        "completion_rate_end": 0.35
+    },
+    {
+        "name": "Deep work block",
+        "description": "90-minute focused work session — no interruptions",
+        "icon": "🎯",
+        "color": "#1D4ED8",
+        "frequency": "weekly",
+        "days_of_week": [1, 2, 3, 4, 5],
+        "preferred_time": "09:00",
+        "implementation_intention": "When I sit down at 9am on workdays, I will close all tabs, put on noise-cancelling headphones, and work on my most important task for 90 minutes",
+        "habit_stack_after": "After morning routine, before checking email",
+        "environment_prompt": "Headphones on desk, phone in another room, browser tab blocker enabled",
+        "reward_description": "Coffee and a short walk after the session",
+        "temptation_bundle": "Only check email and Slack after the block is complete",
+        "completion_rate_start": 0.95,
+        "completion_rate_end": 0.98
     }
 ]

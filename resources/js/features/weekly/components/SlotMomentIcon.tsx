@@ -14,10 +14,15 @@ export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress
     const isCompleted = moment.status === 'completed';
     const isPast = moment.status === 'completed' || moment.status === 'missed';
 
-    const { dragX, isDragging, isDone, handlers } = useSwipeComplete({
+    // 0 = frictionless (perfect habit), 1 = maximum resistance (new/failing habit)
+    const resistanceFactor = moment.consistency !== null
+        ? Math.max(0, Math.min(1, 1 - moment.consistency / 100))
+        : 1;
+
+    const { dragX, dragProgress, isDragging, isDone, handlers } = useSwipeComplete({
         onComplete: () => onToggle(moment.id, moment.instance_id, date),
         onProgressChange: onSwipeProgress,
-        threshold: isPast ? 180 : 100,
+        resistanceFactor: isPast ? 0.5 : resistanceFactor,
         disabled: isStatic,
     });
 
@@ -31,6 +36,9 @@ export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress
             ? 'slot-icon--swiping'
             : '');
 
+    // Hue-rotate from neutral → green (120deg) as drag progresses
+    const hueRotate = dragProgress > 0 ? `hue-rotate(${dragProgress * 120}deg)` : undefined;
+
     return (
         <div
             className="slot-icon-track"
@@ -41,7 +49,11 @@ export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress
                 className={['slot-icon', statusClass, swipeClass].filter(Boolean).join(' ')}
                 style={isStatic
                     ? undefined
-                    : { transform: `translateX(${dragX}px)`, cursor: 'grab' }
+                    : {
+                        transform: `translateX(${dragX}px)`,
+                        filter: hueRotate,
+                        cursor: 'grab',
+                    }
                 }
                 {...(!isStatic ? handlers : {})}
                 role={isStatic ? undefined : 'button'}
@@ -57,3 +69,4 @@ export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress
         </div>
     );
 }
+

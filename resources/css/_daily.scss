@@ -103,6 +103,31 @@
     }
 }
 
+// ── Adaptive drag wash — green fill grows left→right with drag progress ───────
+
+.slot-moment-card {
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(to right,
+                rgba(0, 229, 170, calc(var(--drag-progress, 0) * 0.18)),
+                transparent calc(var(--drag-progress, 0) * 100% + 20%));
+        border-radius: inherit;
+        transition: background 0.05s linear;
+        z-index: 0;
+    }
+
+    // Ensure card children sit above the wash layer
+    >* {
+        position: relative;
+        z-index: 1;
+    }
+}
+
 // ── Edit button on weekly slot moment card ────────────────────────────────────
 
 .slot-moment-card__edit-btn {

@@ -66,6 +66,7 @@ export default function DailyTimeSlotCell({
                         isNext={isNext}
                         onToggle={handleToggle}
                         onSwipeProgress={handleSwipeProgress}
+                        swipeProgress={swipeProgress}
                     />
                 ) : ooo ? (
                     <span className="weekly-slot__ooo-dot" aria-hidden />

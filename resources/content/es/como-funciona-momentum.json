@@ -1,0 +1,67 @@
+{
+    "slug": "como-funciona-momentum",
+    "locale": "es",
+    "alternate": { "en": "how-momentum-works" },
+    "seo": {
+        "title": "Cómo funciona Momentum — Actuar, Revisar, Configurar",
+        "description": "Momentum se basa en tres capas claras: el Daily para actuar sobre hábitos, el Weekly y Monthly para revisar patrones, y Moments para configurarlo todo. Conoce la filosofía.",
+        "keywords": "filosofía de rastreador de hábitos, acción diaria de hábitos, revisión semanal de hábitos, configuración de hábitos, app de hábitos momentum"
+    },
+    "hero": {
+        "badge": "Filosofía",
+        "headline": "Tres capas. Un sistema.",
+        "subline": "La mayoría de las apps de hábitos mezclan el hacer, el revisar y el planificar. Momentum los mantiene separados — porque cada uno exige una mentalidad diferente."
+    },
+    "sections": [
+        {
+            "type": "principles",
+            "heading": "Las tres capas de Momentum",
+            "items": [
+                {
+                    "icon": "⚡",
+                    "title": "Daily — Actuar",
+                    "description": "La vista Daily es tu capa de ejecución. Sin nada que configurar ni planificar — solo tus hábitos en franjas horarias, uno tras otro. Desliza para completar. Sigue adelante. El objetivo es cero fricción entre la intención y la acción."
+                },
+                {
+                    "icon": "📅",
+                    "title": "Weekly y Monthly — Revisar",
+                    "description": "Las vistas Weekly y Monthly son tu capa de análisis. Puntuaciones de consistencia, rachas, brechas y patrones a lo largo de días y semanas. No estás aquí para hacer nada — estás aquí para ver qué funciona y qué no."
+                },
+                {
+                    "icon": "⚙️",
+                    "title": "Moments — Configurar",
+                    "description": "El área de Moments es tu capa de planificación. Crea hábitos, define la recurrencia, añade pistas y recompensas, diseña tu entorno. Solo vienes aquí cuando quieres cambiar algo. El resto del tiempo, se mantiene fuera de tu camino."
+                }
+            ]
+        },
+        {
+            "type": "text",
+            "heading": "Por qué importa la separación",
+            "body": "Cuando una app te pide que configures un hábito al mismo tiempo que te pide que lo completes, genera carga cognitiva exactamente en el peor momento. Momentum separa deliberadamente estos modos. Cuando abres la vista Daily a las 07:00, tu único trabajo es actuar. Cuando abres Weekly el domingo por la tarde, tu único trabajo es reflexionar. Cuando te sientas a planificar los hábitos del próximo mes, vas a Moments. Cada contexto está protegido."
+        },
+        {
+            "type": "text",
+            "heading": "Construido alrededor de cómo se forman realmente los hábitos",
+            "body": "La investigación sobre hábitos es clara: la consistencia supera a la intensidad, y el diseño del entorno supera a la fuerza de voluntad. La vista Daily elimina cualquier fricción posible del acto de completar. Las vistas Weekly y Monthly te dan los datos para detectar dónde se está rompiendo la consistencia. Y Moments te permite rediseñar el sistema — ajustar horarios, añadir pistas, replantear recompensas — cuando la evidencia dice que algo no funciona. Este es el bucle de retroalimentación que hace que los hábitos perduren."
+        },
+        {
+            "type": "text",
+            "heading": "El principio de configurar una vez",
+            "body": "Un Moment bien configurado no debería requerir ningún pensamiento durante la ejecución. Lo configuras una vez en el área de Moments — el nombre, el horario, la pista, la recompensa — y luego simplemente aparece en tu vista Daily a la hora correcta. El sistema recuerda para que tú no tengas que hacerlo. Este es el mismo principio que hay detrás de la \u2018eliminación de decisiones\u2019 de James Clear: el mejor sistema de hábitos es el que requiere menos decisiones en el momento de actuar."
+        },
+        {
+            "type": "features",
+            "heading": "Qué te aporta cada capa",
+            "items": [
+                { "icon": "🎯", "title": "Enfoque", "description": "Daily elimina todo excepto lo que necesitas hacer ahora mismo. Sin menús, sin ajustes, sin distracciones." },
+                { "icon": "📈", "title": "Claridad", "description": "Weekly y Monthly te muestran la verdad sobre tus hábitos — no cómo te sientes respecto a ellos, sino lo que los datos realmente dicen." },
+                { "icon": "🔧", "title": "Control", "description": "Moments te da control total sobre el sistema sin que ese control se cuele en tu tiempo de ejecución." },
+                { "icon": "🔄", "title": "Iteración", "description": "Revisa lo que funciona, ajusta lo que no, y deja que la vista Daily ejecute la nueva versión. El bucle es rápido e intencional." }
+            ]
+        }
+    ],
+    "cta": {
+        "text": "Empieza a construir tu sistema",
+        "href": "/register"
+    }
+}

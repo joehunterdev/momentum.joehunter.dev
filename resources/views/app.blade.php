@@ -14,8 +14,8 @@
     <link rel="canonical" href="{{ config('app.url') }}">
 
     <!-- Favicon / App Icons -->
-    <link rel="icon" type="image/png" href="/logo_75.png">
-    <link rel="apple-touch-icon" href="/logo_75.png">
+    <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="apple-touch-icon" href="/logo.png">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">

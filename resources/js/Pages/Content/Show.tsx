@@ -75,7 +75,7 @@ export default function Show({ content, locale, alternates, appUrl }: Props) {
                     {/* Nav */}
                     <header className="content-page__header">
                         <Link href="/" className="content-page__logo-link">
-                            <img src="/logo_75.png" alt="Momentum" className="content-page__logo" />
+                            <img src="/logo.png" alt="Momentum" className="content-page__logo" />
                         </Link>
 
                         <nav className="content-page__nav">

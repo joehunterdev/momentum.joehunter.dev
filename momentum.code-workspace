@@ -75,6 +75,12 @@
 		"[typescriptreact]": {
 			"editor.defaultFormatter": "vscode.typescript-language-features"
 		},
+		"[javascript]": {
+			"editor.defaultFormatter": "vscode.typescript-language-features"
+		},
+		"[javascriptreact]": {
+			"editor.defaultFormatter": "vscode.typescript-language-features"
+		},
 		"[php]": {
 			"editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
 			"editor.tabSize": 4
@@ -87,6 +93,9 @@
 		},
 
 		"intelephense.environment.phpVersion": "8.4.0",
+
+		"typescript.tsdk": "node_modules/typescript/lib",
+		"typescript.enablePromptUseWorkspaceTsdk": true,
 
 		"files.associations": {
 			"*.blade.php": "blade",
@@ -109,6 +118,9 @@
 			"recca0120.vscode-phpunit",
 			"Gruntfuggly.todo-tree",
 			"DavidAnson.vscode-markdownlint",
+			"bradlc.vscode-tailwindcss",
+			"dbaeumer.vscode-eslint",
+			"xdebug.php-debug",
 			"vscode.git",
 			"vscode.github"
 		]

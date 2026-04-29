@@ -3,6 +3,12 @@ import { Head, Link } from '@inertiajs/react';
 
 const features = [
     {
+        icon: '✏️',
+        title: 'Moment Creation',
+        description: 'Build habits step by step — name it, set a cue, choose a schedule, and lock it in.',
+        href: '/en/habit-stacking',
+    },
+    {
         icon: '\uD83D\uDCC5',
         title: 'Weekly View',
         description: 'See your entire week at a glance. Every moment, every slot, colour-coded by status.',
@@ -46,7 +52,7 @@ export default function Welcome({ auth }: PageProps) {
 
                 <div className="welcome-page__inner">
                     <header className="welcome-page__header">
-                        <img src="/logo_75.png" alt="Momentum" className="welcome-page__logo" />
+                        <img src="/logo.png" alt="Momentum" className="welcome-page__logo" />
                         <nav className="welcome-page__nav">
                             {auth.user ? (
                                 <Link href={route('weekly')} className="welcome-page__nav-link welcome-page__nav-link--primary">

@@ -10,10 +10,14 @@
 /.phpunit.cache
 /.vscode
 /.zed
+# Ignore any code-workspace files that land outside the root (e.g. inside config/)
+config/*.code-workspace
 /auth.json
 /node_modules
 /public/hot
 /public/storage
+/public/build
+/bootstrap/ssr
 /storage/*.key
 /storage/pail
 /vendor
