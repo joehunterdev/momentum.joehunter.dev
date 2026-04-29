@@ -47,6 +47,12 @@ export default function Authenticated({
                                     Monthly
                                 </NavLink>
                                 <NavLink
+                                    href={route('moments.index')}
+                                    active={route().current('moments.*')}
+                                >
+                                    Moments
+                                </NavLink>
+                                <NavLink
                                     href={route('config.edit')}
                                     active={route().current('config.edit')}
                                 >
@@ -168,6 +174,12 @@ export default function Authenticated({
                             active={route().current('monthly')}
                         >
                             Monthly
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('moments.index')}
+                            active={route().current('moments.*')}
+                        >
+                            Moments
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('config.edit')}

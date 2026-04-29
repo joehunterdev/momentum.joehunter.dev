@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"intelephense.environment.phpVersion": "8.4.0",
+		"files.associations": {
+			"*.blade.php": "blade",
+			"*.css": "css",
+			"*.scss": "scss"
+		},
+		"emmet.includeLanguages": {
+			"blade": "html"
+		}
+	}
+}

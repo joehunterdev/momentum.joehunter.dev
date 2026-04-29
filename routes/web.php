@@ -70,7 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/monthly', [MonthlyController::class, 'index'])->name('monthly');
 
     Route::resource('moments', MomentController::class)
-        ->only(['create', 'store', 'edit', 'update', 'destroy']);
+        ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
 
     Route::post('/moments/{moment}/toggle', [MomentInstanceController::class, 'toggle'])
         ->name('moments.toggle');

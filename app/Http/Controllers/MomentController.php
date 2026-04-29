@@ -11,6 +11,21 @@ use Inertia\Response;
 
 class MomentController extends Controller
 {
+    public function index(): Response
+    {
+        $moments = request()->user()
+            ->moments()
+            ->with(['schedule', 'cue', 'reward'])
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->map(fn(Moment $moment) => MomentData::fromModel($moment));
+
+        return Inertia::render('Moments/Index', [
+            'moments' => $moments,
+        ]);
+    }
+
     public function create(): Response
     {
         return Inertia::render('Moments/Create');
@@ -65,7 +80,7 @@ class MomentController extends Controller
             'temptation_bundle' => $data['temptation_bundle'] ?? null,
         ]);
 
-        $redirectTo = $request->input('_redirect', route('weekly'));
+        $redirectTo = $request->input('_redirect', route('moments.index'));
 
         return redirect()->to($redirectTo)->with('success', 'Moment created.');
     }
@@ -143,7 +158,7 @@ class MomentController extends Controller
             ]
         );
 
-        return redirect()->route('weekly')->with('success', 'Moment updated.');
+        return redirect()->route('moments.index')->with('success', 'Moment updated.');
     }
 
     public function destroy(Moment $moment): RedirectResponse
@@ -152,7 +167,7 @@ class MomentController extends Controller
 
         $moment->delete();
 
-        return redirect()->route('weekly')->with('success', 'Moment deleted.');
+        return redirect()->route('moments.index')->with('success', 'Moment deleted.');
     }
 
     private function authorize(Moment $moment): void
