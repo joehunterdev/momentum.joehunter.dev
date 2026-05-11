@@ -1,4 +1,4 @@
-name: Deploy to Production (SSH)
+name: Deploy to Production
 
 on:
   push:
@@ -12,38 +12,44 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+      - name: Deploy changed files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          port: ${{ secrets.FTP_PORT }}
+          protocol: ftp
+          local-dir: ./
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}/
+          state-name: .ftp-deploy-sync-state.json
+          exclude: |
+            .git/**
+            .github/**
+            .docs/**
+            .vscode/**
+            node_modules/**
+            vendor/**
+            tests/**
+            storage/logs/**
+            storage/framework/cache/**
+            storage/framework/sessions/**
+            storage/framework/testing/**
+            storage/framework/views/**
+            .env*
+            *.log
+            phpunit.xml
+            package*.json
 
-      - name: Rsync files to server
-        run: |
-          rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no" \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='.docs' \
-            --exclude='.vscode' \
-            --exclude='node_modules' \
-            --exclude='vendor' \
-            --exclude='storage/logs' \
-            --exclude='storage/framework/cache' \
-            --exclude='storage/framework/sessions' \
-            --exclude='storage/framework/views' \
-            --exclude='.env' \
-            --exclude='*.log' \
-            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.FTP_SERVER_DIR }}/
-
-      - name: Run post-deploy commands
+      - name: Run post-deploy commands via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
+          port: 65002
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script_stop: true
           script: |
