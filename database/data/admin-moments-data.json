@@ -2,7 +2,7 @@
   {
     "name": "Morning Brush",
     "description": "Brush teeth after waking up.",
-    "icon": "🪥",
+    "icon": "🦷",
     "color": "#4FC3F7",
     "frequency": "daily",
     "days_of_week": null,
@@ -18,7 +18,7 @@
   {
     "name": "Afternoon Brush",
     "description": "Mid-afternoon teeth brush.",
-    "icon": "🪥",
+    "icon": "🦷",
     "color": "#4FC3F7",
     "frequency": "daily",
     "days_of_week": null,
@@ -34,7 +34,7 @@
   {
     "name": "Evening Brush",
     "description": "Brush teeth before bed.",
-    "icon": "🪥",
+    "icon": "🦷",
     "color": "#4FC3F7",
     "frequency": "daily",
     "days_of_week": null,
