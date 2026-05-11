@@ -33,8 +33,11 @@ class AdminUserMomentSeeder extends Seeder
         }
 
         $this->importer->applyDefaultConfig($user, [
-            'wake_time' => '07:00:00',
-            'sleep_time' => '22:30:00',
+            'wake_time' => '08:15:00',
+            'sleep_time' => '00:15:00',
+            'office_start' => '09:30:00',
+            'office_end' => '17:30:00',
+            'week_starts_on' => 1,
         ]);
 
         $count = $this->importer->import(
