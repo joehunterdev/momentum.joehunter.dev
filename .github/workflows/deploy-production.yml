@@ -24,7 +24,7 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           protocol: ftp
           local-dir: ./
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}/
+          server-dir: /public_html/
           state-name: .ftp-deploy-sync-state.json
           exclude: |
             .git/**
@@ -59,15 +59,8 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          port: 65002
+          port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script_stop: true
           script: |
-            export PHP_BIN=/usr/local/php84/bin/php
-            export COMPOSER_BIN=/usr/local/bin/composer
             cd ${{ secrets.FTP_SERVER_DIR }}
-            $PHP_BIN $COMPOSER_BIN install --no-dev --no-interaction --optimize-autoloader
-            $PHP_BIN $COMPOSER_BIN dump-autoload
-            $PHP_BIN artisan storage:link
-            $PHP_BIN artisan config:cache && $PHP_BIN artisan route:cache && $PHP_BIN artisan view:cache && $PHP_BIN artisan event:cache
-            $PHP_BIN artisan migrate --force --no-interaction -v
+            composer install --no-dev --no-interaction --optimize-autoloader
