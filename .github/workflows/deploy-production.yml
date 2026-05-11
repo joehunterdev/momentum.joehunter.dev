@@ -1,0 +1,55 @@
+name: Deploy to Production Envs
+
+on:
+  push:
+    branches:
+      - release/production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production.momentum.joehunter.dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for diff calculations
+
+      - name: Deploy only changed files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          port: ${{ secrets.FTP_PORT }}
+          protocol: ftp
+          local-dir: ./
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}/
+          state-name: .ftp-deploy-sync-state.json
+          exclude: |
+            .git/**
+            .github/**
+            .docs/**
+            .vscode/**
+            .idea/**
+            .fleet/**
+            .private/**
+            node_modules/**
+            vendor/**
+            tests/**
+            storage/logs/**
+            storage/framework/cache/**
+            storage/framework/sessions/**
+            storage/framework/testing/**
+            storage/framework/views/**
+            storage/debugbar/**
+            docs/**
+             .env*
+            *.log
+            npm-debug.log
+            yarn-error.log
+            .phpunit.cache
+            .phpunit.result.cache
+            phpunit.xml
+            webpack.mix.js
+            package*.json
