@@ -53,14 +53,3 @@ jobs:
             phpunit.xml
             webpack.mix.js
             package*.json
-
-      - name: Composer install (no-dev, optimized)
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ secrets.FTP_SERVER_DIR }}
-            composer install --no-dev --no-interaction --optimize-autoloader
