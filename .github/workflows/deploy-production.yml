@@ -1,4 +1,4 @@
-name: Deploy to Production Envs
+name: Deploy to Production (SSH)
 
 on:
   push:
@@ -12,44 +12,45 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Full history for diff calculations
 
-      - name: Deploy only changed files via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Rsync files to server
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }}" \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.docs' \
+            --exclude='.vscode' \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='storage/logs' \
+            --exclude='storage/framework/cache' \
+            --exclude='storage/framework/sessions' \
+            --exclude='storage/framework/views' \
+            --exclude='.env' \
+            --exclude='*.log' \
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.FTP_SERVER_DIR }}/
+
+      - name: Run post-deploy commands
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          port: ${{ secrets.FTP_PORT }}
-          protocol: ftp
-          local-dir: ./
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}/
-          state-name: .ftp-deploy-sync-state.json
-          exclude: |
-            .git/**
-            .github/**
-            .docs/**
-            .vscode/**
-            .idea/**
-            .fleet/**
-            .private/**
-            node_modules/**
-            vendor/**
-            tests/**
-            storage/logs/**
-            storage/framework/cache/**
-            storage/framework/sessions/**
-            storage/framework/testing/**
-            storage/framework/views/**
-            storage/debugbar/**
-            docs/**
-             .env*
-            *.log
-            npm-debug.log
-            yarn-error.log
-            .phpunit.cache
-            .phpunit.result.cache
-            phpunit.xml
-            webpack.mix.js
-            package*.json
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            export PHP=/usr/local/php84/bin/php
+            cd ${{ secrets.FTP_SERVER_DIR }}
+            $PHP /usr/local/bin/composer install --no-dev --no-interaction --optimize-autoloader
+            $PHP artisan config:cache
+            $PHP artisan route:cache
+            $PHP artisan view:cache
+            $PHP artisan migrate --force --no-interaction
