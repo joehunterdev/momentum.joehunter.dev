@@ -15,6 +15,18 @@ jobs:
         with:
           fetch-depth: 0  # Full history for diff calculations
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
       - name: Deploy only changed files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
@@ -53,3 +65,15 @@ jobs:
             phpunit.xml
             webpack.mix.js
             package*.json
+
+      - name: Composer install (no-dev, optimized)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            cd ${{ secrets.FTP_SERVER_DIR }}
+            composer install --no-dev --no-interaction --optimize-autoloader
