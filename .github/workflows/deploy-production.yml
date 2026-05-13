@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy to Production Envs
 
 on:
   push:
@@ -13,9 +13,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Full history for diff calculations
 
-      - name: Deploy changed files via FTP
+      - name: Deploy only changed files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -31,6 +31,9 @@ jobs:
             .github/**
             .docs/**
             .vscode/**
+            .idea/**
+            .fleet/**
+            .private/**
             node_modules/**
             vendor/**
             tests/**
@@ -39,18 +42,14 @@ jobs:
             storage/framework/sessions/**
             storage/framework/testing/**
             storage/framework/views/**
-            .env*
+            storage/debugbar/**
+            docs/**
+             .env*
             *.log
+            npm-debug.log
+            yarn-error.log
+            .phpunit.cache
+            .phpunit.result.cache
             phpunit.xml
+            webpack.mix.js
             package*.json
-
-      - name: Composer install (no-dev, optimized)
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ secrets.FTP_SERVER_DIR }}
-            composer install --no-dev --no-interaction --optimize-autoloader
