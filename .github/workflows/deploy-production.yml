@@ -44,19 +44,13 @@ jobs:
             phpunit.xml
             package*.json
 
-      - name: Run post-deploy commands via SSH
+      - name: Composer install (no-dev, optimized)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          port: 65002
+          port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script_stop: true
           script: |
-            export PHP=/usr/local/php84/bin/php
             cd ${{ secrets.FTP_SERVER_DIR }}
-            $PHP /usr/local/bin/composer install --no-dev --no-interaction --optimize-autoloader
-            $PHP artisan config:cache
-            $PHP artisan route:cache
-            $PHP artisan view:cache
-            $PHP artisan migrate --force --no-interaction
+            composer install --no-dev --no-interaction --optimize-autoloader
