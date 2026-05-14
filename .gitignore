@@ -25,10 +25,9 @@ Homestead.yaml
 Thumbs.db
 
 # Private docs and workflows (never commit)
-.docs/.private/
-.github/workflows/.private/
+.private/
+**/.private/
 
 # Playwright MCP output
 .playwright-mcp/
 
-.docs/*

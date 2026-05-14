@@ -15,27 +15,6 @@ jobs:
         with:
           fetch-depth: 0  # Full history for diff calculations
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.4'
-          tools: composer:v2
-
-      - name: Install Composer dependencies
-        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install npm dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Build assets
-        run: npm run build
-
       - name: Deploy only changed files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
@@ -54,7 +33,7 @@ jobs:
             .vscode/**
             .idea/**
             .fleet/**
-            .private/**
+            **/.private/**
             node_modules/**
             vendor/**
             tests/**
@@ -65,15 +44,17 @@ jobs:
             storage/framework/views/**
             storage/debugbar/**
             docs/**
-             .env*
+            .env*
             *.log
             npm-debug.log
             yarn-error.log
             .phpunit.cache
             .phpunit.result.cache
             phpunit.xml
-            webpack.mix.js
             package*.json
+            README.md
+            TODO.md
+            *.code-workspace
 
       - name: Composer install (no-dev, optimized)
         uses: appleboy/ssh-action@v1.0.3
@@ -85,4 +66,4 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
             cd ${{ secrets.FTP_SERVER_DIR }}
-            composer install --no-dev --no-interaction --optimize-autoloader
+            composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
