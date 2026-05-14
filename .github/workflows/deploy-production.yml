@@ -1,4 +1,4 @@
-name: Deploy to Production Envs
+name: Deploy to Production
 
 on:
   push:
@@ -9,30 +9,57 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: production.momentum.joehunter.dev
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Full history for diff calculations
+        uses: actions/checkout@v4
 
-      - name: Deploy only changed files via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          port: ${{ secrets.FTP_PORT }}
-          protocol: ftp
-          local-dir: ./
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}/
-          state-name: .ftp-deploy-sync-state.json
-          exclude: |
-            .git/**
-            .github/**
-            .docs/**
-            .vscode/**
-            .idea/**
-            .fleet/**
+          php-version: '8.4'
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Build frontend assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy files via rsync
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.docs' \
+            --exclude='.vscode' \
+            --exclude='.idea' \
+            --exclude='.fleet' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='storage/framework/views/*' \
+            --exclude='**/.private' \
+            --exclude='.env' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='README.md' \
+            --exclude='TODO.md' \
+            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.SSH_DEPLOY_PATH }}
             **/.private/**
             node_modules/**
             vendor/**
@@ -55,15 +82,3 @@ jobs:
             README.md
             TODO.md
             *.code-workspace
-
-      - name: Composer install (no-dev, optimized)
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            cd ${{ secrets.FTP_SERVER_DIR }}
-            composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
