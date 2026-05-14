@@ -23,10 +23,10 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-      - name: Build frontend assets
-        run: |
-          npm ci
-          npm run build
+      # - name: Build frontend assets
+      #   run: |
+      #     npm ci
+      #     npm run build
 
       - name: Start SSH agent
         uses: webfactory/ssh-agent@v0.9.0
