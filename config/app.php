@@ -13,9 +13,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Momentum'),
 
-    'version' => env('APP_VERSION', '1.6.2'),
+    'version' => env('APP_VERSION', '1.7.1'),
 
     /*
     |--------------------------------------------------------------------------
