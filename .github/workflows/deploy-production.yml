@@ -21,38 +21,12 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.SSH_DEPLOY_PATH }}
-            
             echo "Pulling latest code..."
             git pull origin main
-            
             echo "Installing PHP dependencies..."
             composer install --no-dev --optimize-autoloader --no-interaction
-            
             echo "Optimizing application..."
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-            
             echo "Deployment completed!"
-            **/.private/**
-            node_modules/**
-            vendor/**
-            tests/**
-            storage/logs/**
-            storage/framework/cache/**
-            storage/framework/sessions/**
-            storage/framework/testing/**
-            storage/framework/views/**
-            storage/debugbar/**
-            docs/**
-            .env*
-            *.log
-            npm-debug.log
-            yarn-error.log
-            .phpunit.cache
-            .phpunit.result.cache
-            phpunit.xml
-            package*.json
-            README.md
-            TODO.md
-            *.code-workspace
