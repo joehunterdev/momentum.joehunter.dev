@@ -16,8 +16,6 @@ config/*.code-workspace
 /node_modules
 /public/hot
 /public/storage
-/public/build
-/bootstrap/ssr
 /storage/*.key
 /storage/pail
 /vendor
