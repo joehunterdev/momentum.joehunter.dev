@@ -33,3 +33,4 @@ Thumbs.db
 # Playwright MCP output
 .playwright-mcp/
 
+.docs/*
