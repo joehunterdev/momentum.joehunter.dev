@@ -241,3 +241,13 @@ $monthly-cell-min-h: 5rem;
     background: #fff;
     overflow: hidden;
 }
+
+// ─── Monthly Vertical View (mobile) ──────────────────────────────────────────
+// Uses standard .weekly-slot and .weekly-day-slots from _weekly.scss
+
+.monthly-vertical-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: #fff;
+}

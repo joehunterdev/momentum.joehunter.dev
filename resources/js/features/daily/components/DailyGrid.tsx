@@ -1,6 +1,7 @@
 import { format, parseISO } from 'date-fns';
 import type { CalendarConfig, TimeSlot, WeekDay } from '@/shared/components/calendar';
 import type { SchedulingState } from '@/features/weekly/types';
+import DayRowShell from '@/shared/components/schedule/DayRowShell';
 import DailyTimeSlotCell from './DailyTimeSlotCell';
 
 type DailyMode = 'overview' | 'configure';
@@ -87,26 +88,52 @@ export default function DailyGrid({
     return (
         <>
             {/* ── Today ─────────────────────────────────────────────────────── */}
-            <section className="daily-grid">
-                <header className="daily-grid__header">
-                    <span className="daily-grid__day-name">{day.dayName}</span>
-                    <span className="daily-grid__date">{format(dateObj, 'd MMMM yyyy')}</span>
-                    {day.isToday && <span className="daily-grid__today-badge">Today</span>}
-                </header>
+            <DayRowShell
+                label={day.dayName}
+                sublabel={format(dateObj, 'd MMMM yyyy')}
+                badge={day.isToday ? 'Today' : undefined}
+                isToday={day.isToday}
+                slotsLayout="vertical"
+            >
+                {visibleSlots.map((slot) => (
+                    <DailyTimeSlotCell
+                        key={`${day.date}-${slot.time}`}
+                        slot={slot}
+                        date={day.date}
+                        config={config}
+                        onToggleMoment={onToggleMoment}
+                        isToday={day.isToday}
+                        isNext={
+                            !!slot.moment &&
+                            nextMomentKey === `${day.date}:${slot.time}:${slot.moment.id}`
+                        }
+                        mode={mode}
+                        scheduling={scheduling}
+                        onStartScheduling={onStartScheduling}
+                        onGhostNameChange={onGhostNameChange}
+                        onGhostIconChange={onGhostIconChange}
+                    />
+                ))}
+            </DayRowShell>
 
-                <div className="daily-grid__slots">
-                    {visibleSlots.map((slot) => (
+            {/* ── Next day ──────────────────────────────────────────────────── */}
+            {showNextDay && nextDay && (
+                <DayRowShell
+                    label={nextDay.dayName}
+                    sublabel={format(parseISO(nextDay.date), 'd MMMM yyyy')}
+                    isToday={false}
+                    isWeekend={nextDay.isWeekend}
+                    slotsLayout="vertical"
+                >
+                    {nextDaySlots.map((slot) => (
                         <DailyTimeSlotCell
-                            key={`${day.date}-${slot.time}`}
+                            key={`${nextDay.date}-${slot.time}`}
                             slot={slot}
-                            date={day.date}
+                            date={nextDay.date}
                             config={config}
-                            onToggleMoment={onToggleMoment}
-                            isToday={day.isToday}
-                            isNext={
-                                !!slot.moment &&
-                                nextMomentKey === `${day.date}:${slot.time}:${slot.moment.id}`
-                            }
+                            onToggleMoment={() => { }}
+                            isToday={false}
+                            isNext={false}
                             mode={mode}
                             scheduling={scheduling}
                             onStartScheduling={onStartScheduling}
@@ -114,38 +141,7 @@ export default function DailyGrid({
                             onGhostIconChange={onGhostIconChange}
                         />
                     ))}
-                </div>
-            </section>
-
-            {/* ── Next day ──────────────────────────────────────────────────── */}
-            {showNextDay && nextDay && (
-                <section className="daily-grid daily-grid--next-day">
-                    <header className="daily-grid__header">
-                        <span className="daily-grid__day-name">{nextDay.dayName}</span>
-                        <span className="daily-grid__date">
-                            {format(parseISO(nextDay.date), 'd MMMM yyyy')}
-                        </span>
-                    </header>
-
-                    <div className="daily-grid__slots daily-grid__slots--next-day">
-                        {nextDaySlots.map((slot) => (
-                            <DailyTimeSlotCell
-                                key={`${nextDay.date}-${slot.time}`}
-                                slot={slot}
-                                date={nextDay.date}
-                                config={config}
-                                onToggleMoment={() => { }}
-                                isToday={false}
-                                isNext={false}
-                                mode={mode}
-                                scheduling={scheduling}
-                                onStartScheduling={onStartScheduling}
-                                onGhostNameChange={onGhostNameChange}
-                                onGhostIconChange={onGhostIconChange}
-                            />
-                        ))}
-                    </div>
-                </section>
+                </DayRowShell>
             )}
         </>
     );

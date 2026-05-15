@@ -2,7 +2,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { CalendarNav } from '@/shared/components/calendar';
-import { MonthlyGrid, MonthlyScheduleGrid } from '@/features/monthly';
+import {
+    MonthlyGrid,
+    MonthlyScheduleGrid,
+    MonthlyVerticalView,
+} from '@/features/monthly';
 import { FrequencyBar } from '@/features/weekly';
 import type { SchedulingState } from '@/features/weekly/types';
 import { addMonths, format, parseISO, subMonths } from 'date-fns';
@@ -126,7 +130,23 @@ export default function Index({ month, monthStart, days, scheduleRows }: Props) 
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
                     {mode === 'overview' ? (
-                        <MonthlyGrid days={days} onDayClick={handleDayClick} />
+                        <>
+                            {/* Desktop/Tablet Grid View */}
+                            <div className="hidden md:block">
+                                <MonthlyGrid
+                                    days={days}
+                                    onDayClick={handleDayClick}
+                                />
+                            </div>
+
+                            {/* Mobile Vertical View */}
+                            <div className="block md:hidden">
+                                <MonthlyVerticalView
+                                    days={days}
+                                    onDayClick={handleDayClick}
+                                />
+                            </div>
+                        </>
                     ) : (
                         <MonthlyScheduleGrid
                             rows={scheduleRows}
