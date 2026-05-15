@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar';
+import type { SchedulingState } from '@/features/weekly/types';
 import { isOutOfOffice } from '@/shared/components/calendar';
 import DailySlotCard from './DailySlotCard';
+import SlotMomentCard from '@/features/weekly/components/SlotMomentCard';
+
+type DailyMode = 'overview' | 'configure';
 
 interface Props {
     slot: TimeSlot;
@@ -10,6 +14,11 @@ interface Props {
     onToggleMoment: (momentId: number, instanceId: number | null, date: string) => void;
     isToday?: boolean;
     isNext?: boolean;
+    mode: DailyMode;
+    scheduling: SchedulingState | null;
+    onStartScheduling: (time: string) => void;
+    onGhostNameChange: (name: string) => void;
+    onGhostIconChange: (icon: string | null) => void;
 }
 
 export default function DailyTimeSlotCell({
@@ -19,20 +28,37 @@ export default function DailyTimeSlotCell({
     onToggleMoment,
     isToday,
     isNext,
+    mode,
+    scheduling,
+    onStartScheduling,
+    onGhostNameChange,
+    onGhostIconChange,
 }: Props) {
     const [swipeProgress, setSwipeProgress] = useState(0);
     const [swipeDone, setSwipeDone] = useState(false);
 
     const ooo = !slot.moment && isOutOfOffice(slot.time, config);
 
+    // Check if this slot is being scheduled (ghost card)
+    const isSchedulingThisSlot =
+        scheduling !== null &&
+        slot.time === scheduling.time &&
+        (scheduling.frequency === 'once'
+            ? date === scheduling.date
+            : true); // For recurring, always show on the target day
+
+    const isGhost = isSchedulingThisSlot && !slot.moment;
+    const isConflict = isSchedulingThisSlot && slot.moment !== null;
+
     const cls = [
         'weekly-slot',
         ooo ? 'weekly-slot--ooo' : '',
         isToday ? 'weekly-slot--today' : '',
-        !slot.moment && !ooo ? 'weekly-slot--empty' : '',
+        !slot.moment && !ooo && !isGhost ? 'weekly-slot--empty' : '',
         slot.moment?.status === 'completed' ? 'weekly-slot--completed' : '',
         swipeProgress > 0 ? 'weekly-slot--swiping' : '',
         swipeDone ? 'weekly-slot--swipe-done' : '',
+        mode === 'configure' && !slot.moment && !ooo && !isGhost ? 'weekly-slot--configure-empty' : '',
     ]
         .filter(Boolean)
         .join(' ');
@@ -48,6 +74,10 @@ export default function DailyTimeSlotCell({
         onToggleMoment(momentId, instanceId, date);
     }
 
+    // In overview mode, allow clicking empty slots to start scheduling (even if out-of-office)
+    const emptyClickable = !slot.moment;
+    const timeClickable = ooo && emptyClickable; // Make time clickable for out-of-office slots
+
     return (
         <div
             className={cls}
@@ -57,9 +87,47 @@ export default function DailyTimeSlotCell({
                     : undefined
             }
         >
-            <span className="weekly-slot__time">{slot.time}</span>
-            <div className="weekly-slot__content">
-                {slot.moment ? (
+            <span
+                className={`weekly-slot__time${timeClickable ? ' weekly-slot__time--clickable' : ''}`}
+                onClick={timeClickable ? () => onStartScheduling(slot.time) : undefined}
+                title={timeClickable ? `Add moment at ${slot.time}` : undefined}
+            >
+                {slot.time}
+            </span>
+            <div className="weekly-slot__content" style={{ position: 'relative' }}>
+                {mode === 'configure' && isGhost ? (
+                    <SlotMomentCard
+                        moment={{
+                            id: 0,
+                            name: scheduling?.name || 'New Moment',
+                            description: null,
+                            status: null,
+                            color: null,
+                            icon: scheduling?.icon ?? null,
+                            frequency: null,
+                            consistency: null,
+                            instance_id: null,
+                            implementation_intention: null,
+                            habit_stack_after: null,
+                            environment_prompt: null,
+                        }}
+                        variant="ghost"
+                        onGhostNameChange={onGhostNameChange}
+                        onGhostIconChange={onGhostIconChange}
+                    />
+                ) : mode === 'configure' && slot.moment && isConflict ? (
+                    <>
+                        <DailySlotCard
+                            moment={slot.moment}
+                            date={date}
+                            isNext={false}
+                            onToggle={handleToggle}
+                            onSwipeProgress={handleSwipeProgress}
+                            swipeProgress={swipeProgress}
+                        />
+                        <span className="weekly-slot__conflict-badge" title="Scheduling conflict">⚠️</span>
+                    </>
+                ) : slot.moment ? (
                     <DailySlotCard
                         moment={slot.moment}
                         date={date}
@@ -70,6 +138,24 @@ export default function DailyTimeSlotCell({
                     />
                 ) : ooo ? (
                     <span className="weekly-slot__ooo-dot" aria-hidden />
+                ) : mode === 'configure' && !isGhost ? (
+                    <button
+                        type="button"
+                        className="weekly-slot__add-btn"
+                        title={`Add moment at ${slot.time}`}
+                        onClick={() => onStartScheduling(slot.time)}
+                    >
+                        +
+                    </button>
+                ) : emptyClickable ? (
+                    <button
+                        type="button"
+                        className="weekly-slot__add-btn weekly-slot__add-btn--always-visible"
+                        title={`Add moment at ${slot.time}`}
+                        onClick={() => onStartScheduling(slot.time)}
+                    >
+                        +
+                    </button>
                 ) : (
                     <span className="weekly-slot__empty-label" />
                 )}

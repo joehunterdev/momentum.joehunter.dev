@@ -69,7 +69,7 @@ export default function SlotMomentCard({
                             title="Pick an icon"
                             onClick={(e) => { e.stopPropagation(); setPickerOpen((v) => !v); }}
                         >
-                            {moment.icon ?? '+'}
+                            {moment.icon ?? '📈'}
                         </button>
 
                         {pickerOpen && createPortal(

@@ -1,6 +1,9 @@
 import { format, parseISO } from 'date-fns';
 import type { CalendarConfig, TimeSlot, WeekDay } from '@/shared/components/calendar';
+import type { SchedulingState } from '@/features/weekly/types';
 import DailyTimeSlotCell from './DailyTimeSlotCell';
+
+type DailyMode = 'overview' | 'configure';
 
 interface Props {
     day: WeekDay;
@@ -8,6 +11,11 @@ interface Props {
     config: CalendarConfig;
     onToggleMoment: (momentId: number, instanceId: number | null, date: string) => void;
     nextMomentKey?: string | null;
+    mode: DailyMode;
+    scheduling: SchedulingState | null;
+    onStartScheduling: (time: string) => void;
+    onGhostNameChange: (name: string) => void;
+    onGhostIconChange: (icon: string | null) => void;
 }
 
 /** Returns true if this slot time falls on an interval boundary (every N minutes). */
@@ -58,7 +66,18 @@ function getNextDaySlots(slots: TimeSlot[], config: CalendarConfig, intervalMinu
     return filtered.slice(0, showUpTo);
 }
 
-export default function DailyGrid({ day, nextDay, config, onToggleMoment, nextMomentKey }: Props) {
+export default function DailyGrid({
+    day,
+    nextDay,
+    config,
+    onToggleMoment,
+    nextMomentKey,
+    mode,
+    scheduling,
+    onStartScheduling,
+    onGhostNameChange,
+    onGhostIconChange
+}: Props) {
     const dateObj = parseISO(day.date);
     const intervalMinutes = 20;
     const visibleSlots = getTodaySlots(day.slots, config, day.isToday, intervalMinutes);
@@ -88,6 +107,11 @@ export default function DailyGrid({ day, nextDay, config, onToggleMoment, nextMo
                                 !!slot.moment &&
                                 nextMomentKey === `${day.date}:${slot.time}:${slot.moment.id}`
                             }
+                            mode={mode}
+                            scheduling={scheduling}
+                            onStartScheduling={onStartScheduling}
+                            onGhostNameChange={onGhostNameChange}
+                            onGhostIconChange={onGhostIconChange}
                         />
                     ))}
                 </div>
@@ -113,6 +137,11 @@ export default function DailyGrid({ day, nextDay, config, onToggleMoment, nextMo
                                 onToggleMoment={() => { }}
                                 isToday={false}
                                 isNext={false}
+                                mode={mode}
+                                scheduling={scheduling}
+                                onStartScheduling={onStartScheduling}
+                                onGhostNameChange={onGhostNameChange}
+                                onGhostIconChange={onGhostIconChange}
                             />
                         ))}
                     </div>

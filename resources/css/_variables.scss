@@ -1,14 +1,40 @@
 // _variables.scss — Momentum design tokens
 
 :root {
-  // ─── Brand ───
-  --mm-primary: #6366F1;
-  --mm-primary-light: #818CF8;
-  --mm-primary-dark: #4F46E5;
-  --mm-accent: #10B981;
+  // ─── Brand Colors (Bootstrap-style) ───
+  --mm-primary: #00E5AA; // Teal/Cyan (logo color)
+  --mm-primary-light: #33EBB9;
+  --mm-primary-dark: #00CFA0;
+  --mm-primary-rgb: 0, 229, 170;
+
+  --mm-secondary: #8B5CF6; // Purple (complementary to teal)
+  --mm-secondary-light: #A78BFA;
+  --mm-secondary-dark: #7C3AED;
+  --mm-secondary-rgb: 139, 92, 246;
+
+  --mm-success: #10B981; // Green
+  --mm-success-light: #34D399;
+  --mm-success-dark: #059669;
+
+  --mm-danger: #EF4444; // Red
+  --mm-danger-light: #F87171;
+  --mm-danger-dark: #DC2626;
+
+  --mm-warning: #F59E0B; // Amber
+  --mm-warning-light: #FBBF24;
+  --mm-warning-dark: #D97706;
+
+  --mm-info: #3B82F6; // Blue
+  --mm-info-light: #60A5FA;
+  --mm-info-dark: #2563EB;
+
+  --mm-muted: #6B7280; // Gray
+  --mm-muted-light: #9CA3AF;
+  --mm-muted-dark: #4B5563;
+
+  // ─── Legacy/Accent (kept for compatibility) ───
+  --mm-accent: var(--mm-success);
   --mm-accent-glow: rgba(16, 185, 129, 0.3);
-  --mm-danger: #EF4444;
-  --mm-warning: #F59E0B;
 
   // ─── Surfaces (dark mode default) ───
   --mm-bg: #0F172A;

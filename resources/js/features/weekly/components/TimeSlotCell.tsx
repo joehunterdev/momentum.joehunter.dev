@@ -57,7 +57,7 @@ export default function TimeSlotCell({
             <div
                 className={[
                     cls,
-                    emptyClickable ? 'weekly-slot--overview-empty' : '',
+                    emptyClickable && !ooo ? 'weekly-slot--overview-empty' : '',
                 ].filter(Boolean).join(' ')}
             >
                 <span
@@ -68,20 +68,21 @@ export default function TimeSlotCell({
                     {slot.time}
                 </span>
                 <div className="weekly-slot__content">
-                    {slot.moment
-                        ? <SlotMomentCard moment={slot.moment} variant="overview" />
-                        : (
-                            <button
-                                type="button"
-                                className="weekly-slot__add-btn weekly-slot__add-btn--always-visible"
-                                title={`Add moment at ${slot.time}`}
-                                onClick={() => onStartScheduling(date, slot.time)}
-                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onStartScheduling(date, slot.time); }}
-                            >
-                                +
-                            </button>
-                        )
-                    }
+                    {slot.moment ? (
+                        <SlotMomentCard moment={slot.moment} variant="overview" />
+                    ) : ooo ? (
+                        <span className="weekly-slot__ooo-dot" aria-hidden />
+                    ) : (
+                        <button
+                            type="button"
+                            className="weekly-slot__add-btn weekly-slot__add-btn--always-visible"
+                            title={`Add moment at ${slot.time}`}
+                            onClick={() => onStartScheduling(date, slot.time)}
+                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onStartScheduling(date, slot.time); }}
+                        >
+                            +
+                        </button>
+                    )}
                 </div>
             </div>
         );

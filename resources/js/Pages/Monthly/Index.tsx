@@ -27,12 +27,11 @@ export default function Index({ month, monthStart, days, scheduleRows }: Props) 
 
     // ── Schedule creation ─────────────────────────────────────────────────────
     function handleStartScheduling(isoDay: number) {
-        const isWeekday = isoDay >= 1 && isoDay <= 5;
         setScheduling({
             date: monthStart,
             time: null,
-            frequency: 'weekly',
-            daysOfWeek: isWeekday ? [1, 2, 3, 4, 5] : [isoDay],
+            frequency: 'daily',
+            daysOfWeek: [0, 1, 2, 3, 4, 5, 6], // All days of the week
             name: '',
             icon: null,
         });

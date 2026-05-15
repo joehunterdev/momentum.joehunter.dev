@@ -62,7 +62,11 @@ export default function SlotMomentIcon({ moment, date, onToggle, onSwipeProgress
                     }
                 }}
             >
-                {moment.icon ?? (moment.name ?? 'U').charAt(0).toUpperCase()}
+                {moment.icon ? (
+                    moment.icon
+                ) : (
+                    <img src="/logo.png" alt="" className="slot-icon__default-logo" />
+                )}
             </div>
         </div>
     );
