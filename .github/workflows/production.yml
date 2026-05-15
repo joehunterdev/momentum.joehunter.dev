@@ -65,11 +65,11 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ${{ secrets.SSH_DEPLOY_PATH }}
-            composer install --no-dev --no-interaction --optimize-autoloader
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-            php artisan optimize
+            /opt/alt/php84/usr/bin/php /usr/local/bin/composer install --no-dev --no-interaction --optimize-autoloader
+            /opt/alt/php84/usr/bin/php artisan config:cache
+            /opt/alt/php84/usr/bin/php artisan route:cache
+            /opt/alt/php84/usr/bin/php artisan view:cache
+            /opt/alt/php84/usr/bin/php artisan optimize
             storage/framework/cache/**
             storage/framework/sessions/**
             storage/framework/testing/**
