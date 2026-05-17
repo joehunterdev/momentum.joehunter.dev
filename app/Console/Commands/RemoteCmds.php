@@ -11,7 +11,7 @@ class RemoteCmds extends Command
      *
      * @var string
      */
-    protected $signature = 'remote:cmds {environment? : The environment to target (staging|production)} {commands?* : Specific commands to run (cache, optimize, fresh, migrate, seed, composer, dump, symlink, logs, download-logs, clear-logs)}';
+    protected $signature = 'remote:cmds {environment? : The environment to target (staging|production)} {commands?* : Specific commands to run (cache, optimize, fresh, migrate, seed, composer, dump, symlink, key-generate, logs, download-logs, clear-logs)}';
 
     /**
      * The description of the console command.
@@ -38,6 +38,7 @@ Examples:
         'composer' => 'composer install --no-dev --no-interaction --optimize-autoloader --ignore-platform-reqs',
         'dump' => 'composer dump-autoload --ignore-platform-reqs',
         'symlink' => 'php artisan storage:link',
+        'key-generate' => 'php artisan key:generate --force',
     ];
 
     /**
@@ -106,6 +107,10 @@ Examples:
             return self::FAILURE;
         }
 
+        // Get PHP path from main .env (optional, defaults to 'php')
+        $phpPathKey = 'SSH_PHP_PATH_' . strtoupper($env);
+        $phpPath = env($phpPathKey, 'php');
+
         // Security: Validate remote path format
         if (! $this->validateRemotePath($remotePath)) {
             $this->error('❌ Invalid remote path format. Must be absolute path.');
@@ -119,6 +124,7 @@ Examples:
         $this->line("   SSH Target: {$sshUser}@{$sshHost}:{$sshPort}");
         $this->line('   SSH Key: ' . ($sshKeyPath ?: '(system default)'));
         $this->line("   Remote Path: {$remotePath}");
+        $this->line("   PHP Path: {$phpPath}");
 
         // Step 2: Test connection
         $this->newLine();
@@ -229,7 +235,7 @@ Examples:
 
         // Display selected commands
         if (! empty($selectedCommands)) {
-            $this->displayCommands($selectedCommands, $remotePath);
+            $this->displayCommands($selectedCommands, $remotePath, $phpPath);
 
             // Ask if user wants to execute
             if ($this->confirm('Execute these commands now via SSH?', false)) {
@@ -237,7 +243,7 @@ Examples:
                 $this->logCommandExecution($env, $selectedCommands);
 
                 $this->newLine();
-                $this->executeCommands($sshUser, $sshHost, $sshPort, $remotePath, $selectedCommands);
+                $this->executeCommands($sshUser, $sshHost, $sshPort, $remotePath, $selectedCommands, $phpPath);
             }
         }
 
@@ -305,16 +311,17 @@ Examples:
     /**
      * Display selected commands
      */
-    private function displayCommands(array $selectedCommands, string $remotePath): void
+    private function displayCommands(array $selectedCommands, string $remotePath, string $phpPath = 'php'): void
     {
         $this->info('✅ Commands selected:');
         $this->newLine();
 
         foreach ($selectedCommands as $cmd) {
             if (isset(self::ALLOWED_COMMANDS[$cmd])) {
+                $command = $this->replacePhpPath(self::ALLOWED_COMMANDS[$cmd], $phpPath);
                 $this->line("<fg=green>✓ {$cmd}</>");
-                $this->line('   Command: ' . self::ALLOWED_COMMANDS[$cmd]);
-                $this->line("   Path: cd {$remotePath} && " . self::ALLOWED_COMMANDS[$cmd]);
+                $this->line('   Command: ' . $command);
+                $this->line("   Path: cd {$remotePath} && " . $command);
                 $this->newLine();
             }
         }
@@ -972,7 +979,7 @@ Examples:
     /**
      * Execute commands via SSH and stream output
      */
-    private function executeCommands(string $user, string $host, int $port, string $remotePath, array $selectedCommands): void
+    private function executeCommands(string $user, string $host, int $port, string $remotePath, array $selectedCommands, string $phpPath = 'php'): void
     {
         $this->info('🔄 Executing commands on remote server...');
         $this->line('<fg=cyan>═══════════════════════════════════════════════</>');
@@ -985,7 +992,7 @@ Examples:
                 continue;
             }
 
-            $command = self::ALLOWED_COMMANDS[$cmd];
+            $command = $this->replacePhpPath(self::ALLOWED_COMMANDS[$cmd], $phpPath);
             $this->info("▶ Running: {$cmd}");
             $this->line("<fg=gray>{$command}</>");
             $this->newLine();
@@ -1061,6 +1068,7 @@ Examples:
             'composer' => 'Install composer dependencies (production-optimized)',
             'dump' => 'Dump composer autoloader',
             'symlink' => 'Create storage:link symlink',
+            'key-generate' => 'Generate new APP_KEY for Laravel encryption (writes to .env)',
             'logs' => 'Fetch remote Laravel logs',
             'download-logs' => 'Download log files to local storage/logs/remote',
             'clear-logs' => 'Clear remote log files (DANGEROUS)',
@@ -1623,5 +1631,14 @@ Examples:
             $this->line('Make sure SCP is available on your system.');
             $this->line('On Windows, ensure SSH/SCP tools are in your PATH.');
         }
+    }
+
+    /**
+     * Replace 'php' with custom PHP path in commands
+     */
+    private function replacePhpPath(string $command, string $phpPath): string
+    {
+        // Replace 'php artisan' and 'php ' at the start or after &&
+        return preg_replace('/\bphp\b/', $phpPath, $command);
     }
 }
