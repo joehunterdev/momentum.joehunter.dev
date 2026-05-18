@@ -146,6 +146,23 @@ export default function ConfigForm({ config }: ConfigFormProps) {
             <div className="flex justify-end">
                 <PrimaryButton disabled={form.processing}>Save Config</PrimaryButton>
             </div>
+
+            {/* ── Data Export ─────────────────────────────────────────── */}
+            <section className="border-t border-gray-200 pt-8">
+                <h2 className="config-section-title">Data Export</h2>
+                <p className="config-section-hint">
+                    Download your moments as a JSON file in the same shape used by the
+                    seeder. Drop it into <code>database/data/</code> to re-seed later.
+                </p>
+                <div className="mt-4">
+                    <a
+                        href={route('config.moments.export')}
+                        className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                        Export Moments JSON
+                    </a>
+                </div>
+            </section>
         </form>
     );
 }

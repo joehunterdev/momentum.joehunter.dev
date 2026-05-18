@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\MomentExportService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -43,5 +45,15 @@ class ConfigController extends Controller
             ->updateOrCreate([], $data);
 
         return back()->with('success', 'Settings saved.');
+    }
+
+    public function exportMoments(Request $request, MomentExportService $exporter): JsonResponse
+    {
+        $payload = $exporter->export($request->user());
+        $filename = 'moments-export-'.now()->format('Y-m-d').'.json';
+
+        return response()->json($payload, 200, [
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }

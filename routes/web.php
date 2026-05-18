@@ -77,6 +77,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/config', [ConfigController::class, 'edit'])->name('config.edit');
     Route::put('/config', [ConfigController::class, 'update'])->name('config.update');
+    Route::get('/config/moments/export', [ConfigController::class, 'exportMoments'])
+        ->name('config.moments.export');
 
     // ─── Profile (Breeze) ─────────────────────────────────────────────────────
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
