@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { DailyGrid, DailyProgressBar } from '@/features/daily';
+import { DailyGrid } from '@/features/daily';
 import { Head, router } from '@inertiajs/react';
-import { CalendarNav, MomentFrequencyConfig } from '@/shared/components/calendar';
+import { CalendarNav, CalendarProgressBar, MomentFrequencyConfig } from '@/shared/components/calendar';
 import { addDays, format, parseISO, subDays } from 'date-fns';
 import type { PageProps } from '@/types';
 import type { IsoDayNumber, SchedulingState as NewSchedulingState } from '@/features/scheduling';
@@ -114,7 +114,7 @@ export default function Index({ date, day, nextDay, config, completedCount, tota
                         routeName="daily"
                     />
                     {scheduling.mode === 'overview' && totalCount > 0 && (
-                        <DailyProgressBar
+                        <CalendarProgressBar
                             completedCount={completedCount}
                             totalCount={totalCount}
                         />

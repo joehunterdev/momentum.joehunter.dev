@@ -103,7 +103,21 @@ export default function Index({ month, monthStart, days, scheduleRows }: Props) 
                             <div className="block md:hidden">
                                 <MonthlyVerticalView
                                     days={days}
+                                    mode={scheduling.mode}
+                                    scheduling={scheduling.state}
                                     onDayClick={handleDayClick}
+                                    onStartScheduling={(date) => {
+                                        scheduling.start({
+                                            kind: 'recurring',
+                                            daysOfWeek: [...ALL_DAYS],
+                                            time: null,
+                                            anchorDate: date,
+                                            name: '',
+                                            icon: null,
+                                        });
+                                    }}
+                                    onDraftNameChange={scheduling.setName}
+                                    onDraftIconChange={scheduling.setIcon}
                                 />
                             </div>
                         </>

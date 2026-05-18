@@ -1,17 +1,31 @@
 import { format, parseISO } from 'date-fns';
-import { CalendarSection, CalendarSectionHeader } from '@/shared/components/calendar';
-import { CalendarMomentCard } from '@/shared/components/calendar';
+import { CalendarSection, CalendarSectionHeader, CalendarSectionArticle } from '@/shared/components/calendar';
+import type { CalendarMode, SchedulingState } from '@/features/scheduling';
 
 interface Props {
     days: App.Data.MonthlyDayData[];
+    mode: CalendarMode;
+    scheduling: SchedulingState | null;
     onDayClick: (date: string) => void;
+    onStartScheduling: (date: string) => void;
+    onDraftNameChange?: (name: string) => void;
+    onDraftIconChange?: (icon: string | null) => void;
 }
 
 /**
  * Mobile-optimized vertical monthly view.
- * Shows each day as a row with its moments, like daily/weekly views.
+ * Shows each day as a row with its moments, using CalendarSectionArticle
+ * for consistency with daily/weekly views (per calendar-components-refactor-plan.md §4.6).
  */
-export default function MonthlyVerticalView({ days, onDayClick }: Props) {
+export default function MonthlyVerticalView({
+    days,
+    mode,
+    scheduling,
+    onDayClick,
+    onStartScheduling,
+    onDraftNameChange,
+    onDraftIconChange,
+}: Props) {
     // Filter to only days with moments or today onwards
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -62,24 +76,39 @@ export default function MonthlyVerticalView({ days, onDayClick }: Props) {
                                 };
 
                                 return (
-                                    <div
+                                    <CalendarSectionArticle
                                         key={moment.id}
-                                        className={`weekly-slot ${moment.status === 'completed' ? 'weekly-slot--completed' : ''}`}
-                                    >
-                                        <CalendarMomentCard moment={slotMoment} variant="read" />
-                                    </div>
+                                        slotKey={`${day.date}:${moment.id}`}
+                                        date={day.date}
+                                        moment={slotMoment}
+                                        mode={mode}
+                                        scheduling={scheduling}
+                                        capabilities={{
+                                            addOnEmpty: false,
+                                            draftEdit: false,
+                                            conflictBadge: false,
+                                            editButton: true,
+                                            outOfOffice: false,
+                                        }}
+                                    />
                                 );
                             })
                         ) : (
-                            <button
-                                type="button"
-                                className="weekly-slot weekly-slot--empty weekly-slot--overview-empty"
-                                onClick={() => onDayClick(day.date)}
-                            >
-                                <span className="weekly-slot__add-btn-text">
-                                    + Add moments
-                                </span>
-                            </button>
+                            <CalendarSectionArticle
+                                slotKey={`${day.date}:empty`}
+                                date={day.date}
+                                moment={null}
+                                mode={mode}
+                                scheduling={scheduling}
+                                capabilities={{
+                                    addOnEmpty: true,
+                                    draftEdit: false,
+                                    conflictBadge: false,
+                                    editButton: false,
+                                    outOfOffice: false,
+                                }}
+                                onStartScheduling={() => onStartScheduling(day.date)}
+                            />
                         )}
                     </CalendarSection>
                 );

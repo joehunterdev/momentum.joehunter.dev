@@ -1,1 +1,1 @@
-export { DailyGrid, DailyProgressBar, DailySlotCard, DailyTimeSlotCell } from './components';
+export { DailyGrid, DailySlotCard, DailyTimeSlotCell } from './components';
