@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import type { TimeSlot, WeeklyConfig } from '../types';
 import { isOutOfOffice } from '@/shared/components/calendar';
 import AddSlotPopover from './AddSlotPopover';
-import SlotMomentCard from './SlotMomentCard';
+import { CalendarMomentCard } from '@/shared/components/calendar';
 
 interface Props {
     slot: TimeSlot;
@@ -69,7 +69,7 @@ export default function TimeSlotCell({
                 </span>
                 <div className="weekly-slot__content">
                     {slot.moment ? (
-                        <SlotMomentCard moment={slot.moment} variant="overview" />
+                        <CalendarMomentCard moment={slot.moment} variant="read" />
                     ) : ooo ? (
                         <span className="weekly-slot__ooo-dot" aria-hidden />
                     ) : (
@@ -101,7 +101,7 @@ export default function TimeSlotCell({
             </span>
             <div className="weekly-slot__content" style={{ position: 'relative' }}>
                 {isGhost ? (
-                    <SlotMomentCard
+                    <CalendarMomentCard
                         moment={{
                             id: 0,
                             name: ghostName || 'New Moment',
@@ -116,13 +116,13 @@ export default function TimeSlotCell({
                             habit_stack_after: null,
                             environment_prompt: null,
                         }}
-                        variant="ghost"
-                        onGhostNameChange={onGhostNameChange}
-                        onGhostIconChange={onGhostIconChange}
+                        variant="draft"
+                        onDraftNameChange={onGhostNameChange}
+                        onDraftIconChange={onGhostIconChange}
                     />
                 ) : slot.moment ? (
                     <>
-                        <SlotMomentCard moment={slot.moment} variant="configure" />
+                        <CalendarMomentCard moment={slot.moment} variant="edit" />
                         {isConflict && <span className="weekly-slot__conflict-badge" title="Scheduling conflict">⚠️</span>}
                     </>
                 ) : (

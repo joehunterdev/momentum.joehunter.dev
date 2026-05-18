@@ -19,32 +19,32 @@ interface Props {
 export default function DailySlotCard({ moment, date, isNext, onToggle, onSwipeProgress, swipeProgress = 0 }: Props) {
     return (
         <div
-            className={`slot-moment-card${isNext ? ' slot-moment-card--next' : ''}`}
+            className={`moment-card${isNext ? ' moment-card--next' : ''}`}
             style={{ '--drag-progress': swipeProgress } as React.CSSProperties}
         >
             {moment.consistency !== null && (
-                <div className="slot-moment-card__top">
+                <div className="moment-card__top">
                     <ConsistencyBar score={moment.consistency} />
-                    <span className="slot-moment-card__score">{moment.consistency}%</span>
+                    <span className="moment-card__score">{moment.consistency}%</span>
                 </div>
             )}
-            <div className="slot-moment-card__row">
+            <div className="moment-card__row">
                 <SlotMomentIcon
                     moment={moment}
                     date={date}
                     onToggle={onToggle}
                     onSwipeProgress={onSwipeProgress}
                 />
-                <div className="slot-moment-card__body">
-                    <div className="slot-moment-card__name-row">
-                        <span className="slot-moment-card__name">{moment.name}</span>
+                <div className="moment-card__body">
+                    <div className="moment-card__name-row">
+                        <span className="moment-card__name">{moment.name}</span>
                         {isNext && <MomentDetailTicker moment={moment} part="badge" />}
                     </div>
                     {isNext ? (
                         <MomentDetailTicker moment={moment} part="track" />
                     ) : (
                         moment.description && (
-                            <span className="slot-moment-card__desc">
+                            <span className="moment-card__desc">
                                 {moment.description}
                             </span>
                         )

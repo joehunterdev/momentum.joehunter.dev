@@ -1,24 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
-import type { SlotMoment } from '../types';
-import SlotMomentIcon from './SlotMomentIcon';
+import type { SlotMoment } from '@/features/weekly/types';
+// TODO(PR#9): SlotMomentIcon + useSwipeComplete move to shared/components/calendar
+// along with the swipe hook. Until then this import reaches into features/weekly.
+import SlotMomentIcon from '@/features/weekly/components/SlotMomentIcon';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
 
-type Variant = 'overview' | 'configure' | 'ghost';
+//TODO: index store update methods maby ? 
+export type CalendarMomentCardVariant = 'read' | 'edit' | 'draft';
 
 interface Props {
     moment: SlotMoment;
-    variant?: Variant;
-    onGhostNameChange?: (name: string) => void;
-    onGhostIconChange?: (icon: string | null) => void;
+    variant?: CalendarMomentCardVariant;
+    onDraftNameChange?: (name: string) => void;
+    onDraftIconChange?: (icon: string | null) => void;
 }
 
-export default function SlotMomentCard({
+export default function CalendarMomentCard({
     moment,
-    variant = 'configure',
-    onGhostNameChange,
-    onGhostIconChange,
+    variant = 'edit',
+    onDraftNameChange,
+    onDraftIconChange,
 }: Props) {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
@@ -49,23 +52,23 @@ export default function SlotMomentCard({
     }, [pickerOpen]);
 
     const cardCls = [
-        'slot-moment-card',
-        variant === 'ghost' ? 'slot-moment-card--ghost' : '',
+        'moment-card',
+        variant === 'draft' ? 'moment-card--draft' : '',
     ]
         .filter(Boolean)
         .join(' ');
 
-    // ── Ghost variant ─────────────────────────────────────────────────────────
-    if (variant === 'ghost') {
+    // ── Draft variant ────────────────────────────────────────────────────────
+    if (variant === 'draft') {
         return (
-            <div className="slot-moment-card slot-moment-card--ghost-edit">
-                <div className="slot-moment-card__row">
+            <div className="moment-card moment-card--draft-edit">
+                <div className="moment-card__row">
                     {/* Icon picker trigger */}
-                    <div className="ghost-icon-wrap">
+                    <div className="draft-icon-wrap">
                         <button
                             ref={iconBtnRef}
                             type="button"
-                            className="slot-icon slot-icon--future slot-icon--ghost-placeholder ghost-icon-trigger"
+                            className="slot-icon slot-icon--future slot-icon--draft-placeholder draft-icon-trigger"
                             title="Pick an icon"
                             onClick={(e) => { e.stopPropagation(); setPickerOpen((v) => !v); }}
                         >
@@ -73,19 +76,19 @@ export default function SlotMomentCard({
                         </button>
 
                         {pickerOpen && createPortal(
-                            <div className="ghost-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
-                                <div className="ghost-icon-picker__grid">
+                            <div className="draft-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
+                                <div className="draft-icon-picker__grid">
                                     {MOMENT_ICONS.map((opt) => (
                                         <button
                                             key={opt.name}
                                             type="button"
                                             className={[
-                                                'ghost-icon-picker__item',
-                                                moment.icon === opt.emoji ? 'ghost-icon-picker__item--active' : '',
+                                                'draft-icon-picker__item',
+                                                moment.icon === opt.emoji ? 'draft-icon-picker__item--active' : '',
                                             ].filter(Boolean).join(' ')}
                                             title={opt.name}
                                             onClick={() => {
-                                                onGhostIconChange?.(opt.emoji);
+                                                onDraftIconChange?.(opt.emoji);
                                                 setPickerOpen(false);
                                             }}
                                         >
@@ -99,14 +102,14 @@ export default function SlotMomentCard({
                     </div>
 
                     {/* Inline name input */}
-                    <div className="slot-moment-card__body">
+                    <div className="moment-card__body">
                         <input
                             type="text"
-                            className="ghost-name-input"
+                            className="draft-name-input"
                             placeholder="Name this moment…"
                             value={moment.name === 'New Moment' ? '' : (moment.name ?? '')}
                             maxLength={60}
-                            onChange={(e) => onGhostNameChange?.(e.target.value)}
+                            onChange={(e) => onDraftNameChange?.(e.target.value)}
                         />
                     </div>
                 </div>
@@ -114,29 +117,29 @@ export default function SlotMomentCard({
         );
     }
 
-    // ── Overview + Configure ──────────────────────────────────────────────────
+    // ── Read + Edit ───────────────────────────────────────────────────────────
     const name = moment.name ?? 'Untitled Moment';
 
     return (
         <div className={cardCls}>
-            <div className="slot-moment-card__row">
+            <div className="moment-card__row">
                 <SlotMomentIcon
                     moment={moment}
                     date=""
                     onToggle={() => { }}
                     isStatic
                 />
-                <div className="slot-moment-card__body">
-                    <span className="slot-moment-card__name">{name}</span>
+                <div className="moment-card__body">
+                    <span className="moment-card__name">{name}</span>
                     {moment.description && (
-                        <span className="slot-moment-card__desc">
+                        <span className="moment-card__desc">
                             {moment.description}
                         </span>
                     )}
                 </div>
                 <button
                     type="button"
-                    className="slot-moment-card__edit-btn"
+                    className="moment-card__edit-btn"
                     title={`Edit ${name}`}
                     onClick={() => router.get(route('moments.edit', { moment: moment.id }))}
                     aria-label={`Edit ${name}`}

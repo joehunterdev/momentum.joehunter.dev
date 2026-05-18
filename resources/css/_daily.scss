@@ -108,7 +108,7 @@
 
 // ── Adaptive drag wash — green fill grows left→right with drag progress ───────
 
-.slot-moment-card {
+.moment-card {
     position: relative;
 
     &::before {
@@ -133,7 +133,7 @@
 
 // ── Edit button on weekly slot moment card ────────────────────────────────────
 
-.slot-moment-card__edit-btn {
+.moment-card__edit-btn {
     flex-shrink: 0;
     padding: 0.25rem;
     font-size: 0.85rem;

@@ -1,4 +1,4 @@
-import SlotMomentCard from '@/features/weekly/components/SlotMomentCard';
+import { CalendarMomentCard } from '@/shared/components/calendar';
 import type { SchedulingState } from '@/features/weekly/types';
 
 interface Props {
@@ -68,14 +68,14 @@ export default function MomentSlotCell({
         <div className={cls}>
             <div className="weekly-slot__content">
                 {isGhost ? (
-                    <SlotMomentCard
+                    <CalendarMomentCard
                         moment={ghostMoment}
-                        variant="ghost"
-                        onGhostNameChange={onGhostNameChange}
-                        onGhostIconChange={onGhostIconChange}
+                        variant="draft"
+                        onDraftNameChange={onGhostNameChange}
+                        onDraftIconChange={onGhostIconChange}
                     />
                 ) : existingMoment ? (
-                    <SlotMomentCard moment={existingMoment} variant="configure" />
+                    <CalendarMomentCard moment={existingMoment} variant="edit" />
                 ) : (
                     <button
                         type="button"

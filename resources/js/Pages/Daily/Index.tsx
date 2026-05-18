@@ -1,73 +1,63 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DailyGrid, DailyProgressBar } from '@/features/daily';
 import { Head, router } from '@inertiajs/react';
-import { CalendarNav, jsToIsoDay } from '@/shared/components/calendar';
+import { CalendarNav, MomentFrequencyConfig } from '@/shared/components/calendar';
 import { addDays, format, parseISO, subDays } from 'date-fns';
 import type { PageProps } from '@/types';
-import { useState } from 'react';
-import type { SchedulingState } from '@/features/weekly/types';
-import { FrequencyBar } from '@/features/weekly';
+import type { IsoDayNumber, SchedulingState as NewSchedulingState } from '@/features/scheduling';
+import { useScheduling } from '@/features/scheduling';
+import type { SchedulingState as LegacySchedulingState } from '@/features/weekly/types';
 
 interface Props extends PageProps, App.Data.DailyPageData { }
 
-type DailyMode = 'overview' | 'configure';
+const WEEKDAYS: IsoDayNumber[] = [1, 2, 3, 4, 5];
 
-export default function Index({ date, day, nextDay, config, completedCount, totalCount }: Props) {
-    const [mode, setMode] = useState<DailyMode>('overview');
-    const [scheduling, setScheduling] = useState<SchedulingState | null>(null);
+/**
+ * Adapter: convert the new discriminated-union scheduling state into the
+ * legacy flat shape that <DailyGrid> still consumes.
+ * Removed once those components migrate in later PRs.
+ */
+function toLegacy(state: NewSchedulingState | null, fallbackDate: string): LegacySchedulingState | null {
+    if (!state) { return null; }
 
-    // ── Schedule-first creation flow ──────────────────────────────────────────
-    function handleStartScheduling(time: string) {
-        setMode('configure');
-        setScheduling({
-            date,
-            time,
+    if (state.kind === 'one-off') {
+        return {
+            date: state.date,
+            time: state.time,
             frequency: 'once',
             daysOfWeek: [],
+            name: state.name,
+            icon: state.icon,
+        };
+    }
+
+    const isAllDays = state.daysOfWeek.length === 7;
+    const isWeekdays =
+        state.daysOfWeek.length === WEEKDAYS.length
+        && WEEKDAYS.every((d) => state.daysOfWeek.includes(d));
+    const frequency: App.Enums.Frequency = isAllDays ? 'daily' : isWeekdays ? 'weekly' : 'custom';
+
+    return {
+        date: state.anchorDate || fallbackDate,
+        time: state.time,
+        frequency,
+        daysOfWeek: state.daysOfWeek,
+        name: state.name,
+        icon: state.icon,
+    };
+}
+
+export default function Index({ date, day, nextDay, config, completedCount, totalCount }: Props) {
+    const scheduling = useScheduling({ redirectTo: route('daily', { date }) });
+
+    function handleStartScheduling(time: string) {
+        scheduling.start({
+            kind: 'one-off',
+            date,
+            time,
             name: '',
             icon: null,
         });
-    }
-
-    function handleSchedulingChange(frequency: App.Enums.Frequency, daysOfWeek: number[]) {
-        setScheduling((prev) => prev ? { ...prev, frequency, daysOfWeek } : null);
-    }
-
-    function handleSchedulingNameChange(name: string) {
-        setScheduling((prev) => prev ? { ...prev, name } : null);
-    }
-
-    function handleSchedulingIconChange(icon: string | null) {
-        setScheduling((prev) => prev ? { ...prev, icon } : null);
-    }
-
-    function handleConfirmSchedule() {
-        if (!scheduling) { return; }
-
-        router.post(
-            route('moments.store'),
-            {
-                name: scheduling.name.trim() || null,
-                frequency: scheduling.frequency,
-                days_of_week: scheduling.frequency !== 'once' ? scheduling.daysOfWeek : null,
-                preferred_time: scheduling.time,
-                icon: scheduling.icon,
-                scheduled_date: scheduling.frequency === 'once' ? scheduling.date : null,
-                _redirect: route('daily', { date }),
-            },
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setScheduling(null);
-                    setMode('overview');
-                },
-            },
-        );
-    }
-
-    function handleCancelSchedule() {
-        setScheduling(null);
-        setMode('overview');
     }
 
     async function handleToggleMoment(
@@ -109,6 +99,8 @@ export default function Index({ date, day, nextDay, config, completedCount, tota
     const prevDate = subDays(currentDate, 1);
     const nextDate = addDays(currentDate, 1);
 
+    const legacyScheduling = toLegacy(scheduling.state, date);
+
     return (
         <AuthenticatedLayout
             header={
@@ -121,7 +113,7 @@ export default function Index({ date, day, nextDay, config, completedCount, tota
                         nextParam={{ date: format(nextDate, 'yyyy-MM-dd') }}
                         routeName="daily"
                     />
-                    {mode === 'overview' && totalCount > 0 && (
+                    {scheduling.mode === 'overview' && totalCount > 0 && (
                         <DailyProgressBar
                             completedCount={completedCount}
                             totalCount={totalCount}
@@ -132,14 +124,14 @@ export default function Index({ date, day, nextDay, config, completedCount, tota
         >
             <Head title="Daily" />
             {/* Scheduling UI */}
-            {mode === 'configure' && scheduling && (
-                <FrequencyBar
-                    time={scheduling.time}
-                    frequency={scheduling.frequency}
-                    daysOfWeek={scheduling.daysOfWeek}
-                    onChange={handleSchedulingChange}
-                    onCancel={handleCancelSchedule}
-                    onConfirm={handleConfirmSchedule}
+            {scheduling.mode === 'configure' && scheduling.state && (
+                <MomentFrequencyConfig
+                    state={scheduling.state}
+                    time={scheduling.state.time}
+                    onKindChange={(next) => scheduling.setKind(next, date)}
+                    onDaysChange={scheduling.setDaysOfWeek}
+                    onCancel={scheduling.exit}
+                    onConfirm={scheduling.confirm}
                 />
             )}
 
@@ -151,11 +143,11 @@ export default function Index({ date, day, nextDay, config, completedCount, tota
                         config={config}
                         onToggleMoment={handleToggleMoment}
                         nextMomentKey={nextMomentKey}
-                        mode={mode}
-                        scheduling={scheduling}
+                        mode={scheduling.mode}
+                        scheduling={legacyScheduling}
                         onStartScheduling={handleStartScheduling}
-                        onGhostNameChange={handleSchedulingNameChange}
-                        onGhostIconChange={handleSchedulingIconChange}
+                        onGhostNameChange={scheduling.setName}
+                        onGhostIconChange={scheduling.setIcon}
                     />
                 </div>
             </div>

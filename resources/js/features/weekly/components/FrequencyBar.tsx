@@ -11,7 +11,7 @@ interface Props {
     onConfirm: () => void;
     onCancel: () => void;
 }
-
+//TODO: Refactor to use a single source of truth for frequency options (currently duplicated in Daily/Index, Monthly/Index, and here)
 const FREQ_OPTIONS: { label: string; value: App.Enums.Frequency }[] = [
     { label: 'Daily', value: 'daily' },
     { label: 'Weekdays', value: 'weekly' },

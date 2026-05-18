@@ -1,11 +1,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { WeeklyGrid, FrequencyBar } from '@/features/weekly';
-import type { SchedulingState, WeeklyPageProps } from '@/features/weekly';
+import { WeeklyGrid } from '@/features/weekly';
+import type { SchedulingState as LegacySchedulingState, WeeklyPageProps } from '@/features/weekly';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
-import { CalendarNav, jsToIsoDay } from '@/shared/components/calendar';
+import { CalendarNav, MomentFrequencyConfig, jsToIsoDay } from '@/shared/components/calendar';
+import type { IsoDayNumber, SchedulingState as NewSchedulingState } from '@/features/scheduling';
+import { useScheduling } from '@/features/scheduling';
 import {
     addWeeks,
     endOfISOWeek,
@@ -19,12 +21,44 @@ import type { PageProps } from '@/types';
 
 interface Props extends PageProps, WeeklyPageProps { }
 
-type WeekMode = 'overview' | 'configure';
+const WEEKDAYS: IsoDayNumber[] = [1, 2, 3, 4, 5];
+
+/**
+ * Adapter: new discriminated-union scheduling state → legacy flat shape
+ * expected by <WeeklyGrid>. Removed when that migrates.
+ */
+function toLegacy(state: NewSchedulingState | null, fallbackDate: string): LegacySchedulingState | null {
+    if (!state) { return null; }
+
+    if (state.kind === 'one-off') {
+        return {
+            date: state.date,
+            time: state.time,
+            frequency: 'once',
+            daysOfWeek: [],
+            name: state.name,
+            icon: state.icon,
+        };
+    }
+
+    const isAllDays = state.daysOfWeek.length === 7;
+    const isWeekdays =
+        state.daysOfWeek.length === WEEKDAYS.length
+        && WEEKDAYS.every((d) => state.daysOfWeek.includes(d));
+    const frequency: App.Enums.Frequency = isAllDays ? 'daily' : isWeekdays ? 'weekly' : 'custom';
+
+    return {
+        date: state.anchorDate || fallbackDate,
+        time: state.time,
+        frequency,
+        daysOfWeek: state.daysOfWeek,
+        name: state.name,
+        icon: state.icon,
+    };
+}
 
 export default function Index({ weekStart, config, days }: Props) {
-
-    const [mode, setMode] = useState<WeekMode>('overview');
-    const [scheduling, setScheduling] = useState<SchedulingState | null>(null);
+    const scheduling = useScheduling({ redirectTo: route('weekly') });
 
     // ── Edit-via-modal flow (kept for editing existing moments) ───────────────
     const [showingModal, setShowingModal] = useState(false);
@@ -51,69 +85,32 @@ export default function Index({ weekStart, config, days }: Props) {
 
     // ── Schedule-first creation flow ──────────────────────────────────────────
     function handleStartScheduling(date: string, time: string) {
-        const clickedIso = jsToIsoDay(new Date(date).getDay());
+        const clickedIso = jsToIsoDay(new Date(date).getDay()) as IsoDayNumber;
         const isWeekday = clickedIso >= 1 && clickedIso <= 5;
 
-        setMode('configure');
-        setScheduling({
-            date,
+        scheduling.start({
+            kind: 'recurring',
+            daysOfWeek: isWeekday ? [...WEEKDAYS] : [clickedIso],
             time,
-            frequency: 'weekly',
-            daysOfWeek: isWeekday ? [1, 2, 3, 4, 5] : [clickedIso], // include clicked day
+            anchorDate: date,
             name: '',
             icon: null,
         });
     }
 
-    function handleSchedulingChange(frequency: App.Enums.Frequency, daysOfWeek: number[]) {
-        setScheduling((prev) => prev ? { ...prev, frequency, daysOfWeek } : null);
-    }
-
-    function handleSchedulingNameChange(name: string) {
-        setScheduling((prev) => prev ? { ...prev, name } : null);
-    }
-
-    function handleSchedulingIconChange(icon: string | null) {
-        setScheduling((prev) => prev ? { ...prev, icon } : null);
-    }
-
-    function handleConfirmSchedule() {
-        if (!scheduling) { return; }
-
-        router.post(
-            route('moments.store'),
-            {
-                name: scheduling.name.trim() || null,
-                frequency: scheduling.frequency,
-                days_of_week: scheduling.frequency !== 'once' ? scheduling.daysOfWeek : null,
-                preferred_time: scheduling.time,
-                icon: scheduling.icon,
-                scheduled_date: scheduling.frequency === 'once' ? scheduling.date : null,
-                _redirect: route('weekly'),
-            },
-            {
-                preserveScroll: true,
-                onSuccess: () => setScheduling(null),
-            },
-        );
-    }
-
-    function handleExitConfigure() {
-        setMode('overview');
-        setScheduling(null);
-    }
+    const legacyScheduling = toLegacy(scheduling.state, weekStart);
 
     // ── Conflict count ────────────────────────────────────────────────────────
-    const conflictCount = scheduling
+    const conflictCount = legacyScheduling
         ? days.reduce((count, day) => {
-            if (scheduling.frequency === 'once') {
-                if (day.date !== scheduling.date) { return count; }
+            if (legacyScheduling.frequency === 'once') {
+                if (day.date !== legacyScheduling.date) { return count; }
             } else {
                 const iso = jsToIsoDay(new Date(day.date).getDay());
-                if (!scheduling.daysOfWeek.includes(iso)) { return count; }
+                if (!legacyScheduling.daysOfWeek.includes(iso)) { return count; }
             }
             const hasConflict = day.slots.some(
-                (s) => s.time === scheduling.time && s.moment !== null,
+                (s) => s.time === legacyScheduling.time && s.moment !== null,
             );
             return count + (hasConflict ? 1 : 0);
         }, 0)
@@ -127,7 +124,7 @@ export default function Index({ weekStart, config, days }: Props) {
     const nextWeekStart = addWeeks(currentWeekStart, 1);
 
     function weekLabel(start: Date): string {
-        return `${format(start, 'd MMM')} \u2013 ${format(endOfISOWeek(start), 'd MMM')}`;
+        return `${format(start, 'd MMM')} – ${format(endOfISOWeek(start), 'd MMM')}`;
     }
 
     return (
@@ -142,12 +139,12 @@ export default function Index({ weekStart, config, days }: Props) {
                         nextParam={{ week: format(nextWeekStart, 'yyyy-MM-dd') }}
                         routeName="weekly"
                     />
-                    {mode === 'overview' ? (
+                    {scheduling.mode === 'overview' ? (
                         <button
                             type="button"
                             className="weekly-header__mode-btn"
                             title="Configure schedule"
-                            onClick={() => setMode('configure')}
+                            onClick={() => scheduling.setMode('configure')}
                         >
                             ⚙️
                         </button>
@@ -155,7 +152,7 @@ export default function Index({ weekStart, config, days }: Props) {
                         <button
                             type="button"
                             className="weekly-header__mode-btn weekly-header__mode-btn--done"
-                            onClick={handleExitConfigure}
+                            onClick={scheduling.exit}
                         >
                             ✕ Done
                         </button>
@@ -165,16 +162,16 @@ export default function Index({ weekStart, config, days }: Props) {
         >
             <Head title="Weekly" />
 
-            {mode === 'configure' && scheduling && (
-                <FrequencyBar
-                    time={scheduling.time}
-                    frequency={scheduling.frequency}
-                    daysOfWeek={scheduling.daysOfWeek}
+            {scheduling.mode === 'configure' && scheduling.state && (
+                <MomentFrequencyConfig
+                    state={scheduling.state}
+                    time={scheduling.state.time}
                     dayLabels={dayLabels}
                     conflictCount={conflictCount}
-                    onChange={handleSchedulingChange}
-                    onConfirm={handleConfirmSchedule}
-                    onCancel={() => setScheduling(null)}
+                    onKindChange={(next) => scheduling.setKind(next, weekStart)}
+                    onDaysChange={scheduling.setDaysOfWeek}
+                    onConfirm={scheduling.confirm}
+                    onCancel={scheduling.cancel}
                 />
             )}
 
@@ -183,11 +180,11 @@ export default function Index({ weekStart, config, days }: Props) {
                     <WeeklyGrid
                         days={days}
                         config={config}
-                        mode={mode}
-                        scheduling={scheduling}
+                        mode={scheduling.mode}
+                        scheduling={legacyScheduling}
                         onStartScheduling={handleStartScheduling}
-                        onGhostNameChange={handleSchedulingNameChange}
-                        onGhostIconChange={handleSchedulingIconChange}
+                        onGhostNameChange={scheduling.setName}
+                        onGhostIconChange={scheduling.setIcon}
                     />
                 </div>
             </div>

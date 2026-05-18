@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import DayRowShell from '@/shared/components/schedule/DayRowShell';
-import SlotMomentCard from '@/features/weekly/components/SlotMomentCard';
+import { CalendarMomentCard } from '@/shared/components/calendar';
 
 interface Props {
     days: App.Data.MonthlyDayData[];
@@ -63,7 +63,7 @@ export default function MonthlyVerticalView({ days, onDayClick }: Props) {
                                             key={moment.id}
                                             className={`weekly-slot ${moment.status === 'completed' ? 'weekly-slot--completed' : ''}`}
                                         >
-                                            <SlotMomentCard moment={slotMoment} variant="overview" />
+                                            <CalendarMomentCard moment={slotMoment} variant="read" />
                                         </div>
                                     );
                                 })}

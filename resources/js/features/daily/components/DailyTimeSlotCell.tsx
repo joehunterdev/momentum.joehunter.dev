@@ -3,7 +3,7 @@ import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar';
 import type { SchedulingState } from '@/features/weekly/types';
 import { isOutOfOffice } from '@/shared/components/calendar';
 import DailySlotCard from './DailySlotCard';
-import SlotMomentCard from '@/features/weekly/components/SlotMomentCard';
+import { CalendarMomentCard } from '@/shared/components/calendar';
 
 type DailyMode = 'overview' | 'configure';
 
@@ -96,7 +96,7 @@ export default function DailyTimeSlotCell({
             </span>
             <div className="weekly-slot__content" style={{ position: 'relative' }}>
                 {mode === 'configure' && isGhost ? (
-                    <SlotMomentCard
+                    <CalendarMomentCard
                         moment={{
                             id: 0,
                             name: scheduling?.name || 'New Moment',
@@ -111,9 +111,9 @@ export default function DailyTimeSlotCell({
                             habit_stack_after: null,
                             environment_prompt: null,
                         }}
-                        variant="ghost"
-                        onGhostNameChange={onGhostNameChange}
-                        onGhostIconChange={onGhostIconChange}
+                        variant="draft"
+                        onDraftNameChange={onGhostNameChange}
+                        onDraftIconChange={onGhostIconChange}
                     />
                 ) : mode === 'configure' && slot.moment && isConflict ? (
                     <>

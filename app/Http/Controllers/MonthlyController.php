@@ -24,7 +24,7 @@ class MonthlyController extends Controller
         $today = Carbon::today();
 
         $monthAnchor = $request->filled('month')
-            ? Carbon::parse($request->input('month').'-01')
+            ? Carbon::parse($request->input('month') . '-01')
             : $today->copy()->startOfMonth();
 
         $monthStart = $monthAnchor->copy()->startOfMonth();
@@ -45,7 +45,7 @@ class MonthlyController extends Controller
             ->where('is_active', true)
             ->with([
                 'schedule',
-                'instances' => fn ($q) => $q->whereBetween('date', [
+                'instances' => fn($q) => $q->whereBetween('date', [
                     $gridStart->toDateString(),
                     $gridEnd->toDateString(),
                 ]),
@@ -61,7 +61,7 @@ class MonthlyController extends Controller
             $isToday = $cursor->equalTo($today);
             $isCurrentMonth = $cursor->month === $monthStart->month;
 
-            $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($cursor));
+            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($cursor));
 
             $days[] = $this->calendar->buildMonthDayData(
                 date: $cursor,
@@ -74,7 +74,7 @@ class MonthlyController extends Controller
 
             $cursor->addDay();
         }
-
+        //TODO: Why we repeating cant be enum ? 
         $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         $scheduleRows = [];
 
@@ -85,6 +85,7 @@ class MonthlyController extends Controller
                 if (! $schedule) {
                     return true; // no schedule = daily
                 }
+                //TODO: Why we repeating cant be enum ? 
 
                 return match ($schedule->frequency) {
                     'daily' => true,
@@ -93,7 +94,7 @@ class MonthlyController extends Controller
                     default => false,
                 };
             })
-                ->map(fn (Moment $m) => MomentData::fromModel($m))
+                ->map(fn(Moment $m) => MomentData::fromModel($m))
                 ->values()
                 ->all();
 

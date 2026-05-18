@@ -972,13 +972,16 @@ above, manual smoke covers:
 1. **Day-pill labels.** Where do `WEEK_DAYS` defaults vs page-overridden
    labels (Mon-first vs Sun-first) live now? Probably stay where they are
    (`shared/constants/moments`).
+    - Yes well the labels can just be a group of consts yes, they shouldnt be hardcoded anywhere in react. A configurable tho should be where to start from no ? So daily not just start on today but from the current hour
 2. **`MomentFrequencyConfig` presets.** Confirm: keep `Daily` and
    `Weekdays` preset chips inside Recurring mode (§6 note).
+   - Yes keep those presets aslong as their dynamic to do monthly, remember that monthly will be the only other configurable other data set
 3. **Empty-state add button on monthly day rows.** Today's
    `MonthlyVerticalView` renders a special "+ Add moments" button on
    empty days that navigates to `/daily?date=…`. New flow: should clicking
    that start scheduling inline (with `kind: 'one-off'` seeded to that
    date), or keep the navigate-to-daily behavior? Inline is more
    consistent; navigate is what exists today.
-
+    - There really should be no "special flow" reuse whatever is in daily and weekly 
+    
 Confirm these three and I'll start at PR #1.
