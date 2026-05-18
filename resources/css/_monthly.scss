@@ -243,7 +243,7 @@ $monthly-cell-min-h: 5rem;
 }
 
 // ─── Monthly Vertical View (mobile) ──────────────────────────────────────────
-// Uses standard .weekly-slot and .weekly-day-slots from _weekly.scss
+// Uses standard .weekly-slot and .calendar-section__articles from _weekly.scss
 
 .monthly-vertical-view {
     display: flex;

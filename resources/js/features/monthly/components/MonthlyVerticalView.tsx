@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns';
-import DayRowShell from '@/shared/components/schedule/DayRowShell';
+import { CalendarSection, CalendarSectionHeader } from '@/shared/components/calendar';
 import { CalendarMomentCard } from '@/shared/components/calendar';
 
 interface Props {
@@ -30,58 +30,58 @@ export default function MonthlyVerticalView({ days, onDayClick }: Props) {
                 const monthName = format(dateObj, 'MMM');
 
                 return (
-                    <DayRowShell
+                    <CalendarSection
                         key={day.date}
-                        label={day.dayName}
-                        sublabel={`${dayNumber} ${monthName}`}
-                        badge={day.isToday ? 'Today' : undefined}
                         isToday={day.isToday}
                         isWeekend={day.isWeekend}
-                        slotsLayout="vertical"
+                        layout="vertical"
+                        header={
+                            <CalendarSectionHeader
+                                label={day.dayName}
+                                sublabel={`${dayNumber} ${monthName}`}
+                                badge={day.isToday ? 'Today' : undefined}
+                            />
+                        }
                     >
                         {day.moments.length > 0 ? (
-                            <div className="weekly-day-slots">
-                                {day.moments.map((moment) => {
-                                    // Convert MonthlyMomentData to SlotMoment format
-                                    const slotMoment: App.Data.SlotMomentData = {
-                                        id: moment.id,
-                                        name: moment.name,
-                                        icon: moment.icon,
-                                        color: moment.color,
-                                        status: moment.status,
-                                        description: null,
-                                        frequency: null,
-                                        consistency: null,
-                                        instance_id: null,
-                                        implementation_intention: null,
-                                        habit_stack_after: null,
-                                        environment_prompt: null,
-                                    };
+                            day.moments.map((moment) => {
+                                // Convert MonthlyMomentData to SlotMoment format
+                                const slotMoment: App.Data.SlotMomentData = {
+                                    id: moment.id,
+                                    name: moment.name,
+                                    icon: moment.icon,
+                                    color: moment.color,
+                                    status: moment.status,
+                                    description: null,
+                                    frequency: null,
+                                    consistency: null,
+                                    instance_id: null,
+                                    implementation_intention: null,
+                                    habit_stack_after: null,
+                                    environment_prompt: null,
+                                };
 
-                                    return (
-                                        <div
-                                            key={moment.id}
-                                            className={`weekly-slot ${moment.status === 'completed' ? 'weekly-slot--completed' : ''}`}
-                                        >
-                                            <CalendarMomentCard moment={slotMoment} variant="read" />
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                return (
+                                    <div
+                                        key={moment.id}
+                                        className={`weekly-slot ${moment.status === 'completed' ? 'weekly-slot--completed' : ''}`}
+                                    >
+                                        <CalendarMomentCard moment={slotMoment} variant="read" />
+                                    </div>
+                                );
+                            })
                         ) : (
-                            <div className="weekly-day-slots">
-                                <button
-                                    type="button"
-                                    className="weekly-slot weekly-slot--empty weekly-slot--overview-empty"
-                                    onClick={() => onDayClick(day.date)}
-                                >
-                                    <span className="weekly-slot__add-btn-text">
-                                        + Add moments
-                                    </span>
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                className="weekly-slot weekly-slot--empty weekly-slot--overview-empty"
+                                onClick={() => onDayClick(day.date)}
+                            >
+                                <span className="weekly-slot__add-btn-text">
+                                    + Add moments
+                                </span>
+                            </button>
                         )}
-                    </DayRowShell>
+                    </CalendarSection>
                 );
             })}
         </div>

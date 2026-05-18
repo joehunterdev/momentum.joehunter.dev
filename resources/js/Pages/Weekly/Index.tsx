@@ -116,7 +116,7 @@ export default function Index({ weekStart, config, days }: Props) {
         }, 0)
         : 0;
 
-    // ── Consistent day-pill labels for FrequencyBar ──────────────────────────
+    // ── Consistent day-pill labels for MomentFrequencyConfig ─────────────────
     const dayLabels = WEEK_DAYS.map((d) => d.label);
 
     const currentWeekStart = startOfISOWeek(parseISO(weekStart));

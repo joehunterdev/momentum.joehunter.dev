@@ -1,25 +1,27 @@
-import type { SchedulingState } from '@/features/weekly/types';
+import type { CalendarMode, SchedulingState } from '@/features/scheduling';
 import MonthlyScheduleRow from './MonthlyScheduleRow';
 
 interface Props {
     rows: App.Data.MonthlyScheduleRowData[];
+    mode: CalendarMode;
     scheduling: SchedulingState | null;
     onStartScheduling: (isoDay: number) => void;
-    onGhostNameChange: (name: string) => void;
-    onGhostIconChange: (icon: string | null) => void;
+    onDraftNameChange: (name: string) => void;
+    onDraftIconChange: (icon: string | null) => void;
 }
 
 /**
  * Monthly configure grid — 7 day-of-week rows (Mon–Sun).
- * Each row uses the same DayRowShell as the weekly view,
- * with MomentSlotCells instead of TimeSlotCells.
+ * Each row uses the same CalendarSection as the weekly view,
+ * with CalendarSectionArticle for the per-moment cells.
  */
 export default function MonthlyScheduleGrid({
     rows,
+    mode,
     scheduling,
     onStartScheduling,
-    onGhostNameChange,
-    onGhostIconChange,
+    onDraftNameChange,
+    onDraftIconChange,
 }: Props) {
     return (
         <div className="weekly-grid">
@@ -27,13 +29,13 @@ export default function MonthlyScheduleGrid({
                 <MonthlyScheduleRow
                     key={row.isoDayNumber}
                     row={row}
+                    mode={mode}
                     scheduling={scheduling}
                     onStartScheduling={onStartScheduling}
-                    onGhostNameChange={onGhostNameChange}
-                    onGhostIconChange={onGhostIconChange}
+                    onDraftNameChange={onDraftNameChange}
+                    onDraftIconChange={onDraftIconChange}
                 />
             ))}
         </div>
     );
 }
-

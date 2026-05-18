@@ -1,7 +1,7 @@
 import { format, parseISO } from 'date-fns';
 import type { CalendarConfig, TimeSlot, WeekDay } from '@/shared/components/calendar';
 import type { SchedulingState } from '@/features/weekly/types';
-import DayRowShell from '@/shared/components/schedule/DayRowShell';
+import { CalendarSection, CalendarSectionHeader } from '@/shared/components/calendar';
 import DailyTimeSlotCell from './DailyTimeSlotCell';
 
 type DailyMode = 'overview' | 'configure';
@@ -88,12 +88,16 @@ export default function DailyGrid({
     return (
         <>
             {/* ── Today ─────────────────────────────────────────────────────── */}
-            <DayRowShell
-                label={day.dayName}
-                sublabel={format(dateObj, 'd MMMM yyyy')}
-                badge={day.isToday ? 'Today' : undefined}
+            <CalendarSection
                 isToday={day.isToday}
-                slotsLayout="vertical"
+                layout="vertical"
+                header={
+                    <CalendarSectionHeader
+                        label={day.dayName}
+                        sublabel={format(dateObj, 'd MMMM yyyy')}
+                        badge={day.isToday ? 'Today' : undefined}
+                    />
+                }
             >
                 {visibleSlots.map((slot) => (
                     <DailyTimeSlotCell
@@ -114,16 +118,20 @@ export default function DailyGrid({
                         onGhostIconChange={onGhostIconChange}
                     />
                 ))}
-            </DayRowShell>
+            </CalendarSection>
 
             {/* ── Next day ──────────────────────────────────────────────────── */}
             {showNextDay && nextDay && (
-                <DayRowShell
-                    label={nextDay.dayName}
-                    sublabel={format(parseISO(nextDay.date), 'd MMMM yyyy')}
+                <CalendarSection
                     isToday={false}
                     isWeekend={nextDay.isWeekend}
-                    slotsLayout="vertical"
+                    layout="vertical"
+                    header={
+                        <CalendarSectionHeader
+                            label={nextDay.dayName}
+                            sublabel={format(parseISO(nextDay.date), 'd MMMM yyyy')}
+                        />
+                    }
                 >
                     {nextDaySlots.map((slot) => (
                         <DailyTimeSlotCell
@@ -141,7 +149,7 @@ export default function DailyGrid({
                             onGhostIconChange={onGhostIconChange}
                         />
                     ))}
-                </DayRowShell>
+                </CalendarSection>
             )}
         </>
     );

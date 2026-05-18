@@ -1,7 +1,7 @@
 import { format, parseISO } from 'date-fns';
 import type { SchedulingState, TimeSlot, WeekDay, WeeklyConfig } from '../types';
 import { jsToIsoDay } from '@/shared/components/calendar';
-import DayRowShell from '@/shared/components/schedule/DayRowShell';
+import { CalendarSection, CalendarSectionHeader } from '@/shared/components/calendar';
 import TimeSlotCell from './TimeSlotCell';
 
 interface Props {
@@ -28,13 +28,17 @@ export default function DaySection({ day, config, mode, scheduling, onStartSched
     const dayIso = jsToIsoDay(dateObj.getDay());
 
     return (
-        <DayRowShell
-            label={day.dayName}
-            sublabel={format(dateObj, 'd MMM')}
-            badge={day.isToday ? 'Today' : undefined}
+        <CalendarSection
             isToday={day.isToday}
             isWeekend={day.isWeekend}
-            slotsLayout="vertical"
+            layout="vertical"
+            header={
+                <CalendarSectionHeader
+                    label={day.dayName}
+                    sublabel={format(dateObj, 'd MMM')}
+                    badge={day.isToday ? 'Today' : undefined}
+                />
+            }
         >
             {visibleSlots.map((slot) => {
                 const schedulingThisDay =
@@ -66,7 +70,7 @@ export default function DaySection({ day, config, mode, scheduling, onStartSched
                     />
                 );
             })}
-        </DayRowShell>
+        </CalendarSection>
     );
 }
 

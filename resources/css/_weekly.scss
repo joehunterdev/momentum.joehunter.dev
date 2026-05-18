@@ -403,7 +403,7 @@ $border-light: #f3f4f6;
 
 // ─── Day section ─────────────────────────────────────────────────────────────
 
-.weekly-day-section {
+.calendar-section {
     border-top: 1px solid $border;
     overflow: hidden;
     background: #fff;
@@ -414,7 +414,7 @@ $border-light: #f3f4f6;
     }
 
     &--today {
-        .weekly-day-header {
+        .calendar-section__header {
             background: rgba(96, 76, 129, 0.05);
             border-left: 3px solid #8B6BAE; // lighter offshoot of #604C81
         }
@@ -422,8 +422,8 @@ $border-light: #f3f4f6;
 
     &--weekend {
 
-        .weekly-day-header,
-        .weekly-day-slots {
+        .calendar-section__header,
+        .calendar-section__articles {
             background: rgba(100, 116, 139, 0.03);
         }
     }
@@ -431,44 +431,44 @@ $border-light: #f3f4f6;
 
 // ─── Day header ───────────────────────────────────────────────────────────────
 
-.weekly-day-header {
+.calendar-section__header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 0.875rem;
     background: #fafafa;
     border-bottom: 1px solid $border-light;
+}
 
-    &__name {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: #374151;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
+.calendar-section__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
 
-    &__date {
-        font-size: 0.75rem;
-        color: #9ca3af;
-    }
+.calendar-section__sublabel {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
 
-    &__badge {
-        margin-left: auto;
-        font-size: 0.625rem;
-        font-weight: 600;
-        color: var(--mm-primary, #6366f1);
-        background: rgba(99, 102, 241, 0.1);
-        padding: 0.125rem 0.5rem;
-        border-radius: 999px;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-    }
+.calendar-section__badge {
+    margin-left: auto;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--mm-primary, #6366f1);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 // ─── Slot row ────────────────────────────────────────────────────────────────
 // Mobile: vertical list of rows. Desktop: 6 equal columns.
 
-.weekly-day-slots {
+.calendar-section__articles {
     display: flex;
     flex-direction: column;
 
