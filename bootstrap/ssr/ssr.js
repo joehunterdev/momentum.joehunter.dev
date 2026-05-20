@@ -675,7 +675,7 @@ createServer((page) => createInertiaApp({
 		"./Pages/Profile/Partials/UpdatePasswordForm.tsx": () => import("./assets/UpdatePasswordForm-CEEhcTha.js"),
 		"./Pages/Profile/Partials/UpdateProfileInformationForm.tsx": () => import("./assets/UpdateProfileInformationForm-D4RYFN7E.js"),
 		"./Pages/Weekly/Index.tsx": () => import("./assets/Index-Bj5JixXS.js"),
-		"./Pages/Welcome.tsx": () => import("./assets/Welcome-DMKl0hm3.js")
+		"./Pages/Welcome.tsx": () => import("./assets/Welcome-C3BU50f8.js")
 	})),
 	setup: ({ App, props }) => {
 		global.route = (name, params, absolute) => B(name, params, absolute, {

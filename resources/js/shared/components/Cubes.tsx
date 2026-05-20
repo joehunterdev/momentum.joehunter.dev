@@ -288,19 +288,21 @@ const Cubes = ({
     const getCubeBorderColor = (row: number, col: number): string => {
         if (colorPattern === 'solid') return borderStyle.includes('#') ? borderStyle : primaryColor;
 
-        // Purple "C" shape - larger, filling more space, open on right
-        const isPurpleTop = row >= 0 && row <= 3 && col >= 0 && col <= 11;
-        const isPurpleLeft = row >= 0 && row <= 11 && col >= 0 && col <= 3;
-        const isPurpleBottom = row >= 8 && row <= 11 && col >= 0 && col <= 8;
+        // Purple outer frame - thick rectangular outline
+        const isPurpleTopBar = row >= 0 && row <= 2 && col >= 0 && col <= 11;
+        const isPurpleLeftBar = row >= 0 && row <= 11 && col >= 0 && col <= 2;
+        const isPurpleBottomBar = row >= 9 && row <= 11 && col >= 0 && col <= 11;
+        const isPurpleRightPartial = row >= 0 && row <= 4 && col >= 9 && col <= 11;
 
-        // Teal "C" shape - larger, open on left, interlocking
-        const isTealTop = row >= 2 && row <= 5 && col >= 3 && col <= 11;
-        const isTealRight = row >= 2 && row <= 11 && col >= 8 && col <= 11;
-        const isTealBottom = row >= 8 && row <= 11 && col >= 3 && col <= 11;
+        // Teal inner frame - thick rectangular outline, interlocking through purple
+        const isTealTopBar = row >= 3 && row <= 5 && col >= 3 && col <= 11;
+        const isTealRightBar = row >= 3 && row <= 11 && col >= 9 && col <= 11;
+        const isTealBottomBar = row >= 9 && row <= 11 && col >= 0 && col <= 11;
+        const isTealLeftPartial = row >= 7 && row <= 11 && col >= 0 && col <= 2;
 
-        if (isPurpleTop || isPurpleLeft || isPurpleBottom) {
+        if (isPurpleTopBar || isPurpleLeftBar || isPurpleBottomBar || isPurpleRightPartial) {
             return primaryColor; // Purple
-        } else if (isTealTop || isTealRight || isTealBottom) {
+        } else if (isTealTopBar || isTealRightBar || isTealBottomBar || isTealLeftPartial) {
             return secondaryColor; // Teal
         }
 

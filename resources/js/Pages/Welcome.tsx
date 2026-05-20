@@ -95,7 +95,7 @@ export default function Welcome({ auth }: PageProps) {
                                 faceColor="transparent"
                                 rippleColor="#8B6BAE"
                                 rippleSpeed={1.5}
-                                autoAnimate={true}
+                                autoAnimate={false}
                                 rippleOnClick={true}
                                 cellGap={6}
                                 colorPattern="m-shape"
