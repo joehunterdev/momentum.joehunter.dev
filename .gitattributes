@@ -6,6 +6,25 @@
 *.md diff=markdown
 *.php diff=php
 
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.svg binary
+*.pdf binary
+
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+AGENTS.md export-ignore
+README.md export-ignore
+tests export-ignore
+.editorconfig export-ignore
+.docs export-ignore
+phpunit.xml export-ignore
