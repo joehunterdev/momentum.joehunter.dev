@@ -22,7 +22,7 @@ class CalendarServiceTest extends TestCase
         $this->assertNotEmpty($slots, 'Should generate time slots');
         $this->assertContains('07:00', $slots, 'Should include wake time');
         $this->assertContains('21:30', $slots, 'Should include slots before sleep time');
-        
+
         // Should have 30 minute intervals: 7:00 to 22:00 = 15 hours = 30 slots
         $this->assertCount(31, $slots); // 31 slots (including both endpoints)
     }
@@ -38,7 +38,7 @@ class CalendarServiceTest extends TestCase
         $this->assertContains('23:30', $slots, 'Should include 23:30');
         $this->assertContains('00:00', $slots, 'Should include midnight');
         $this->assertContains('00:30', $slots, 'Should include past midnight');
-        
+
         // 08:00 to 00:30 next day = 16.5 hours = 34 slots
         $this->assertCount(34, $slots, 'Should have 34 slots (08:00 to 00:30)');
     }
