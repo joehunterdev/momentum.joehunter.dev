@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar';
-import type { SchedulingState } from '@/features/weekly/types';
+import type { SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice } from '@/shared/components/calendar';
 import DailySlotCard from './DailySlotCard';
 import { CalendarMomentCard } from '@/shared/components/calendar';
@@ -43,7 +43,7 @@ export default function DailyTimeSlotCell({
     const isSchedulingThisSlot =
         scheduling !== null &&
         slot.time === scheduling.time &&
-        (scheduling.frequency === 'once'
+        (scheduling.kind === 'one-off'
             ? date === scheduling.date
             : true); // For recurring, always show on the target day
 

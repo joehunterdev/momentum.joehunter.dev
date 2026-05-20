@@ -36,3 +36,12 @@ E:\www\momentum.joehunter.dev\resources\js\features\weekly\components\WeeklyGrid
 
 E:\www\momentum.joehunter.dev\resources\js\features\weekly\components\DaySection.tsx
 'once' | 'recurring' could be enums too
+
+
+## Todo 20-05-2026
+Cleanup cube home
+
+Homogenize weekly and monthly page views:
+Monthly and Weekly views need to reuse the same components as daily no ? 
+E:\www\momentum.joehunter.dev\.docs\calendar-components\calendar-components-implementation.md
+All those views should be the same with the progress bars top and inner rows

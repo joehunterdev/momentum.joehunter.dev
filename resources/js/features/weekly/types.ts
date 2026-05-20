@@ -9,12 +9,3 @@ export type TimeSlot = App.Data.TimeSlotData;
 export type WeekDay = App.Data.WeekDayData;
 export type WeeklyConfig = App.Data.UserConfigData;
 export type WeeklyPageProps = App.Data.WeeklyPageData;
-
-export interface SchedulingState {
-    date: string;
-    time: string | null;
-    frequency: App.Enums.Frequency;
-    daysOfWeek: number[];
-    name: string;
-    icon: string | null;
-}

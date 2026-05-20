@@ -1,4 +1,5 @@
-import type { SchedulingState, WeekDay, WeeklyConfig } from '../types';
+import type { WeekDay, WeeklyConfig } from '../types';
+import type { SchedulingState } from '@/features/scheduling';
 import { computeWindowStart } from '@/shared/components/calendar';
 import DaySection from './DaySection';
 

@@ -86,7 +86,6 @@ class MonthlyController extends Controller
                     return true; // no schedule = daily
                 }
                 //TODO: Why we repeating cant be enum ? 
-
                 return match ($schedule->frequency) {
                     'daily' => true,
                     'weekly' => $iso >= 1 && $iso <= 5,

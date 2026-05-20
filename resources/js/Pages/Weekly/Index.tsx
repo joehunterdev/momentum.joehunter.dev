@@ -1,12 +1,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { WeeklyGrid } from '@/features/weekly';
-import type { SchedulingState as LegacySchedulingState, WeeklyPageProps } from '@/features/weekly';
+import { WeeklyGrid, FrequencyBar } from '@/features/weekly';
+import type { WeeklyPageProps } from '@/features/weekly';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
-import { CalendarNav, MomentFrequencyConfig, jsToIsoDay } from '@/shared/components/calendar';
-import type { IsoDayNumber, SchedulingState as NewSchedulingState } from '@/features/scheduling';
+import { CalendarNav, jsToIsoDay } from '@/shared/components/calendar';
+import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import {
     addWeeks,
@@ -22,40 +22,6 @@ import type { PageProps } from '@/types';
 interface Props extends PageProps, WeeklyPageProps { }
 
 const WEEKDAYS: IsoDayNumber[] = [1, 2, 3, 4, 5];
-
-/**
- * Adapter: new discriminated-union scheduling state → legacy flat shape
- * expected by <WeeklyGrid>. Removed when that migrates.
- */
-function toLegacy(state: NewSchedulingState | null, fallbackDate: string): LegacySchedulingState | null {
-    if (!state) { return null; }
-
-    if (state.kind === 'one-off') {
-        return {
-            date: state.date,
-            time: state.time,
-            frequency: 'once',
-            daysOfWeek: [],
-            name: state.name,
-            icon: state.icon,
-        };
-    }
-
-    const isAllDays = state.daysOfWeek.length === 7;
-    const isWeekdays =
-        state.daysOfWeek.length === WEEKDAYS.length
-        && WEEKDAYS.every((d) => state.daysOfWeek.includes(d));
-    const frequency: App.Enums.Frequency = isAllDays ? 'daily' : isWeekdays ? 'weekly' : 'custom';
-
-    return {
-        date: state.anchorDate || fallbackDate,
-        time: state.time,
-        frequency,
-        daysOfWeek: state.daysOfWeek,
-        name: state.name,
-        icon: state.icon,
-    };
-}
 
 export default function Index({ weekStart, config, days }: Props) {
     const scheduling = useScheduling({ redirectTo: route('weekly') });
@@ -88,6 +54,7 @@ export default function Index({ weekStart, config, days }: Props) {
         const clickedIso = jsToIsoDay(new Date(date).getDay()) as IsoDayNumber;
         const isWeekday = clickedIso >= 1 && clickedIso <= 5;
 
+        //TODO: Cant we identify this as a recurring type
         scheduling.start({
             kind: 'recurring',
             daysOfWeek: isWeekday ? [...WEEKDAYS] : [clickedIso],
@@ -98,25 +65,50 @@ export default function Index({ weekStart, config, days }: Props) {
         });
     }
 
-    const legacyScheduling = toLegacy(scheduling.state, weekStart);
+    function handleFrequencyChange(frequency: App.Enums.Frequency, daysOfWeek: number[]) {
+        if (frequency === 'once') {
+            scheduling.setKind('one-off', weekStart);
+            return;
+        }
+        scheduling.setKind('recurring', weekStart);
+        scheduling.setDaysOfWeek(daysOfWeek as IsoDayNumber[]);
+    }
+
+    const schedulingState = scheduling.state;
+
+    // FrequencyBar still speaks the App.Enums.Frequency vocabulary; derive it
+    // from the union here rather than reintroducing a shared adapter.
+    const frequencyForBar: App.Enums.Frequency = !schedulingState
+        ? 'once'
+        : schedulingState.kind === 'one-off'
+            ? 'once'
+            : schedulingState.daysOfWeek.length === 7
+                ? 'daily'
+                : schedulingState.daysOfWeek.length === WEEKDAYS.length
+                    && WEEKDAYS.every((d) => schedulingState.daysOfWeek.includes(d))
+                    ? 'weekly'
+                    : 'custom';
+    const daysOfWeekForBar: number[] = !schedulingState || schedulingState.kind === 'one-off'
+        ? []
+        : schedulingState.daysOfWeek;
 
     // ── Conflict count ────────────────────────────────────────────────────────
-    const conflictCount = legacyScheduling
+    const conflictCount = schedulingState
         ? days.reduce((count, day) => {
-            if (legacyScheduling.frequency === 'once') {
-                if (day.date !== legacyScheduling.date) { return count; }
+            if (schedulingState.kind === 'one-off') {
+                if (day.date !== schedulingState.date) { return count; }
             } else {
-                const iso = jsToIsoDay(new Date(day.date).getDay());
-                if (!legacyScheduling.daysOfWeek.includes(iso)) { return count; }
+                const iso = jsToIsoDay(new Date(day.date).getDay()) as IsoDayNumber;
+                if (!schedulingState.daysOfWeek.includes(iso)) { return count; }
             }
             const hasConflict = day.slots.some(
-                (s) => s.time === legacyScheduling.time && s.moment !== null,
+                (s) => s.time === schedulingState.time && s.moment !== null,
             );
             return count + (hasConflict ? 1 : 0);
         }, 0)
         : 0;
 
-    // ── Consistent day-pill labels for MomentFrequencyConfig ─────────────────
+    // ── Consistent day-pill labels for FrequencyBar ──────────────────────────
     const dayLabels = WEEK_DAYS.map((d) => d.label);
 
     const currentWeekStart = startOfISOWeek(parseISO(weekStart));
@@ -162,14 +154,14 @@ export default function Index({ weekStart, config, days }: Props) {
         >
             <Head title="Weekly" />
 
-            {scheduling.mode === 'configure' && scheduling.state && (
-                <MomentFrequencyConfig
-                    state={scheduling.state}
-                    time={scheduling.state.time}
+            {scheduling.mode === 'configure' && schedulingState && (
+                <FrequencyBar
+                    time={schedulingState.time}
+                    frequency={frequencyForBar}
+                    daysOfWeek={daysOfWeekForBar}
                     dayLabels={dayLabels}
                     conflictCount={conflictCount}
-                    onKindChange={(next) => scheduling.setKind(next, weekStart)}
-                    onDaysChange={scheduling.setDaysOfWeek}
+                    onChange={handleFrequencyChange}
                     onConfirm={scheduling.confirm}
                     onCancel={scheduling.cancel}
                 />
@@ -181,7 +173,7 @@ export default function Index({ weekStart, config, days }: Props) {
                         days={days}
                         config={config}
                         mode={scheduling.mode}
-                        scheduling={legacyScheduling}
+                        scheduling={schedulingState}
                         onStartScheduling={handleStartScheduling}
                         onGhostNameChange={scheduling.setName}
                         onGhostIconChange={scheduling.setIcon}

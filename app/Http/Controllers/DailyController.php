@@ -50,7 +50,7 @@ class DailyController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $slots = $this->calendar->buildTimeSlots($wakeTime, $sleepTime, intervalMinutes: 20);
+        $slots = $this->calendar->buildTimeSlots($wakeTime, $sleepTime, intervalMinutes: 30);
         $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($date));
 
         $day = $this->calendar->buildWeekDayData(
@@ -61,7 +61,7 @@ class DailyController extends Controller
             isToday: $isToday,
             consistencyWindow: $consistencyWindow,
             today: $today,
-            intervalMinutes: 20,
+            intervalMinutes: 30,
         );
 
         $completedCount = collect($day->slots)
@@ -72,28 +72,9 @@ class DailyController extends Controller
             ->filter(fn($slot) => $slot->moment !== null)
             ->count();
 
-        // Build tomorrow's day data when viewing today, so the frontend can
-        // fill whitespace at the end of the day with upcoming moments.
-        $nextDay = null;
-        if ($isToday) {
-            $tomorrow = $today->copy()->addDay();
-            $tomorrowMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($tomorrow));
-            $nextDay = $this->calendar->buildWeekDayData(
-                date: $tomorrow,
-                slots: $slots,
-                dayMoments: $tomorrowMoments,
-                isPast: false,
-                isToday: false,
-                consistencyWindow: $consistencyWindow,
-                today: $today,
-                intervalMinutes: 20,
-            );
-        }
-
         $pageData = new DailyPageData(
             date: $date->toDateString(),
             day: $day,
-            nextDay: $nextDay,
             config: new UserConfigData(
                 wake_time: substr($wakeTime, 0, 5),
                 sleep_time: substr($sleepTime, 0, 5),

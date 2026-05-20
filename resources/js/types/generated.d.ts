@@ -8,7 +8,6 @@ declare namespace App {
         export type DailyPageData = {
             date: string;
             day: App.Data.WeekDayData;
-            nextDay: App.Data.WeekDayData | null;
             config: App.Data.UserConfigData;
             completedCount: number;
             totalCount: number;

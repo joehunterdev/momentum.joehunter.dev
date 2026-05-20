@@ -1,5 +1,6 @@
 import { format, parseISO } from 'date-fns';
-import type { SchedulingState, TimeSlot, WeekDay, WeeklyConfig } from '../types';
+import type { TimeSlot, WeekDay, WeeklyConfig } from '../types';
+import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { jsToIsoDay } from '@/shared/components/calendar';
 import { CalendarSection, CalendarSectionHeader } from '@/shared/components/calendar';
 import TimeSlotCell from './TimeSlotCell';
@@ -25,7 +26,7 @@ function getWindowedSlots(slots: TimeSlot[], windowStart: number): TimeSlot[] {
 export default function DaySection({ day, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange, windowStart }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getWindowedSlots(day.slots, windowStart);
-    const dayIso = jsToIsoDay(dateObj.getDay());
+    const dayIso = jsToIsoDay(dateObj.getDay()) as IsoDayNumber;
 
     return (
         <CalendarSection
@@ -44,7 +45,7 @@ export default function DaySection({ day, config, mode, scheduling, onStartSched
                 const schedulingThisDay =
                     scheduling !== null &&
                     slot.time === scheduling.time &&
-                    (scheduling.frequency === 'once'
+                    (scheduling.kind === 'one-off'
                         ? day.date === scheduling.date
                         : scheduling.daysOfWeek.includes(dayIso));
 
