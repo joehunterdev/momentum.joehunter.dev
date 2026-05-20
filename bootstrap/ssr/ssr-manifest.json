@@ -97,7 +97,8 @@
     "/build/assets/Index-Bj5JixXS.js"
   ],
   "resources/js/Pages/Welcome.tsx": [
-    "/build/assets/Welcome-CgtEdpaO.js"
+    "/build/assets/Welcome-DMKl0hm3.js",
+    "/build/assets/Welcome-BEDcaQFt.css"
   ],
   "resources/js/features/config/components/ConfigForm.tsx": [
     "/build/assets/Edit-CXYAQltb.js"
@@ -203,6 +204,14 @@
   ],
   "resources/js/features/weekly/index.ts": [
     "/build/assets/Index-Bj5JixXS.js"
+  ],
+  "resources/js/shared/components/Cubes.css": [
+    "/build/assets/Welcome-DMKl0hm3.js",
+    "/build/assets/Welcome-BEDcaQFt.css"
+  ],
+  "resources/js/shared/components/Cubes.tsx": [
+    "/build/assets/Welcome-DMKl0hm3.js",
+    "/build/assets/Welcome-BEDcaQFt.css"
   ],
   "resources/js/shared/components/FlashMessage.tsx": [
     "/build/assets/FlashMessage-BBodC94Y.js"

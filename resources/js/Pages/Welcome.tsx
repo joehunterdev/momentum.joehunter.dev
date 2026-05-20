@@ -1,5 +1,6 @@
 import { PageProps } from '@/types';
 import { Head, Link } from '@inertiajs/react';
+import Cubes from '@/shared/components/Cubes';
 
 const features = [
     {
@@ -72,17 +73,36 @@ export default function Welcome({ auth }: PageProps) {
                     </header>
 
                     <section className="welcome-page__hero">
-                        <h1 className="welcome-page__headline">
-                            Build momentum,<br />one habit at a time.
-                        </h1>
-                        <p className="welcome-page__subline">
-                            Momentum helps you design, schedule and stick to the habits that matter — backed by proven behaviour science.
-                        </p>
-                        {!auth.user && (
-                            <Link href={route('register')} className="welcome-page__cta">
-                                Start for free
-                            </Link>
-                        )}
+                        <div className="welcome-page__hero-content">
+                            <h1 className="welcome-page__headline">
+                                Build momentum,<br />one habit at a time.
+                            </h1>
+                            <p className="welcome-page__subline">
+                                Momentum helps you design, schedule and stick to the habits that matter — backed by proven behaviour science.
+                            </p>
+                            {!auth.user && (
+                                <Link href={route('register')} className="welcome-page__cta">
+                                    Start for free
+                                </Link>
+                            )}
+                        </div>
+                        <div className="welcome-page__hero-animation">
+                            <Cubes
+                                gridSize={12}
+                                maxAngle={60}
+                                radius={4}
+                                borderStyle="1px solid rgba(156, 163, 175, 0.3)"
+                                faceColor="transparent"
+                                rippleColor="#8B6BAE"
+                                rippleSpeed={1.5}
+                                autoAnimate={true}
+                                rippleOnClick={true}
+                                cellGap={6}
+                                colorPattern="m-shape"
+                                primaryColor="#8B6BAE"
+                                secondaryColor="#00E5AA"
+                            />
+                        </div>
                     </section>
 
                     <section className="welcome-page__features">
