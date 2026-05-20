@@ -2,9 +2,9 @@ import { useState } from 'react';
 import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar';
 import type { SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice } from '@/shared/components/calendar';
-import DailySlotCard from './DailySlotCard';
-import { CalendarMomentCard } from '@/shared/components/calendar';
-import { MomentActionItem } from '@/features/calendar';
+import { useSwipeComplete } from '../hooks/useSwipeComplete';
+import { CalendarMomentCard, MomentDisplay } from '@/shared/components/calendar';
+import { MomentStatus, SchedulingKind } from '@/shared/types/enums';
 
 type DailyMode = 'overview' | 'configure';
 
@@ -44,7 +44,7 @@ export default function DailyTimeSlotCell({
     const isSchedulingThisSlot =
         scheduling !== null &&
         slot.time === scheduling.time &&
-        (scheduling.kind === 'one-off'
+        (scheduling.kind === SchedulingKind.OneOff
             ? date === scheduling.date
             : true); // For recurring, always show on the target day
 
@@ -56,7 +56,7 @@ export default function DailyTimeSlotCell({
         ooo ? 'weekly-slot--ooo' : '',
         isToday ? 'weekly-slot--today' : '',
         !slot.moment && !ooo && !isGhost ? 'weekly-slot--empty' : '',
-        slot.moment?.status === 'completed' ? 'weekly-slot--completed' : '',
+        slot.moment?.status === MomentStatus.Completed ? 'weekly-slot--completed' : '',
         swipeProgress > 0 ? 'weekly-slot--swiping' : '',
         swipeDone ? 'weekly-slot--swipe-done' : '',
         mode === 'configure' && !slot.moment && !ooo && !isGhost ? 'weekly-slot--configure-empty' : '',
@@ -119,27 +119,21 @@ export default function DailyTimeSlotCell({
                     />
                 ) : mode === 'configure' && slot.moment && isConflict ? (
                     <>
-                        <DailySlotCard
+                        <CalendarMomentCard
                             moment={slot.moment}
-                            date={date}
-                            isNext={false}
-                            onToggle={handleToggle}
-                            onSwipeProgress={handleSwipeProgress}
-                            swipeProgress={swipeProgress}
+                            variant="edit"
                         />
                         <span className="weekly-slot__conflict-badge" title="Scheduling conflict">⚠️</span>
                     </>
                 ) : mode === 'configure' && slot.moment ? (
-                    <DailySlotCard
+                    <CalendarMomentCard
                         moment={slot.moment}
-                        date={date}
-                        isNext={isNext}
-                        onToggle={handleToggle}
-                        onSwipeProgress={handleSwipeProgress}
-                        swipeProgress={swipeProgress}
+                        variant="edit"
                     />
                 ) : slot.moment ? (
-                    <MomentActionItem moment={slot.moment} />
+                    <div className="daily-time-slot-cell__moment">
+                        <MomentDisplay moment={slot.moment} />
+                    </div>
                 ) : ooo ? (
                     <span className="weekly-slot__ooo-dot" aria-hidden />
                 ) : mode === 'configure' && !isGhost ? (

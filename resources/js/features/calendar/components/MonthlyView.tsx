@@ -3,8 +3,8 @@ import {
     CalendarMomentCard,
     CalendarSection,
     CalendarSectionHeader,
+    MomentDisplay,
 } from '@/shared/components/calendar';
-import { MomentActionItem } from '@/features/calendar';
 
 interface Props {
     days: App.Data.MonthlyDayData[];
@@ -34,7 +34,7 @@ function groupByIsoWeek(days: App.Data.MonthlyDayData[]): WeekGroup[] {
  * Each day-article carries the day label in its leading column and stacks any
  * scheduled moments inside, or shows a `+` add button when empty.
  */
-export default function MonthlyVerticalView({ days, onStartScheduling }: Props) {
+export default function MonthlyView({ days, onStartScheduling }: Props) {
     const today = startOfDay(new Date());
     const isCurrentMonthView = days.some((d) => d.isToday);
     const visibleDays = isCurrentMonthView
@@ -72,7 +72,7 @@ export default function MonthlyVerticalView({ days, onStartScheduling }: Props) 
                                     <div className="calendar-article__content weekly-slot__content">
                                         {day.moments.length > 0 ? (
                                             day.moments.map((m) => (
-                                                <MomentActionItem
+                                                <MomentDisplay
                                                     key={m.id}
                                                     moment={m}
                                                 />

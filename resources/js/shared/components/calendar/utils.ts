@@ -3,7 +3,41 @@
  * Extracted from duplicated logic in DailyGrid, DaySection, TimeSlotCell.
  */
 
-import type { CalendarConfig } from './types';
+import type { CalendarConfig, TimeSlot } from './types';
+
+/**
+ * Filter time slots to those visible in the wake→sleep window.
+ * For today, anchors to (now - 2h) snapped to interval to keep current time in view.
+ *
+ * @param slots - all time slots for the day
+ * @param config - calendar configuration with wake/sleep times
+ * @param isToday - whether this is today's view
+ * @param intervalMinutes - slot interval for snapping (default: 30)
+ * @returns filtered array of visible time slots
+ */
+export function getVisibleTimeSlots(
+    slots: TimeSlot[],
+    config: CalendarConfig,
+    isToday: boolean,
+    intervalMinutes: number = 30,
+): TimeSlot[] {
+    const inWindow = slots.filter(
+        (s) => s.time >= config.wake_time && s.time < config.sleep_time,
+    );
+
+    if (!isToday) {
+        return inWindow;
+    }
+
+    const now = new Date();
+    const cutoffMinutes = Math.max(0, now.getHours() * 60 + now.getMinutes() - 2 * 60);
+    const snappedCutoff = cutoffMinutes - (cutoffMinutes % intervalMinutes);
+    const cutoffHH = String(Math.floor(snappedCutoff / 60)).padStart(2, '0');
+    const cutoffMM = String(snappedCutoff % 60).padStart(2, '0');
+    const cutoffTime = `${cutoffHH}:${cutoffMM}`;
+
+    return inWindow.filter((s) => s.time >= cutoffTime || s.moment !== null);
+}
 
 /**
  * Snap a time string (HH:mm or HH:mm:ss) to the nearest 30-min slot boundary.

@@ -15,7 +15,7 @@ interface Props {
     onGhostIconChange: (icon: string | null) => void;
 }
 
-export default function WeeklyGrid({ days, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange }: Props) {
+export default function WeeklyView({ days, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange }: Props) {
     const allTimes = Array.from(
         new Set(days.flatMap((d) => d.slots.map((s) => s.time).filter((t) => t.endsWith(':00'))))
     ).sort();

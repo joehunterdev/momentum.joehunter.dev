@@ -9,40 +9,22 @@ import {
     MomentFrequencyConfig,
 } from '@/shared/components/calendar';
 import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar';
+import { getVisibleTimeSlots } from '@/shared/components/calendar/utils';
 import { addDays, format, parseISO, subDays } from 'date-fns';
 import type { PageProps } from '@/types';
 import { useScheduling } from '@/features/scheduling';
+import { useCalendarActions } from '@/features/calendar/hooks/useCalendarActions';
+import { MomentStatus, SchedulingKind } from '@/shared/types/enums';
 
 interface Props extends PageProps, App.Data.DailyPageData { }
 
-const INTERVAL_MINUTES = 30;
-
-/** Slots from wake → sleep. For today, anchor to (now - 2h) snapped to interval. */
-function getVisibleSlots(slots: TimeSlot[], config: CalendarConfig, isToday: boolean): TimeSlot[] {
-    const inWindow = slots.filter(
-        (s) => s.time >= config.wake_time && s.time < config.sleep_time,
-    );
-
-    if (!isToday) {
-        return inWindow;
-    }
-
-    const now = new Date();
-    const cutoffMinutes = Math.max(0, now.getHours() * 60 + now.getMinutes() - 2 * 60);
-    const snappedCutoff = cutoffMinutes - (cutoffMinutes % INTERVAL_MINUTES);
-    const cutoffHH = String(Math.floor(snappedCutoff / 60)).padStart(2, '0');
-    const cutoffMM = String(snappedCutoff % 60).padStart(2, '0');
-    const cutoffTime = `${cutoffHH}:${cutoffMM}`;
-
-    return inWindow.filter((s) => s.time >= cutoffTime || s.moment !== null);
-}
-
 export default function Index({ date, day, config, completedCount, totalCount }: Props) {
     const scheduling = useScheduling({ redirectTo: route('daily', { date }) });
+    const { toggleMoment } = useCalendarActions();
 
     function handleStartScheduling(time: string) {
         scheduling.start({
-            kind: 'one-off',
+            kind: SchedulingKind.OneOff,
             date,
             time,
             name: '',
@@ -55,30 +37,17 @@ export default function Index({ date, day, config, completedCount, totalCount }:
         _instanceId: number | null,
         date: string,
     ) {
-        const token =
-            (
-                document.querySelector(
-                    'meta[name="csrf-token"]',
-                ) as HTMLMetaElement | null
-            )?.content ?? '';
-
-        await fetch(route('moments.toggle', { moment: momentId }), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': token,
-                Accept: 'application/json',
-            },
-            body: JSON.stringify({ date }),
+        await toggleMoment({
+            momentId,
+            date,
+            reloadOnly: ['day', 'completedCount', 'totalCount'],
         });
-
-        router.reload({ only: ['day', 'completedCount', 'totalCount'] });
     }
 
     // Key = "date:time:momentId" — first pending moment of the day
     const nextMomentKey = (() => {
         for (const slot of day.slots) {
-            if (slot.moment && slot.moment.status !== 'completed') {
+            if (slot.moment && slot.moment.status !== MomentStatus.Completed) {
                 return `${day.date}:${slot.time}:${slot.moment.id}`;
             }
         }
@@ -88,7 +57,7 @@ export default function Index({ date, day, config, completedCount, totalCount }:
     const currentDate = parseISO(date);
     const prevDate = subDays(currentDate, 1);
     const nextDate = addDays(currentDate, 1);
-    const visibleSlots = getVisibleSlots(day.slots, config, day.isToday);
+    const visibleSlots = getVisibleTimeSlots(day.slots, config, day.isToday);
 
     return (
         <AuthenticatedLayout

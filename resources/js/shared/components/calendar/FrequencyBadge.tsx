@@ -22,7 +22,7 @@ const FREQ_OPTIONS: { label: string; value: App.Enums.Frequency }[] = [
 const ALL_DAYS = WEEK_DAYS.map((d) => d.value) as number[];
 const WEEKDAYS = [1, 2, 3, 4, 5];
 
-export default function FrequencyBar({
+export default function FrequencyBadge({
     time,
     frequency,
     daysOfWeek,

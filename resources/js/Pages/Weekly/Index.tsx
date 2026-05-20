@@ -1,13 +1,15 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { WeeklyGrid, FrequencyBar } from '@/features/calendar';
+import { WeeklyView } from '@/features/calendar';
+import { FrequencyBadge } from '@/shared/components/calendar';
 import type { WeeklyPageProps } from '@/features/calendar';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
 import { CalendarNav, CalendarProgressBar, jsToIsoDay } from '@/shared/components/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
+import { SchedulingKind } from '@/shared/types/enums';
 import {
     addWeeks,
     endOfISOWeek,
@@ -56,7 +58,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
 
         //TODO: Cant we identify this as a recurring type
         scheduling.start({
-            kind: 'recurring',
+            kind: SchedulingKind.Recurring,
             daysOfWeek: isWeekday ? [...WEEKDAYS] : [clickedIso],
             time,
             anchorDate: date,
@@ -67,20 +69,20 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
 
     function handleFrequencyChange(frequency: App.Enums.Frequency, daysOfWeek: number[]) {
         if (frequency === 'once') {
-            scheduling.setKind('one-off', weekStart);
+            scheduling.setKind(SchedulingKind.OneOff, weekStart);
             return;
         }
-        scheduling.setKind('recurring', weekStart);
+        scheduling.setKind(SchedulingKind.Recurring, weekStart);
         scheduling.setDaysOfWeek(daysOfWeek as IsoDayNumber[]);
     }
 
     const schedulingState = scheduling.state;
 
-    // FrequencyBar still speaks the App.Enums.Frequency vocabulary; derive it
+    // FrequencyBadge still speaks the App.Enums.Frequency vocabulary; derive it
     // from the union here rather than reintroducing a shared adapter.
     const frequencyForBar: App.Enums.Frequency = !schedulingState
         ? 'once'
-        : schedulingState.kind === 'one-off'
+        : schedulingState.kind === SchedulingKind.OneOff
             ? 'once'
             : schedulingState.daysOfWeek.length === 7
                 ? 'daily'
@@ -88,14 +90,14 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                     && WEEKDAYS.every((d) => schedulingState.daysOfWeek.includes(d))
                     ? 'weekly'
                     : 'custom';
-    const daysOfWeekForBar: number[] = !schedulingState || schedulingState.kind === 'one-off'
+    const daysOfWeekForBar: number[] = !schedulingState || schedulingState.kind === SchedulingKind.OneOff
         ? []
         : schedulingState.daysOfWeek;
 
     // ── Conflict count ────────────────────────────────────────────────────────
     const conflictCount = schedulingState
         ? days.reduce((count, day) => {
-            if (schedulingState.kind === 'one-off') {
+            if (schedulingState.kind === SchedulingKind.OneOff) {
                 if (day.date !== schedulingState.date) { return count; }
             } else {
                 const iso = jsToIsoDay(new Date(day.date).getDay()) as IsoDayNumber;
@@ -108,7 +110,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
         }, 0)
         : 0;
 
-    // ── Consistent day-pill labels for FrequencyBar ──────────────────────────
+    // ── Consistent day-pill labels for FrequencyBadge ──────────────────────────
     const dayLabels = WEEK_DAYS.map((d) => d.label);
 
     const currentWeekStart = startOfISOWeek(parseISO(weekStart));
@@ -163,7 +165,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
             <Head title="Weekly" />
 
             {scheduling.mode === 'configure' && schedulingState && (
-                <FrequencyBar
+                <FrequencyBadge
                     time={schedulingState.time}
                     frequency={frequencyForBar}
                     daysOfWeek={daysOfWeekForBar}
@@ -177,7 +179,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
 
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <WeeklyGrid
+                    <WeeklyView
                         days={days}
                         config={config}
                         mode={scheduling.mode}

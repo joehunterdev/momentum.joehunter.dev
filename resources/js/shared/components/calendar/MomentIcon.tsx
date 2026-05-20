@@ -1,5 +1,6 @@
-import { useSwipeComplete } from '../hooks/useSwipeComplete';
-import type { CalendarMoment } from '../types';
+import { useSwipeComplete } from '@/features/calendar/hooks/useSwipeComplete';
+import type { CalendarMoment } from './types';
+import { MomentStatus } from '@/shared/types/enums';
 
 interface Props {
     moment: CalendarMoment;
@@ -10,8 +11,8 @@ interface Props {
     isStatic?: boolean;
 }
 
-export default function CalendarMomentIcon({ moment, date, onToggle, onSwipeProgress, isStatic = false }: Props) {
-    const isPast = moment.status === 'completed' || moment.status === 'missed';
+export default function MomentIcon({ moment, date, onToggle, onSwipeProgress, isStatic = false }: Props) {
+    const isPast = moment.status === MomentStatus.Completed || moment.status === MomentStatus.Missed;
 
     // 0 = frictionless (perfect habit), 1 = maximum resistance (new/failing habit)
     const resistanceFactor = moment.consistency !== null

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
-import type { CalendarMoment } from '@/features/calendar/types';
-import CalendarMomentIcon from '@/features/calendar/components/CalendarMomentIcon';
+import type { CalendarMoment } from './types';
+import MomentIcon from './MomentIcon';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
 
 //TODO: index store update methods maby ? 
@@ -121,7 +121,7 @@ export default function CalendarMomentCard({
     return (
         <div className={cardCls}>
             <div className="moment-card__row">
-                <CalendarMomentIcon
+                <MomentIcon
                     moment={moment}
                     date=""
                     onToggle={() => { }}

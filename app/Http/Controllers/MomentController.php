@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Data\MomentData;
+use App\Http\Requests\StoreMomentRequest;
+use App\Http\Requests\UpdateMomentRequest;
 use App\Models\Moment;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,28 +17,9 @@ class MomentController extends Controller
         return Inertia::render('Moments/Create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreMomentRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'name' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'color' => ['nullable', 'string', 'max:7'],
-            'icon' => ['nullable', 'string', 'max:10'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            // Schedule
-            'frequency' => ['nullable', 'in:daily,weekly,custom,once'],
-            'days_of_week' => ['nullable', 'array'],
-            'days_of_week.*' => ['integer', 'between:1,7'],
-            'preferred_time' => ['nullable', 'date_format:H:i'],
-            'scheduled_date' => ['nullable', 'date'],
-            // Cue
-            'implementation_intention' => ['nullable', 'string', 'max:255'],
-            'habit_stack_after' => ['nullable', 'string', 'max:255'],
-            'environment_prompt' => ['nullable', 'string', 'max:255'],
-            // Reward
-            'reward_description' => ['nullable', 'string', 'max:255'],
-            'temptation_bundle' => ['nullable', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         $moment = $request->user()->moments()->create([
             'name' => $data['name'] ?? 'Untitled Moment',
@@ -81,31 +63,9 @@ class MomentController extends Controller
         ]);
     }
 
-    public function update(Request $request, Moment $moment): RedirectResponse
+    public function update(UpdateMomentRequest $request, Moment $moment): RedirectResponse
     {
-        $this->authorize($moment);
-
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'color' => ['nullable', 'string', 'max:7'],
-            'icon' => ['nullable', 'string', 'max:10'],
-            'is_active' => ['boolean'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            // Schedule
-            'frequency' => ['nullable', 'in:daily,weekly,custom,once'],
-            'days_of_week' => ['nullable', 'array'],
-            'days_of_week.*' => ['integer', 'between:1,7'],
-            'preferred_time' => ['nullable', 'date_format:H:i'],
-            'scheduled_date' => ['nullable', 'date'],
-            // Cue
-            'implementation_intention' => ['nullable', 'string', 'max:255'],
-            'habit_stack_after' => ['nullable', 'string', 'max:255'],
-            'environment_prompt' => ['nullable', 'string', 'max:255'],
-            // Reward
-            'reward_description' => ['nullable', 'string', 'max:255'],
-            'temptation_bundle' => ['nullable', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
 
         $moment->update([
             'name' => $data['name'],

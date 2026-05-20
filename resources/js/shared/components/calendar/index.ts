@@ -8,6 +8,13 @@ export type { ArticleCapabilities } from './CalendarSectionArticle';
 export { default as CalendarSectionHeader } from './CalendarSectionHeader';
 export { default as CalendarViewToggle } from './CalendarViewToggle';
 export { default as MomentFrequencyConfig } from './MomentFrequencyConfig';
+
+// Display components (moved from features/calendar)
+export { default as MomentDisplay } from './MomentDisplay';
+export { default as MomentIcon } from './MomentIcon';
+export { default as FrequencyBadge } from './FrequencyBadge';
+export { default as AddMomentPopover } from './AddMomentPopover';
+
 export type { CalendarConfig, CalendarMoment, TimeSlot, WeekDay } from './types';
 export * from './utils';
 

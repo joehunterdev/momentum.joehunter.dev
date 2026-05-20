@@ -6,7 +6,7 @@ interface Props {
     progress?: number;
 }
 
-export default function MomentActionItem({ moment, progress }: Props) {
+export default function MomentDisplay({ moment, progress }: Props) {
     const pct = Math.max(0, Math.min(100, progress ?? moment.progress ?? 0));
     const name = moment.name ?? 'Untitled Moment';
 

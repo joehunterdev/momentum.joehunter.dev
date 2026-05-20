@@ -2,7 +2,8 @@ import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/sch
 import { isOutOfOffice, jsToIsoDay } from './utils';
 import type { CalendarConfig, CalendarMoment } from './types';
 import CalendarMomentCard from './CalendarMomentCard';
-import { MomentActionItem } from '@/features/calendar';
+import type { CalendarMomentCardVariant } from './CalendarMomentCard';
+import MomentDisplay from './MomentDisplay';
 
 export interface ArticleCapabilities {
     /** Daily — swipe right to complete (PR #9 wires this in). */
@@ -168,7 +169,7 @@ export default function CalendarSectionArticle({
                                 variant="edit"
                             />
                         ) : (
-                            <MomentActionItem moment={moment} />
+                            <MomentDisplay moment={moment} />
                         )}
                         {isConflict && (
                             <span className="calendar-article__conflict-badge weekly-slot__conflict-badge" title="Scheduling conflict">

@@ -1,7 +1,8 @@
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 import { transitionKind } from './transition';
-import type { IsoDayNumber, SchedulingKind, SchedulingState } from './types';
+import type { IsoDayNumber, SchedulingState } from './types';
+import { SchedulingKind } from '@/shared/types/enums';
 
 export type CalendarMode = 'overview' | 'configure';
 
@@ -40,7 +41,7 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
 
     function setDaysOfWeek(days: IsoDayNumber[]) {
         setState((prev) => {
-            if (!prev || prev.kind !== 'recurring') {
+            if (!prev || prev.kind !== SchedulingKind.Recurring) {
                 return prev;
             }
             return { ...prev, daysOfWeek: days };
@@ -64,7 +65,7 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
             return;
         }
 
-        const payload = state.kind === 'one-off'
+        const payload = state.kind === SchedulingKind.OneOff
             ? {
                 name: state.name.trim() || null,
                 frequency: 'once' as const,

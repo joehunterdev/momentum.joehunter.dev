@@ -1,12 +1,13 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { CalendarNav, CalendarProgressBar, MomentFrequencyConfig } from '@/shared/components/calendar';
-import { MonthlyScheduleRow, MonthlyVerticalView } from '@/features/calendar';
+import { MonthlyScheduleRow, MonthlyView } from '@/features/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import { addMonths, format, parseISO, subMonths } from 'date-fns';
 import { WEEK_DAYS } from '@/shared/constants/moments';
 import type { PageProps } from '@/types';
+import { SchedulingKind } from '@/shared/types/enums';
 
 interface Props extends PageProps, App.Data.MonthlyPageData { }
 
@@ -21,7 +22,7 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
 
     function handleStartScheduling(_isoDay: number) {
         scheduling.start({
-            kind: 'recurring',
+            kind: SchedulingKind.Recurring,
             daysOfWeek: [...ALL_DAYS],
             time: null,
             anchorDate: monthStart,
@@ -89,11 +90,11 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
                     {scheduling.mode === 'overview' ? (
-                        <MonthlyVerticalView
+                        <MonthlyView
                             days={days}
                             onStartScheduling={(date) => {
                                 scheduling.start({
-                                    kind: 'recurring',
+                                    kind: SchedulingKind.Recurring,
                                     daysOfWeek: [...ALL_DAYS],
                                     time: null,
                                     anchorDate: date,

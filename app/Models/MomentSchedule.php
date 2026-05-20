@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Frequency;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,6 +17,7 @@ class MomentSchedule extends Model
     ];
 
     protected $casts = [
+        'frequency' => Frequency::class,
         'days_of_week' => 'array',
         'preferred_time' => 'string',
         'scheduled_date' => 'string',

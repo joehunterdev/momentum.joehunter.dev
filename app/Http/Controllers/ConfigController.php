@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserConfigRequest;
 use App\Services\MomentExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -29,16 +30,9 @@ class ConfigController extends Controller
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateUserConfigRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'wake_time' => ['required', 'date_format:H:i'],
-            'sleep_time' => ['required', 'date_format:H:i'],
-            'week_starts_on' => ['required', 'integer', 'between:1,7'],
-            'office_start' => ['required', 'date_format:H:i'],
-            'office_end' => ['required', 'date_format:H:i', 'after:office_start'],
-            'identity_statement' => ['nullable', 'string', 'max:500'],
-        ]);
+        $data = $request->validated();
 
         $request->user()
             ->config()
@@ -50,10 +44,10 @@ class ConfigController extends Controller
     public function exportMoments(Request $request, MomentExportService $exporter): JsonResponse
     {
         $payload = $exporter->export($request->user());
-        $filename = 'moments-export-'.now()->format('Y-m-d').'.json';
+        $filename = 'moments-export-' . now()->format('Y-m-d') . '.json';
 
         return response()->json($payload, 200, [
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }

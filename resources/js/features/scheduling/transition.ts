@@ -1,26 +1,24 @@
-import type { SchedulingKind, SchedulingState } from './types';
+import type { SchedulingState } from './types';
+import { SchedulingKind } from '@/shared/types/enums';
 
 /**
- * Flip a scheduling state between one-off and recurring without losing
- * the fields that carry across (name, icon, time).
+ * Transition between one-off and recurring scheduling modes, preserving
+ * relevant fields and clearing contradictory ones.
  *
- * `fallbackDate` is used to anchor the new state when there isn't a date
- * to inherit (e.g. transitioning recurring → recurring, or seeding from
- * a one-off without a date).
+ * @param current - Current scheduling state
+ * @param next - Desired scheduling kind
+ * @param fallbackDate - Date to use if current state doesn't have a suitable date
+ * @returns New scheduling state with appropriate fields for the new kind
  */
 export function transitionKind(
     current: SchedulingState,
     next: SchedulingKind,
     fallbackDate: string,
 ): SchedulingState {
-    if (current.kind === next) {
-        return current;
-    }
-
-    if (next === 'one-off') {
+    if (next === SchedulingKind.OneOff) {
         return {
-            kind: 'one-off',
-            date: current.kind === 'recurring' ? current.anchorDate : fallbackDate,
+            kind: SchedulingKind.OneOff,
+            date: current.kind === SchedulingKind.Recurring ? current.anchorDate : fallbackDate,
             time: current.time,
             name: current.name,
             icon: current.icon,
@@ -28,10 +26,10 @@ export function transitionKind(
     }
 
     return {
-        kind: 'recurring',
+        kind: SchedulingKind.Recurring,
         daysOfWeek: [],
         time: current.time,
-        anchorDate: current.kind === 'one-off' ? current.date : fallbackDate,
+        anchorDate: current.kind === SchedulingKind.OneOff ? current.date : fallbackDate,
         name: current.name,
         icon: current.icon,
     };

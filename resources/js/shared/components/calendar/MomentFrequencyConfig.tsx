@@ -1,8 +1,6 @@
-import type {
-    IsoDayNumber,
-    SchedulingKind,
-    SchedulingState,
-} from '@/features/scheduling';
+import { useState } from 'react';
+import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
+import { SchedulingKind } from '@/shared/types/enums';
 import { WEEK_DAYS } from '@/shared/constants/moments';
 
 const ALL_DAYS: IsoDayNumber[] = [1, 2, 3, 4, 5, 6, 7];
@@ -36,13 +34,13 @@ export default function MomentFrequencyConfig({
     onCancel,
 }: Props) {
     const kind = state.kind;
-    const daysOfWeek: IsoDayNumber[] = state.kind === 'recurring' ? state.daysOfWeek : [];
+    const daysOfWeek: IsoDayNumber[] = state.kind === SchedulingKind.Recurring ? state.daysOfWeek : [];
 
     const isAllDays = sameSet(daysOfWeek, ALL_DAYS);
     const isWeekdays = sameSet(daysOfWeek, WEEKDAYS);
 
     function toggleDay(day: IsoDayNumber) {
-        if (kind !== 'recurring') { return; }
+        if (kind !== SchedulingKind.Recurring) { return; }
         const next = daysOfWeek.includes(day)
             ? daysOfWeek.filter((d) => d !== day)
             : [...daysOfWeek, day].sort((a, b) => a - b);
@@ -77,15 +75,15 @@ export default function MomentFrequencyConfig({
             <div className="moment-frequency-config__kind-group" role="group" aria-label="Schedule kind">
                 <button
                     type="button"
-                    className={kindBtnCls(kind === 'one-off')}
-                    onClick={() => onKindChange('one-off')}
+                    className={kindBtnCls(kind === SchedulingKind.OneOff)}
+                    onClick={() => onKindChange(SchedulingKind.OneOff)}
                 >
-                    Once
+                    One-off
                 </button>
                 <button
                     type="button"
-                    className={kindBtnCls(kind === 'recurring')}
-                    onClick={() => onKindChange('recurring')}
+                    className={kindBtnCls(kind === SchedulingKind.Recurring)}
+                    onClick={() => onKindChange(SchedulingKind.Recurring)}
                 >
                     Recurring
                 </button>

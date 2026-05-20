@@ -1,9 +1,6 @@
 import { useRef, useState } from 'react';
 import type { TimeSlot, WeeklyConfig } from '../types';
-import { isOutOfOffice } from '@/shared/components/calendar';
-import AddSlotPopover from './AddSlotPopover';
-import { CalendarMomentCard } from '@/shared/components/calendar';
-import { MomentActionItem } from '@/features/calendar';
+import { isOutOfOffice, CalendarMomentCard, MomentDisplay, AddMomentPopover } from '@/shared/components/calendar';
 
 interface Props {
     slot: TimeSlot;
@@ -70,7 +67,7 @@ export default function TimeSlotCell({
                 </span>
                 <div className="weekly-slot__content">
                     {slot.moment ? (
-                        <MomentActionItem moment={slot.moment} />
+                        <MomentDisplay moment={slot.moment} />
                     ) : ooo ? (
                         <span className="weekly-slot__ooo-dot" aria-hidden />
                     ) : (
@@ -138,7 +135,7 @@ export default function TimeSlotCell({
                         >
                             +
                         </button>
-                        <AddSlotPopover
+                        <AddMomentPopover
                             isOpen={popoverOpen}
                             anchorRef={addBtnRef}
                             onClose={() => setPopoverOpen(false)}

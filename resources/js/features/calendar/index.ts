@@ -1,20 +1,18 @@
 // Daily
-export { default as DailySlotCard } from './components/DailySlotCard';
 export { default as DailyTimeSlotCell } from './components/DailyTimeSlotCell';
 
 // Weekly
-export { default as WeeklyGrid } from './components/WeeklyGrid';
+export { default as WeeklyView } from './components/WeeklyView';
 export { default as TimeSlotCell } from './components/TimeSlotCell';
-export { default as CalendarMomentIcon } from './components/CalendarMomentIcon';
-export { default as FrequencyBar } from './components/FrequencyBar';
 
 // Monthly
 export { default as MonthlyDayCell } from './components/MonthlyDayCell';
 export { default as MonthlyScheduleRow } from './components/MonthlyScheduleRow';
-export { default as MonthlyVerticalView } from './components/MonthlyVerticalView';
+export { default as MonthlyView } from './components/MonthlyView';
 
-// Shared calendar components
-export { default as MomentActionItem } from './components/MomentActionItem';
+// Hooks
+export { useCalendarActions } from './hooks/useCalendarActions';
+export type { UseCalendarActionsReturn } from './hooks/useCalendarActions';
 
 // Types
 export type * from './types';
