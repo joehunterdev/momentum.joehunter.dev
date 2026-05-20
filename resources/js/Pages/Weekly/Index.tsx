@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { WeeklyView } from '@/features/calendar';
+import { WeeklyContainer } from '@/features/calendar';
 import { FrequencyBadge } from '@/shared/components/calendar';
 import type { WeeklyPageProps } from '@/features/calendar';
 import { MomentModal, useMomentForm } from '@/features/moments';
@@ -179,7 +179,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
 
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <WeeklyView
+                    <WeeklyContainer
                         days={days}
                         config={config}
                         mode={scheduling.mode}

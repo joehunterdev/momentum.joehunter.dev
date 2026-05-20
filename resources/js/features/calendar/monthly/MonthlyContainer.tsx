@@ -1,14 +1,21 @@
 import { format, parseISO, startOfDay, startOfISOWeek } from 'date-fns';
 import {
-    CalendarMomentCard,
     CalendarSection,
     CalendarSectionHeader,
-    MomentDisplay,
 } from '@/shared/components/calendar';
+import type { CalendarMode, SchedulingState } from '@/features/scheduling';
+import MomentAction from '../components/MomentAction';
+import MonthlyScheduleRow from './MonthlyScheduleRow';
 
 interface Props {
     days: App.Data.MonthlyDayData[];
-    onStartScheduling: (date: string) => void;
+    scheduleRows: App.Data.MonthlyScheduleRowData[];
+    mode: CalendarMode;
+    scheduling: SchedulingState | null;
+    onStartSchedulingFromDate: (date: string) => void;
+    onStartSchedulingFromIsoDay: (isoDay: number) => void;
+    onDraftNameChange: (name: string) => void;
+    onDraftIconChange: (icon: string | null) => void;
 }
 
 interface WeekGroup {
@@ -30,11 +37,37 @@ function groupByIsoWeek(days: App.Data.MonthlyDayData[]): WeekGroup[] {
 }
 
 /**
- * Mobile monthly view. Section = ISO week, article = one day (24h "slot").
- * Each day-article carries the day label in its leading column and stacks any
- * scheduled moments inside, or shows a `+` add button when empty.
+ * Orchestrates the monthly view. Overview mode renders the week-grouped day
+ * articles; configure mode renders the recurring schedule rows.
  */
-export default function MonthlyView({ days, onStartScheduling }: Props) {
+export default function MonthlyContainer({
+    days,
+    scheduleRows,
+    mode,
+    scheduling,
+    onStartSchedulingFromDate,
+    onStartSchedulingFromIsoDay,
+    onDraftNameChange,
+    onDraftIconChange,
+}: Props) {
+    if (mode === 'configure') {
+        return (
+            <div className="weekly-grid">
+                {scheduleRows.map((row) => (
+                    <MonthlyScheduleRow
+                        key={row.isoDayNumber}
+                        row={row}
+                        mode={mode}
+                        scheduling={scheduling}
+                        onStartScheduling={onStartSchedulingFromIsoDay}
+                        onDraftNameChange={onDraftNameChange}
+                        onDraftIconChange={onDraftIconChange}
+                    />
+                ))}
+            </div>
+        );
+    }
+
     const today = startOfDay(new Date());
     const isCurrentMonthView = days.some((d) => d.isToday);
     const visibleDays = isCurrentMonthView
@@ -72,7 +105,7 @@ export default function MonthlyView({ days, onStartScheduling }: Props) {
                                     <div className="calendar-article__content weekly-slot__content">
                                         {day.moments.length > 0 ? (
                                             day.moments.map((m) => (
-                                                <MomentDisplay
+                                                <MomentAction
                                                     key={m.id}
                                                     moment={m}
                                                 />
@@ -82,7 +115,7 @@ export default function MonthlyView({ days, onStartScheduling }: Props) {
                                                 type="button"
                                                 className="calendar-article__add-btn weekly-slot__add-btn weekly-slot__add-btn--always-visible"
                                                 title={`Add moment on ${dayLabel}`}
-                                                onClick={() => onStartScheduling(day.date)}
+                                                onClick={() => onStartSchedulingFromDate(day.date)}
                                             >
                                                 +
                                             </button>

@@ -3,7 +3,8 @@ import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar';
 import type { SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice } from '@/shared/components/calendar';
 import { useSwipeComplete } from '../hooks/useSwipeComplete';
-import { CalendarMomentCard, MomentDisplay } from '@/shared/components/calendar';
+import { CalendarMomentCard } from '@/shared/components/calendar';
+import MomentAction from './MomentAction';
 import { MomentStatus, SchedulingKind } from '@/shared/types/enums';
 
 type DailyMode = 'overview' | 'configure';
@@ -132,7 +133,7 @@ export default function DailyTimeSlotCell({
                     />
                 ) : slot.moment ? (
                     <div className="daily-time-slot-cell__moment">
-                        <MomentDisplay moment={slot.moment} />
+                        <MomentAction moment={slot.moment} />
                     </div>
                 ) : ooo ? (
                     <span className="weekly-slot__ooo-dot" aria-hidden />

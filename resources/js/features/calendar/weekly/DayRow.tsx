@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import type { WeekDay, WeeklyConfig } from '../types';
-import TimeSlotCell from './TimeSlotCell';
+import TimeSlotCell from '../components/TimeSlotCell';
 
 interface Props {
     day: WeekDay;

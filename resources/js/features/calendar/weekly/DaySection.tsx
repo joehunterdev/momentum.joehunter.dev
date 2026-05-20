@@ -3,7 +3,7 @@ import type { TimeSlot, WeekDay, WeeklyConfig } from '../types';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { jsToIsoDay } from '@/shared/components/calendar';
 import { CalendarSection, CalendarSectionHeader } from '@/shared/components/calendar';
-import TimeSlotCell from './TimeSlotCell';
+import TimeSlotCell from '../components/TimeSlotCell';
 
 interface Props {
     day: WeekDay;
@@ -73,4 +73,3 @@ export default function DaySection({ day, config, mode, scheduling, onStartSched
         </CalendarSection>
     );
 }
-

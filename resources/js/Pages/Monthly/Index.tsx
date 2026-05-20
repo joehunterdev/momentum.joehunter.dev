@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { CalendarNav, CalendarProgressBar, MomentFrequencyConfig } from '@/shared/components/calendar';
-import { MonthlyScheduleRow, MonthlyView } from '@/features/calendar';
+import { MonthlyContainer } from '@/features/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import { addMonths, format, parseISO, subMonths } from 'date-fns';
@@ -89,35 +89,25 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
 
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
-                    {scheduling.mode === 'overview' ? (
-                        <MonthlyView
-                            days={days}
-                            onStartScheduling={(date) => {
-                                scheduling.start({
-                                    kind: SchedulingKind.Recurring,
-                                    daysOfWeek: [...ALL_DAYS],
-                                    time: null,
-                                    anchorDate: date,
-                                    name: '',
-                                    icon: null,
-                                });
-                            }}
-                        />
-                    ) : (
-                        <div className="weekly-grid">
-                            {scheduleRows.map((row) => (
-                                <MonthlyScheduleRow
-                                    key={row.isoDayNumber}
-                                    row={row}
-                                    mode={scheduling.mode}
-                                    scheduling={scheduling.state}
-                                    onStartScheduling={handleStartScheduling}
-                                    onDraftNameChange={scheduling.setName}
-                                    onDraftIconChange={scheduling.setIcon}
-                                />
-                            ))}
-                        </div>
-                    )}
+                    <MonthlyContainer
+                        days={days}
+                        scheduleRows={scheduleRows}
+                        mode={scheduling.mode}
+                        scheduling={scheduling.state}
+                        onStartSchedulingFromDate={(date) => {
+                            scheduling.start({
+                                kind: SchedulingKind.Recurring,
+                                daysOfWeek: [...ALL_DAYS],
+                                time: null,
+                                anchorDate: date,
+                                name: '',
+                                icon: null,
+                            });
+                        }}
+                        onStartSchedulingFromIsoDay={handleStartScheduling}
+                        onDraftNameChange={scheduling.setName}
+                        onDraftIconChange={scheduling.setIcon}
+                    />
                 </div>
             </div>
         </AuthenticatedLayout>
