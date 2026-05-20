@@ -18,19 +18,14 @@ The aim in short is to do a quick analysis moment-action-plan.md here and then s
 Slot moment data so slot feels alot more like MomentActionData ? or should we stick with slot domain wise
 - `app/Data/SlotMomentData.php`
 
+ I feel like the components and file folder structure is still messyy.
+ I feel like we have a bunch of reusables like frequency bar, consistency bar calendar moment icon etc.. really i wanted feature/calendar folder
+ to keep top level the containers then each view might even tho i doubt it have specifics for each day week month views. But im also seeing a mismatch between the terms cell, vertical, grid slot card ? its all very confusing and then also moment action ? 
 
-MonthlyMomentData
-E:\www\momentum.joehunter.dev\app\Data\MomentData.php
+ features/calendar
+ Daily
+ Weekly
+ Monthly
+each of those components will dip into reusable features from slot or moment action ? no 
 
-    public function __construct(
-        public int $id,
-        public string $name,
-        public ?string $description,
-        public ?string $color,
-        public ?string $icon,
-        public bool $is_active,
-        public int $sort_order,
-        public ?MomentScheduleData $schedule,
-        public ?CueData $cue,
-        public ?RewardData $reward,
-    ) {}
+can we think about htis after deep analysis and pro react architictural thinkign seewhat u propose. Also read my instructions

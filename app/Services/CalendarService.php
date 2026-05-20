@@ -36,6 +36,11 @@ class CalendarService
             $end->second(0);
         }
 
+        // Handle sleep times that cross midnight (e.g., wake=20:00, sleep=02:00)
+        if ($end->lt($current)) {
+            $end->addDay();
+        }
+
         while ($current->lte($end)) {
             $slots[] = $current->format('H:i');
             $current->addMinutes($intervalMinutes);
@@ -96,7 +101,7 @@ class CalendarService
         }
 
         $completed = $moment->instances->filter(
-            fn ($i) => $i->date->toDateString() >= $windowStart->toDateString()
+            fn($i) => $i->date->toDateString() >= $windowStart->toDateString()
                 && $i->date->toDateString() <= $today->toDateString()
                 && $i->completed_at !== null
         )->count();
@@ -115,7 +120,7 @@ class CalendarService
         Carbon $consistencyWindow,
         Carbon $today,
     ): SlotMomentData {
-        $instance = $match->instances->first(fn ($i) => $i->date->toDateString() === $dateStr);
+        $instance = $match->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
         // TODO: missed, pending,passed need their own enum both front and back
         $status = match (true) {
             $instance?->completed_at !== null => 'completed',
@@ -220,7 +225,7 @@ class CalendarService
         $dateStr = $date->toDateString();
 
         $moments = $dayMoments->map(function (Moment $m) use ($dateStr, $isPast, $isToday, $momentProgress) {
-            $instance = $m->instances->first(fn ($i) => $i->date->toDateString() === $dateStr);
+            $instance = $m->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
 
             $status = match (true) {
                 $instance?->completed_at !== null => 'completed',
@@ -248,7 +253,7 @@ class CalendarService
             );
         })->values()->all();
 
-        $completedCount = collect($moments)->filter(fn ($m) => $m->status === 'completed')->count();
+        $completedCount = collect($moments)->filter(fn($m) => $m->status === 'completed')->count();
         $totalCount = count($moments);
 
         return new MonthlyDayData(

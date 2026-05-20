@@ -19,8 +19,7 @@ interface Props {
 const VISIBLE_SLOTS = 6;
 
 function getWindowedSlots(slots: TimeSlot[], windowStart: number): TimeSlot[] {
-    const hourly = slots.filter((s) => s.time.endsWith(':00'));
-    return hourly.slice(windowStart, windowStart + VISIBLE_SLOTS);
+    return slots.slice(windowStart, windowStart + VISIBLE_SLOTS);
 }
 
 export default function DaySection({ day, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange, windowStart }: Props) {

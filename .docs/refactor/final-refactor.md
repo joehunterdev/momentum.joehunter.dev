@@ -2,536 +2,332 @@
 
 ## Overview
 
-This refactor aligns frontend and backend architectures by:
-1. **Frontend:** Reducing `features/calendar/` from 15 → 5 components, moving display to `shared/`
-2. **Frontend:** Creating `useCalendarActions` hook to mirror backend's `CalendarService`
-3. **Backend:** Extracting validation to FormRequest classes (Laravel best practice)
-4. **Both:** Establishing clear separation of concerns across all layers
+This refactor aligns frontend and backend around a clean, DRY domain model for the calendar feature. The driving goal is **one canonical row component** (`MomentAction`) reused across Daily, Weekly, and Monthly views — so adding a new view never means duplicating row markup again.
 
-**Goal:** Achieve the same clean architecture patterns in `calendar/` that already exist in `moments/` and `config/`.
+**What changes:**
+1. **Frontend:** `features/calendar/` reorganizes into per-view subfolders (`daily/`, `weekly/`, `monthly/`) with a shared `components/` directory for reusables.
+2. **Frontend:** `MomentDisplay` is renamed/rebuilt as `MomentAction` — the single source of truth for rendering a moment in any view's row.
+3. **Frontend:** Row wrappers (`DailyTimeSlotCell`, `TimeSlotCell`) collapse into a single cell that hosts `MomentAction`.
+4. **Backend:** Already done — `CalendarService` + FormRequests + DTOs are in place.
+
+**Why:** The current state mixes terminology (Cell / Card / Grid / Slot / Vertical / Row) and splits row UI across `MomentDisplay`, `DailyTimeSlotCell`, `TimeSlotCell`, and `DailySlotCard`. The app's purpose is to demonstrate clean React reusability, so the row UI must collapse to one component.
 
 ---
 
-## Phase 1: Frontend Hook Extraction (High Priority)
+## Locked-in decisions
 
-### 1.1 Create `useCalendarActions` Hook
+| Decision | Choice | Rationale |
+|---|---|---|
+| **View folder layout** | `features/calendar/{daily,weekly,monthly}/` subfolders | Keeps calendar as the domain home; view-specific containers grouped by view; shared row UI stays at calendar root. |
+| **Row component name** | `MomentAction` | Reflects the app's purpose (act on a moment). Replaces `MomentDisplay` / `MomentActionItem`. |
+| **DTO name** | `SlotMomentData` (unchanged) | "Slot" is the backend domain term for a time bucket; DTO shape is independent of UI naming. |
+| **Backend FormRequests** | Already extracted | `StoreMomentRequest`, `UpdateMomentRequest`, `UpdateUserConfigRequest` — done. |
 
-**File:** `resources/js/features/calendar/hooks/useCalendarActions.ts`
+---
 
-**Purpose:** Extract API call logic from Pages, mirror backend's `CalendarService` pattern
+## End-state target
 
-**Methods to implement:**
+### Frontend file tree
+
+```
+resources/js/
+├── Pages/                              # Thin Inertia containers
+│   ├── Daily/Index.tsx                 # Renders <DailyContainer />
+│   ├── Weekly/Index.tsx                # Renders <WeeklyContainer />
+│   ├── Monthly/Index.tsx               # Renders <MonthlyContainer />
+│   ├── Moments/{Create,Edit}.tsx
+│   └── Config/Edit.tsx
+│
+├── features/
+│   ├── calendar/
+│   │   ├── daily/
+│   │   │   └── DailyContainer.tsx      # Orchestrates daily slot list
+│   │   ├── weekly/
+│   │   │   ├── WeeklyContainer.tsx     # Orchestrates 7-day grid
+│   │   │   ├── DayRow.tsx              # Weekly-specific layout helper
+│   │   │   └── DaySection.tsx          # Weekly-specific layout helper
+│   │   ├── monthly/
+│   │   │   ├── MonthlyContainer.tsx    # Orchestrates monthly layout
+│   │   │   ├── MonthlyDayCell.tsx
+│   │   │   └── MonthlyScheduleRow.tsx
+│   │   ├── components/                 # Shared across all views
+│   │   │   ├── MomentAction.tsx        # ⭐ Canonical row component
+│   │   │   └── TimeSlotCell.tsx        # Single cell wrapper (merged daily/weekly)
+│   │   ├── hooks/
+│   │   │   ├── useCalendarActions.ts
+│   │   │   └── useSwipeComplete.ts
+│   │   ├── utils.ts                    # Pure calendar helpers
+│   │   ├── types.ts
+│   │   └── index.ts                    # Barrel
+│   │
+│   ├── moments/                        # ✅ unchanged
+│   ├── config/                         # ✅ unchanged
+│   └── scheduling/                     # ✅ unchanged
+│
+└── shared/components/calendar/         # Cross-feature calendar UI framework
+    ├── CalendarNav.tsx
+    ├── CalendarSection.tsx
+    ├── CalendarSectionArticle.tsx
+    ├── CalendarSectionHeader.tsx
+    ├── CalendarProgressBar.tsx
+    ├── CalendarViewToggle.tsx
+    ├── CalendarMomentCard.tsx          # Distinct from MomentAction — used in modals/lists
+    ├── MomentFrequencyConfig.tsx
+    ├── MomentIcon.tsx
+    ├── FrequencyBadge.tsx
+    ├── AddMomentPopover.tsx
+    ├── types.ts
+    └── utils.ts                        # OR move to features/calendar/utils.ts (see Phase D)
+```
+
+### Naming convention
+
+| Concept | Name | Where |
+|---|---|---|
+| View orchestrator | `{Daily,Weekly,Monthly}Container` | `features/calendar/{view}/` |
+| **Canonical moment row** | **`MomentAction`** | `features/calendar/components/` |
+| Cell wrapper (handles swipe, scheduling, etc.) | `TimeSlotCell` | `features/calendar/components/` |
+| View-specific layout helper | `DayRow`, `DaySection`, `MonthlyDayCell`, `MonthlyScheduleRow` | `features/calendar/{view}/` |
+| Calendar UI framework (nav, progress, sections) | `Calendar*` | `shared/components/calendar/` |
+| Backend DTO | `SlotMomentData` | `app/Data/` |
+
+### Component responsibility matrix
+
+| Type | Location | Examples | Purpose |
+|---|---|---|---|
+| **View Container** | `features/calendar/{view}/` | `DailyContainer`, `WeeklyContainer`, `MonthlyContainer` | Orchestrate layout, manage state, call hooks |
+| **View-specific helper** | `features/calendar/{view}/` | `DayRow`, `MonthlyDayCell` | Layout primitives only used by one view |
+| **Shared row component** | `features/calendar/components/` | `MomentAction`, `TimeSlotCell` | Reused across all views |
+| **Cross-feature calendar UI** | `shared/components/calendar/` | `CalendarNav`, `CalendarProgressBar` | UI framework, no calendar business logic |
+| **Business logic** | `features/calendar/hooks/` | `useCalendarActions`, `useSwipeComplete` | Toggle, complete, scheduling triggers |
+
+---
+
+## MomentAction — the canonical row
+
+`MomentAction` is the single component that renders a moment inside any view's row. Start minimal — just data display — and add interactions later.
+
+**Props (v1):**
 ```typescript
-export function useCalendarActions() {
-    const toggleMoment = useCallback(async (
-        momentId: number, 
-        date: string,
-        time?: string
-    ) => {
-        await router.post(
-            route('moments.toggle', { moment: momentId }), 
-            { date, time },
-            { only: ['day', 'days', 'completedCount', 'totalCount'] }
-        );
-    }, []);
-    
-    const scheduleOneOff = useCallback((
-        date: string,
-        time: string,
-        name: string,
-        icon: string | null
-    ) => {
-        // Scheduling logic extraction
-    }, []);
-    
-    return { toggleMoment, scheduleOneOff };
+interface MomentActionProps {
+    moment: SlotMomentData;      // backend DTO shape (App.Data.SlotMomentData)
+    progress?: number;            // override; defaults to moment.progress
 }
 ```
 
-**Files to update:**
-- `Pages/Daily/Index.tsx` - Remove `handleToggleMoment`, use `useCalendarActions`
-- `Pages/Weekly/Index.tsx` - Remove inline toggle logic
-- `Pages/Monthly/Index.tsx` - Remove inline toggle logic
+**Renders:**
+- Icon (left)
+- Title + optional description (body)
+- Progress fill as background (`--moment-progress` CSS var)
 
-**Success criteria:**
-- ✅ All Pages use `const { toggleMoment } = useCalendarActions()`
-- ✅ No raw `fetch()` calls in Pages
-- ✅ TypeScript compiles with no errors
-- ✅ All calendar views still toggle moments correctly
+**Explicitly out of scope for v1:**
+- Swipe-to-complete (lives in `TimeSlotCell` via `useSwipeComplete`)
+- Tap / click handlers (passed by parent if needed)
+- Scheduling popover (lives in `TimeSlotCell`)
+
+**Why split row content from cell behavior:** `MomentAction` becomes pure presentation. Every view can render it identically. `TimeSlotCell` adds view-specific interaction by wrapping `MomentAction`.
 
 ---
 
-## Phase 2: Frontend Component Reorganization (High Priority)
+## Phases
 
-### 2.1 Move Display Components to `shared/components/calendar/`
+### ✅ Completed
 
-**Goal:** Consolidate all display/UI components in shared location (mirrors backend's `app/Data/`)
+| Phase | Status | Outcome |
+|---|---|---|
+| Hook extraction | ✅ Done | `useCalendarActions` exists; Daily page consumes it |
+| Display components → `shared/` | ✅ Done | `MomentDisplay`, `MomentIcon`, `FrequencyBadge`, `AddMomentPopover` relocated |
+| Dead code removed | ✅ Done | `ConsistencyBar`, `MomentDetailTicker`, `DailySlotCard` deleted |
+| View containers renamed | ✅ Done | `WeeklyView`, `MonthlyView` exist (will be re-renamed to `*Container` in Phase A) |
+| Backend FormRequests | ✅ Done | `StoreMomentRequest`, `UpdateMomentRequest`, `UpdateUserConfigRequest` |
+
+---
+
+### Phase A: Restructure into view subfolders
+
+**Goal:** Group view containers and their helpers by view.
 
 **Moves:**
 
-| Current Location | New Location | Rename |
-|-----------------|--------------|--------|
-| `features/calendar/components/MomentActionItem.tsx` | `shared/components/calendar/MomentDisplay.tsx` | ✅ |
-| `features/calendar/components/CalendarMomentIcon.tsx` | `shared/components/calendar/MomentIcon.tsx` | ✅ |
-| `features/calendar/components/FrequencyBar.tsx` | `shared/components/calendar/FrequencyBadge.tsx` | ✅ |
-| `features/calendar/components/AddSlotPopover.tsx` | `shared/components/calendar/AddMomentPopover.tsx` | ✅ |
-
-**Steps:**
-1. Move files with renames
-2. Update imports in all consumers:
-   - `DailyTimeSlotCell.tsx`
-   - `TimeSlotCell.tsx`
-   - `MonthlyVerticalView.tsx`
-   - `CalendarSectionArticle.tsx`
-3. Update `shared/components/calendar/index.ts` barrel export
-4. Update `features/calendar/index.ts` barrel export (remove moved components)
-
-**Delete unused components:**
-- `features/calendar/components/ConsistencyBar.tsx` (unused)
-- `features/calendar/components/MomentDetailTicker.tsx` (unused)
-- `features/calendar/components/DailySlotCard.tsx` (replaced by MomentDisplay)
-
-**Success criteria:**
-- ✅ `shared/components/calendar/` has all display components
-- ✅ `features/calendar/components/` only has view containers + layout wrappers
-- ✅ All imports updated, no broken references
-- ✅ `npx tsc --noEmit` passes
-- ✅ All three calendar views render correctly
-
----
-
-### 2.2 Rename View Containers
-
-**Goal:** Clear naming convention - "View" suffix for page-level orchestrators
-
-**Renames:**
-
-| Current Name | New Name | Location |
-|-------------|----------|----------|
-| `WeeklyGrid.tsx` | `WeeklyView.tsx` | `features/calendar/components/` |
-| `MonthlyVerticalView.tsx` | `MonthlyView.tsx` | `features/calendar/components/` |
-
-**Note:** `DailyView` doesn't exist yet - Daily page renders `DailyTimeSlotCell` directly. Consider extracting later if Daily page gets complex.
-
-**Files to update:**
-- `Pages/Weekly/Index.tsx` - Import `WeeklyView` instead of `WeeklyGrid`
-- `Pages/Monthly/Index.tsx` - Import `MonthlyView` instead of `MonthlyVerticalView`
-- `features/calendar/index.ts` - Update barrel exports
-
-**Success criteria:**
-- ✅ View containers clearly named with "View" suffix
-- ✅ Pages import updated
-- ✅ TypeScript compiles
-- ✅ Weekly and Monthly views render correctly
-
----
-
-### 2.3 Consolidate Layout Helpers (Optional - Low Priority)
-
-**Current layout helpers:**
-- `DayRow.tsx`
-- `DaySection.tsx`
-- `MonthlyScheduleRow.tsx`
-
-**Analysis needed:** Check if these have overlapping responsibilities or can be simplified.
-
-**Defer this until Phases 1-2 complete** - only refactor if clear duplication exists.
-
----
-
-## Phase 3: Frontend Utilities (Medium Priority)
-
-### 3.1 Create `features/calendar/utils.ts`
-
-**Purpose:** Pure functions for calendar calculations (mirror backend's `CalendarService` helpers)
-
-**Functions to extract:**
-
-```typescript
-// From Pages/Daily/Index.tsx
-export function getVisibleTimeSlots(
-    slots: TimeSlot[], 
-    config: CalendarConfig, 
-    isToday: boolean,
-    intervalMinutes: number = 30
-): TimeSlot[] {
-    // Extract inline logic from Daily/Index.tsx
-}
-
-// From backend CalendarService::snapToSlot
-export function snapToSlotBoundary(
-    time: string, 
-    intervalMinutes: number = 30
-): string {
-    // Client-side implementation of time snapping
-}
-
-// Progress calculation helpers
-export function calculateSlotProgress(
-    completed: number, 
-    total: number
-): number {
-    return total === 0 ? 0 : Math.round((completed / total) * 100);
-}
-```
-
-**Files to update:**
-- `Pages/Daily/Index.tsx` - Use `getVisibleTimeSlots()` from utils
-- Any components doing time calculations
-
-**Success criteria:**
-- ✅ Pure functions extracted to utils
-- ✅ Pages use utility functions instead of inline logic
-- ✅ TypeScript compiles
-- ✅ Daily view still correctly filters visible slots
-
----
-
-## Phase 4: Backend FormRequest Extraction (Medium Priority)
-
-### 4.1 Create FormRequest Classes
-
-**Goal:** Follow Laravel best practice (you already use `ProfileUpdateRequest`)
+| From | To | Notes |
+|---|---|---|
+| `features/calendar/components/WeeklyView.tsx` | `features/calendar/weekly/WeeklyContainer.tsx` | Rename suffix `View` → `Container` |
+| `features/calendar/components/MonthlyView.tsx` | `features/calendar/monthly/MonthlyContainer.tsx` | Rename suffix `View` → `Container` |
+| `features/calendar/components/DayRow.tsx` | `features/calendar/weekly/DayRow.tsx` | Weekly-only helper |
+| `features/calendar/components/DaySection.tsx` | `features/calendar/weekly/DaySection.tsx` | Weekly-only helper |
+| `features/calendar/components/MonthlyDayCell.tsx` | `features/calendar/monthly/MonthlyDayCell.tsx` | Monthly-only helper |
+| `features/calendar/components/MonthlyScheduleRow.tsx` | `features/calendar/monthly/MonthlyScheduleRow.tsx` | Monthly-only helper |
 
 **Create:**
+- `features/calendar/daily/DailyContainer.tsx` — extract orchestration currently inlined in `Pages/Daily/Index.tsx`
 
-**File:** `app/Http/Requests/StoreMomentRequest.php`
-```php
-<?php
-
-namespace App\Http\Requests;
-
-use Illuminate\Foundation\Http\FormRequest;
-
-class StoreMomentRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    public function rules(): array
-    {
-        return [
-            'name' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'color' => ['nullable', 'string', 'max:7'],
-            'icon' => ['nullable', 'string', 'max:10'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            // Schedule
-            'frequency' => ['nullable', 'in:daily,weekly,custom,once'],
-            'days_of_week' => ['nullable', 'array'],
-            'days_of_week.*' => ['integer', 'between:1,7'],
-            'preferred_time' => ['nullable', 'date_format:H:i'],
-            'scheduled_date' => ['nullable', 'date'],
-            // Cue
-            'implementation_intention' => ['nullable', 'string', 'max:255'],
-            'habit_stack_after' => ['nullable', 'string', 'max:255'],
-            'environment_prompt' => ['nullable', 'string', 'max:255'],
-            // Reward
-            'reward_description' => ['nullable', 'string', 'max:255'],
-            'temptation_bundle' => ['nullable', 'string', 'max:255'],
-        ];
-    }
-}
-```
-
-**File:** `app/Http/Requests/UpdateMomentRequest.php`
-```php
-<?php
-
-namespace App\Http\Requests;
-
-class UpdateMomentRequest extends StoreMomentRequest
-{
-    // Inherits all validation rules from StoreMomentRequest
-}
-```
-
-**File:** `app/Http/Requests/UpdateUserConfigRequest.php`
-```php
-<?php
-
-namespace App\Http\Requests;
-
-use Illuminate\Foundation\Http\FormRequest;
-
-class UpdateUserConfigRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return true;
-    }
-
-    public function rules(): array
-    {
-        return [
-            'wake_time' => ['required', 'date_format:H:i'],
-            'sleep_time' => ['required', 'date_format:H:i'],
-            'office_start' => ['nullable', 'date_format:H:i'],
-            'office_end' => ['nullable', 'date_format:H:i'],
-        ];
-    }
-}
-```
-
-**Files to update:**
-- `app/Http/Controllers/MomentController.php`:
-  ```php
-  public function store(StoreMomentRequest $request): RedirectResponse
-  {
-      $data = $request->validated();
-      // ... rest of logic
-  }
-  
-  public function update(UpdateMomentRequest $request, Moment $moment): RedirectResponse
-  {
-      $data = $request->validated();
-      // ... rest of logic
-  }
-  ```
-
-- `app/Http/Controllers/ConfigController.php`:
-  ```php
-  public function update(UpdateUserConfigRequest $request): RedirectResponse
-  {
-      $data = $request->validated();
-      // ... rest of logic
-  }
-  ```
+**Update:**
+- `features/calendar/index.ts` — barrel exports point at new paths
+- `Pages/{Daily,Weekly,Monthly}/Index.tsx` — render the new `*Container` components
 
 **Success criteria:**
-- ✅ All FormRequest classes created
-- ✅ Controllers use FormRequest type hints
-- ✅ Controllers use `$request->validated()` instead of `$request->validate()`
-- ✅ Run `vendor/bin/pint --dirty` to format
-- ✅ Test moment creation/editing still works
-- ✅ Test config update still works
+- `features/calendar/{daily,weekly,monthly}/` each contain their container + any view-specific helpers
+- `features/calendar/components/` contains only cross-view reusables
+- `npx tsc --noEmit` passes
+- All three views render and function identically
 
 ---
 
-## Phase 5: Client-Side Validation (Low Priority - Future Enhancement)
+### Phase B: Build MomentAction (the DRY win)
 
-**Goal:** Improve UX by validating before submission
+**Goal:** Replace `MomentDisplay` with `MomentAction` — the canonical row component.
 
-**Options:**
-1. Manual validation in `useMomentForm` hook
-2. Schema library (Zod, Valibot, Yup)
-3. Share validation rules between Laravel + TypeScript
+**Steps:**
+1. Create `features/calendar/components/MomentAction.tsx` with the v1 props/markup above.
+2. Update all consumers to import `MomentAction` instead of `MomentDisplay`:
+   - `DailyTimeSlotCell.tsx` → `TimeSlotCell.tsx` (Phase C will merge these)
+   - `MonthlyScheduleRow.tsx`
+   - `CalendarSectionArticle.tsx`
+3. Delete `shared/components/calendar/MomentDisplay.tsx`.
+4. Update `shared/components/calendar/index.ts` barrel.
 
-**Recommendation:** Defer until Phases 1-4 complete. This is polish, not architecture.
+**Decision point:** `MomentAction` consumes `SlotMomentData` directly from `App.Data.SlotMomentData` rather than a frontend `CalendarMoment` alias. This collapses the type indirection.
 
-**If implementing:**
-- Create `features/moments/validation.ts`
-- Add validation to `useMomentForm` hook
-- Show client-side errors before form submission
+**Success criteria:**
+- One row component (`MomentAction`) used by Daily, Weekly, Monthly
+- No remaining references to `MomentDisplay` or `MomentActionItem`
+- Visual parity with current row rendering
+- Background progress bar visible on all three views
 
 ---
 
-## Phase 6: Merge TimeSlotCell Variants (Low Priority)
+### Phase C: Merge cell wrappers
 
-**Goal:** Reduce duplication between `TimeSlotCell` and `DailyTimeSlotCell` (~80% overlap)
+**Goal:** One `TimeSlotCell` for all views, replacing `DailyTimeSlotCell` + `TimeSlotCell`.
 
-**Current:**
-- `TimeSlotCell.tsx` - Weekly view (no swipe)
-- `DailyTimeSlotCell.tsx` - Daily view (with swipe)
-
-**Proposed:**
+**Approach:**
 ```typescript
-// features/calendar/components/TimeSlotCell.tsx
 interface TimeSlotCellProps {
-    slot: TimeSlot;
+    slot: TimeSlotData;
     date: string;
     mode: 'overview' | 'configure';
-    enableSwipe?: boolean;  // Only true for Daily configure mode
-    onToggle?: (momentId: number, instanceId: number | null) => void;
+    enableSwipe?: boolean;           // only true for Daily configure mode
+    onToggle?: (momentId: number) => void;
     onSchedule?: (time: string) => void;
 }
 ```
 
+**Steps:**
+1. Fold `DailyTimeSlotCell` logic into `TimeSlotCell` behind `enableSwipe` prop.
+2. `useSwipeComplete` only attaches handlers when `enableSwipe={true}`.
+3. Daily container passes `enableSwipe` based on `mode`; Weekly never enables swipe.
+4. Delete `DailyTimeSlotCell.tsx`.
+
 **Success criteria:**
-- ✅ Single `TimeSlotCell` component with `enableSwipe` prop
-- ✅ `useSwipeComplete` hook only activates when `enableSwipe={true}`
-- ✅ Daily and Weekly views both use same component
-- ✅ Swipe-to-complete still works in Daily configure mode
-- ✅ Weekly view has no swipe functionality
-
-**Defer until Phases 1-4 complete** - this is optimization, not critical path.
+- Single `TimeSlotCell` component
+- Swipe still works in Daily configure mode
+- Weekly view has no swipe behavior
+- `features/calendar/components/` reaches **2 files**: `MomentAction.tsx` + `TimeSlotCell.tsx`
 
 ---
 
-## Execution Order
+### Phase D: Reconcile utils.ts location
 
-### Sprint 1 (Critical Path - Do First)
-1. ✅ **Phase 1:** Create `useCalendarActions` hook
-2. ✅ **Phase 2.1:** Move display components to `shared/`
-3. ✅ **Phase 2.2:** Rename view containers
+**Current state:** `getVisibleTimeSlots` lives in `shared/components/calendar/utils.ts` but is calendar business logic, not shared UI utility.
 
-**Validation after Sprint 1:**
-- Run `npx tsc --noEmit`
-- Test all three calendar views (Daily, Weekly, Monthly)
-- Test moment toggle/completion
-- Run `vendor/bin/pint --dirty --format agent`
+**Decision:** Move to `features/calendar/utils.ts` (matches backend's `CalendarService` helpers).
 
-### Sprint 2 (Polish)
-4. ✅ **Phase 3:** Extract calendar utilities
-5. ✅ **Phase 4:** Create FormRequest classes
+**Steps:**
+1. Move pure calendar functions (`getVisibleTimeSlots`, time snapping, progress helpers) to `features/calendar/utils.ts`.
+2. Leave only UI-formatting helpers in `shared/components/calendar/utils.ts` (if any remain — otherwise delete it).
+3. Update imports.
 
-**Validation after Sprint 2:**
-- Test moment creation/editing
-- Test config updates
-- Verify validation errors still appear
-
-### Sprint 3 (Optimization - Optional)
-6. ⏸️ **Phase 6:** Merge `TimeSlotCell` variants (only if needed)
-7. ⏸️ **Phase 5:** Client-side validation (future enhancement)
+**Success criteria:**
+- Calendar business logic lives in `features/calendar/utils.ts`
+- `shared/components/calendar/utils.ts` only holds cross-feature UI helpers (or is removed)
 
 ---
 
-## File Structure After Refactor
+### Phase E: Client-side validation (deferred)
 
-### Backend (Before → After)
-```
-app/Http/
-├── Controllers/
-│   ├── MomentController.php        # ❌ Inline validation
-│   └── ConfigController.php        # ❌ Inline validation
-└── Requests/
-    ├── ProfileUpdateRequest.php    # ✅ Already exists
-    ├── StoreMomentRequest.php      # ✅ NEW
-    ├── UpdateMomentRequest.php     # ✅ NEW
-    └── UpdateUserConfigRequest.php # ✅ NEW
-```
-
-### Frontend (Before → After)
-```
-features/calendar/
-├── components/                     # 15 components → 5 components
-│   ├── WeeklyView.tsx              # RENAMED from WeeklyGrid
-│   ├── MonthlyView.tsx             # RENAMED from MonthlyVerticalView
-│   ├── TimeSlotCell.tsx            # KEPT (maybe merge with Daily variant)
-│   ├── DailyTimeSlotCell.tsx       # KEPT (or merge into TimeSlotCell)
-│   ├── MonthlyDayCell.tsx          # KEPT
-│   ├── DayRow.tsx                  # KEPT (review for consolidation)
-│   ├── DaySection.tsx              # KEPT (review for consolidation)
-│   ├── MonthlyScheduleRow.tsx      # KEPT (review for consolidation)
-│   ├── ❌ MomentActionItem.tsx     # MOVED to shared/
-│   ├── ❌ CalendarMomentIcon.tsx   # MOVED to shared/
-│   ├── ❌ FrequencyBar.tsx         # MOVED to shared/
-│   ├── ❌ AddSlotPopover.tsx       # MOVED to shared/
-│   ├── ❌ ConsistencyBar.tsx       # DELETED (unused)
-│   ├── ❌ MomentDetailTicker.tsx   # DELETED (unused)
-│   └── ❌ DailySlotCard.tsx        # DELETED (replaced)
-├── hooks/
-│   ├── useSwipeComplete.ts         # ✅ Already exists
-│   └── useCalendarActions.ts       # ✅ NEW
-├── utils.ts                        # ✅ NEW
-├── index.ts                        # Updated barrel exports
-└── types.ts
-
-shared/components/calendar/
-├── CalendarNav.tsx                 # ✅ Already exists
-├── CalendarSection.tsx             # ✅ Already exists
-├── CalendarProgressBar.tsx         # ✅ Already exists
-├── CalendarViewToggle.tsx          # ✅ Already exists
-├── CalendarMomentCard.tsx          # ✅ Already exists
-├── MomentDisplay.tsx               # ✅ MOVED from MomentActionItem
-├── MomentIcon.tsx                  # ✅ MOVED from CalendarMomentIcon
-├── FrequencyBadge.tsx              # ✅ MOVED from FrequencyBar
-└── AddMomentPopover.tsx            # ✅ MOVED from AddSlotPopover
-```
+Defer until the structural refactor is stable. When implemented, add validation to `useMomentForm` mirroring backend `StoreMomentRequest` rules. Out of scope for this plan.
 
 ---
 
-## Success Metrics
+## Execution order
 
-**After Sprint 1 (Critical):**
-- ✅ `features/calendar/components/` has 8 files (down from 15)
-- ✅ `shared/components/calendar/` has 9 display components
-- ✅ All Pages use `useCalendarActions` hook
-- ✅ TypeScript compiles with no errors
-- ✅ All three calendar views render and function correctly
-- ✅ Moment toggle/completion works
-- ✅ Pint formatting passes
+### Sprint 1 — Structural
+1. **Phase A:** Restructure into view subfolders
+2. **Phase B:** Build `MomentAction`
 
-**After Sprint 2 (Polish):**
-- ✅ Backend has 4 FormRequest classes
-- ✅ Controllers use `$request->validated()`
-- ✅ Moment creation/editing works
-- ✅ Config updates work
-- ✅ Validation errors still display correctly
+**Gate:** TypeScript clean, all three views render with the new row component.
 
-**After Sprint 3 (Optional):**
-- ⏸️ Single `TimeSlotCell` component (if merged)
-- ⏸️ Client-side validation (if implemented)
+### Sprint 2 — Consolidation
+3. **Phase C:** Merge cell wrappers
+4. **Phase D:** Move utils
+
+**Gate:** `features/calendar/components/` = 2 files. Visual parity confirmed in browser.
+
+### Sprint 3 — Polish (deferred)
+5. **Phase E:** Client-side validation
 
 ---
 
-## Rollback Plan
+## Success metrics
 
-**If issues arise during Sprint 1:**
-1. Revert `useCalendarActions` hook creation
-2. Restore old imports in Pages
-3. Move components back to `features/calendar/components/`
-4. Restore old component names
+**End state:**
+- `features/calendar/components/` has **2 files** (`MomentAction.tsx`, `TimeSlotCell.tsx`)
+- `features/calendar/{daily,weekly,monthly}/` each hold one container + view-specific helpers
+- Zero references to old names: `MomentDisplay`, `MomentActionItem`, `DailyTimeSlotCell`, `WeeklyGrid`, `MonthlyVerticalView`
+- Backend unchanged from current state (FormRequests + `CalendarService` already aligned)
+- One row component renders moments in all three views
 
-**Git strategy:**
-- Create feature branch: `refactor/calendar-architecture`
-- Commit after each phase with clear messages
-- Test thoroughly before merging to `feature/moment-actions`
+**DRY check:** Adding a new calendar view should require:
+1. A new `features/calendar/{newview}/{NewView}Container.tsx`
+2. A new Page that renders it
+3. **Zero** new row UI
+
+If a future view needs to duplicate `MomentAction`, the refactor failed.
 
 ---
 
-## Testing Checklist
+## Rollback strategy
 
-**After each phase:**
+- Phase A is mechanical (file moves + import updates) — easy to revert.
+- Phase B is the only behavioral change — keep `MomentDisplay` in place until all consumers are migrated, then delete in a separate commit.
+- Phase C touches interaction logic — test swipe in Daily configure mode before deleting `DailyTimeSlotCell`.
+
+Commit per phase; do not bundle.
+
+---
+
+## Testing checklist (run after each phase)
 
 ### Daily View
-- [ ] Page loads without errors
-- [ ] Time slots render correctly
-- [ ] Moments display with icons and progress
+- [ ] Page loads, slots render
+- [ ] `MomentAction` displays icon, title, description, progress background
 - [ ] Swipe-to-complete works in configure mode
-- [ ] Toggle moment completion works
-- [ ] Navigation (prev/next day) works
+- [ ] Day navigation works
 
 ### Weekly View
-- [ ] Page loads without errors
-- [ ] 7-day grid renders correctly
-- [ ] Moments display in correct time slots
-- [ ] Toggle moment completion works
+- [ ] 7-day layout renders
+- [ ] `MomentAction` displays identically to Daily
+- [ ] No swipe behavior
 - [ ] Week navigation works
-- [ ] FrequencyBadge displays correctly
 
 ### Monthly View
-- [ ] Page loads without errors
-- [ ] Month calendar renders correctly
-- [ ] Moments display on correct days
-- [ ] Schedule rows render correctly
+- [ ] Month calendar renders
+- [ ] `MomentAction` displays in schedule rows
 - [ ] Month navigation works
-- [ ] Mobile vertical view works
 
 ### Moment CRUD
-- [ ] Create moment form opens
-- [ ] Create moment submits successfully
-- [ ] Edit moment form opens with data
-- [ ] Update moment submits successfully
-- [ ] Delete moment works
-- [ ] Validation errors display correctly
+- [ ] Create / Edit / Delete moment
+- [ ] Validation errors display (FormRequest behavior)
 
 ### Config
-- [ ] Config page loads
-- [ ] Wake/sleep times update successfully
-- [ ] Office hours update successfully
-- [ ] Validation errors display correctly
+- [ ] Wake/sleep + office hours update
+- [ ] Validation errors display
 
 ---
 
-## Next Steps
+## References
 
-1. **Review this plan** - Confirm Sprint 1 priorities
-2. **Start Phase 1** - Create `useCalendarActions` hook
-3. **Test thoroughly** - After each phase
-4. **Commit frequently** - Small, focused commits
-5. **Update architecture docs** - After successful refactor
-
-**Ready to begin?** Start with Phase 1.1 - Create `useCalendarActions` hook.
+- Brief: `.docs/calendar-components/moment-action/moment-action-brief.md`
+- Frontend architecture: `.docs/architecture-diagrams/architecture-front.md`
+- Backend architecture: `.docs/architecture-diagrams/architecture-back.md`
+- Patterns to mirror: `features/moments/`, `features/config/`, `features/scheduling/`

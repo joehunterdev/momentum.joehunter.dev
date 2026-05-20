@@ -17,7 +17,7 @@ interface Props {
 
 export default function WeeklyView({ days, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange }: Props) {
     const allTimes = Array.from(
-        new Set(days.flatMap((d) => d.slots.map((s) => s.time).filter((t) => t.endsWith(':00'))))
+        new Set(days.flatMap((d) => d.slots.map((s) => s.time)))
     ).sort();
     const windowStart = computeWindowStart(allTimes, VISIBLE_SLOTS);
 
