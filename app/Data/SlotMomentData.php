@@ -25,5 +25,12 @@ class SlotMomentData extends Data
         public ?string $implementation_intention,
         public ?string $habit_stack_after,
         public ?string $environment_prompt,
+        /**
+         * Completion percentage (0–100) over the current view's timespan.
+         * Daily  = 100 if this moment instance is completed today, else 0.
+         * Weekly = ratio across the visible Mon–Sun week.
+         * Monthly = ratio across the current month's days.
+         */
+        public ?int $progress = null,
     ) {}
 }

@@ -1,6 +1,6 @@
-import ConsistencyBar from '@/features/weekly/components/ConsistencyBar';
-import MomentDetailTicker from '@/features/weekly/components/MomentDetailTicker';
-import SlotMomentIcon from '@/features/weekly/components/SlotMomentIcon';
+import ConsistencyBar from './ConsistencyBar';
+import MomentDetailTicker from './MomentDetailTicker';
+import SlotMomentIcon from './SlotMomentIcon';
 import type { SlotMoment } from '@/shared/components/calendar';
 
 interface Props {

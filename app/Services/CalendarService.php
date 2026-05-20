@@ -127,6 +127,9 @@ class CalendarService
 
         $consistency = $this->calculateConsistency($match, $consistencyWindow, $today);
 
+        // Daily view progress: 100 if completed today, else 0
+        $progress = $status === 'completed' ? 100 : 0;
+
         return new SlotMomentData(
             id: $match->id,
             name: $match->name,
@@ -140,6 +143,7 @@ class CalendarService
             implementation_intention: $match->cue?->implementation_intention,
             habit_stack_after: $match->cue?->habit_stack_after,
             environment_prompt: $match->cue?->environment_prompt,
+            progress: $progress,
         );
     }
 
@@ -148,6 +152,7 @@ class CalendarService
      *
      * @param  string[]  $slots
      * @param  Collection<int, Moment>  $dayMoments
+     * @param  array<int, int>  $momentProgress  Weekly progress map (momentId => percentage)
      */
     public function buildWeekDayData(
         Carbon $date,
@@ -158,10 +163,11 @@ class CalendarService
         Carbon $consistencyWindow,
         Carbon $today,
         int $intervalMinutes = 30,
+        array $momentProgress = [],
     ): WeekDayData {
         $dateStr = $date->toDateString();
 
-        $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $consistencyWindow, $today, $intervalMinutes) {
+        $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $consistencyWindow, $today, $intervalMinutes, $momentProgress) {
             $match = $dayMoments->first(function (Moment $m) use ($slotTime, $intervalMinutes) {
                 if (! $m->schedule?->preferred_time) {
                     return false;
@@ -174,9 +180,16 @@ class CalendarService
                 return new TimeSlotData(time: $slotTime, moment: null);
             }
 
+            $slotMoment = $this->buildSlotMoment($match, $dateStr, $isPast, $isToday, $consistencyWindow, $today);
+
+            // Override progress with weekly aggregate if provided
+            if (isset($momentProgress[$match->id])) {
+                $slotMoment->progress = $momentProgress[$match->id];
+            }
+
             return new TimeSlotData(
                 time: $slotTime,
-                moment: $this->buildSlotMoment($match, $dateStr, $isPast, $isToday, $consistencyWindow, $today),
+                moment: $slotMoment,
             );
         }, $slots);
 
@@ -193,6 +206,7 @@ class CalendarService
      * Build a MonthlyDayData for a single calendar date (no time slots — just moment summaries).
      *
      * @param  Collection<int, Moment>  $dayMoments
+     * @param  array<int, int>  $momentProgress  Monthly progress map (momentId => percentage)
      */
     public function buildMonthDayData(
         Carbon $date,
@@ -202,10 +216,11 @@ class CalendarService
         bool $isCurrentMonth,
         Carbon $today,
         int $intervalMinutes = 20,
+        array $momentProgress = [],
     ): MonthlyDayData {
         $dateStr = $date->toDateString();
 
-        $moments = $dayMoments->map(function (Moment $m) use ($dateStr, $isPast, $isToday) {
+        $moments = $dayMoments->map(function (Moment $m) use ($dateStr, $isPast, $isToday, $momentProgress) {
             $instance = $m->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
 
             $status = match (true) {
@@ -215,12 +230,15 @@ class CalendarService
                 default => null,
             };
 
+            $progress = $momentProgress[$m->id] ?? null;
+
             return new MonthlyMomentData(
                 id: $m->id,
                 name: $m->name,
                 icon: $m->icon,
                 color: $m->color,
                 status: $status,
+                progress: $progress,
             );
         })->values()->all();
 

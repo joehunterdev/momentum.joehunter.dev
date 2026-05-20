@@ -45,6 +45,7 @@ declare namespace App {
             icon: string | null;
             color: string | null;
             status: string | null;
+            progress: number | null;
         };
         export type MonthlyPageData = {
             month: string;
@@ -78,6 +79,7 @@ declare namespace App {
             implementation_intention: string | null;
             habit_stack_after: string | null;
             environment_prompt: string | null;
+            progress: number | null;
         };
         export type TimeSlotData = {
             time: string;

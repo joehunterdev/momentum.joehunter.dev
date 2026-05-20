@@ -2,6 +2,7 @@ import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/sch
 import { isOutOfOffice, jsToIsoDay } from './utils';
 import type { CalendarConfig, SlotMoment } from './types';
 import CalendarMomentCard from './CalendarMomentCard';
+import { MomentActionItem } from '@/features/calendar';
 
 export interface ArticleCapabilities {
     /** Daily — swipe right to complete (PR #9 wires this in). */
@@ -97,6 +98,7 @@ function makeDraftMoment(scheduling: SchedulingState | null): SlotMoment {
         implementation_intention: null,
         habit_stack_after: null,
         environment_prompt: null,
+        progress: null,
     };
 }
 
@@ -142,9 +144,8 @@ export default function CalendarSectionArticle({
         <div className={cls}>
             {time !== undefined && (
                 <span
-                    className={`calendar-article__time weekly-slot__time${
-                        emptyClickable ? ' calendar-article__time--clickable weekly-slot__time--clickable' : ''
-                    }`}
+                    className={`calendar-article__time weekly-slot__time${emptyClickable ? ' calendar-article__time--clickable weekly-slot__time--clickable' : ''
+                        }`}
                     onClick={emptyClickable ? onStartScheduling : undefined}
                     title={emptyClickable ? `Add moment at ${time}` : undefined}
                 >
@@ -161,10 +162,14 @@ export default function CalendarSectionArticle({
                     />
                 ) : moment ? (
                     <>
-                        <CalendarMomentCard
-                            moment={moment}
-                            variant={mode === 'configure' ? 'edit' : 'read'}
-                        />
+                        {mode === 'configure' ? (
+                            <CalendarMomentCard
+                                moment={moment}
+                                variant="edit"
+                            />
+                        ) : (
+                            <MomentActionItem moment={moment} />
+                        )}
                         {isConflict && (
                             <span className="calendar-article__conflict-badge weekly-slot__conflict-badge" title="Scheduling conflict">
                                 ⚠️

@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { DailyTimeSlotCell } from '@/features/daily';
+import { DailyTimeSlotCell } from '@/features/calendar';
 import { Head, router } from '@inertiajs/react';
 import {
     CalendarNav,

@@ -53,6 +53,31 @@ class MonthlyController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // Compute per-moment monthly progress (completed ÷ scheduled across current month)
+        $momentProgress = [];
+        $tempDate = $monthStart->copy();
+        while ($tempDate->lte($monthEnd)) {
+            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($tempDate));
+            foreach ($dayMoments as $moment) {
+                if (! isset($momentProgress[$moment->id])) {
+                    $momentProgress[$moment->id] = ['completed' => 0, 'total' => 0];
+                }
+                $momentProgress[$moment->id]['total']++;
+                $instance = $moment->instances->first(fn($i) => $i->date->toDateString() === $tempDate->toDateString());
+                if ($instance?->completed_at !== null) {
+                    $momentProgress[$moment->id]['completed']++;
+                }
+            }
+            $tempDate->addDay();
+        }
+
+        // Convert to percentage (0-100)
+        foreach ($momentProgress as $momentId => $stats) {
+            $momentProgress[$momentId] = $stats['total'] > 0
+                ? (int) round(($stats['completed'] / $stats['total']) * 100)
+                : 0;
+        }
+
         $days = [];
         $cursor = $gridStart->copy();
 
@@ -70,11 +95,12 @@ class MonthlyController extends Controller
                 isToday: $isToday,
                 isCurrentMonth: $isCurrentMonth,
                 today: $today,
+                momentProgress: $momentProgress,
             );
 
             $cursor->addDay();
         }
-        //TODO: Why we repeating cant be enum ? 
+        // TODO: Why we repeating cant be enum ?
         $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         $scheduleRows = [];
 
@@ -85,7 +111,8 @@ class MonthlyController extends Controller
                 if (! $schedule) {
                     return true; // no schedule = daily
                 }
-                //TODO: Why we repeating cant be enum ? 
+
+                // TODO: Why we repeating cant be enum ?
                 return match ($schedule->frequency) {
                     'daily' => true,
                     'weekly' => $iso >= 1 && $iso <= 5,

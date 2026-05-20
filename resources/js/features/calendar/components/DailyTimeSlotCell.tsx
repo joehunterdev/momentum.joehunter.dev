@@ -110,6 +110,7 @@ export default function DailyTimeSlotCell({
                             implementation_intention: null,
                             habit_stack_after: null,
                             environment_prompt: null,
+                            progress: null,
                         }}
                         variant="draft"
                         onDraftNameChange={onGhostNameChange}

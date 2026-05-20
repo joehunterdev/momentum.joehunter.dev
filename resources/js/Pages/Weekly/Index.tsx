@@ -1,8 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { WeeklyGrid, FrequencyBar } from '@/features/weekly';
-import type { WeeklyPageProps } from '@/features/weekly';
+import { WeeklyGrid, FrequencyBar } from '@/features/calendar';
+import type { WeeklyPageProps } from '@/features/calendar';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
 import { CalendarNav, CalendarProgressBar, jsToIsoDay } from '@/shared/components/calendar';

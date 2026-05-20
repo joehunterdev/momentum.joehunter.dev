@@ -4,6 +4,7 @@ import {
     CalendarSection,
     CalendarSectionHeader,
 } from '@/shared/components/calendar';
+import { MomentActionItem } from '@/features/calendar';
 
 interface Props {
     days: App.Data.MonthlyDayData[];
@@ -42,6 +43,7 @@ function toSlotMoment(moment: App.Data.MonthlyMomentData): App.Data.SlotMomentDa
         implementation_intention: null,
         habit_stack_after: null,
         environment_prompt: null,
+        progress: moment.progress,
     };
 }
 
@@ -88,10 +90,9 @@ export default function MonthlyVerticalView({ days, onStartScheduling }: Props) 
                                     <div className="calendar-article__content weekly-slot__content">
                                         {day.moments.length > 0 ? (
                                             day.moments.map((m) => (
-                                                <CalendarMomentCard
+                                                <MomentActionItem
                                                     key={m.id}
                                                     moment={toSlotMoment(m)}
-                                                    variant="read"
                                                 />
                                             ))
                                         ) : (

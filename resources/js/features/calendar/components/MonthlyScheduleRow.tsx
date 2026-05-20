@@ -30,6 +30,7 @@ function toSlotMoment(m: App.Data.MomentData): App.Data.SlotMomentData {
         implementation_intention: m.cue?.implementation_intention ?? null,
         habit_stack_after: m.cue?.habit_stack_after ?? null,
         environment_prompt: m.cue?.environment_prompt ?? null,
+        progress: null,
     };
 }
 

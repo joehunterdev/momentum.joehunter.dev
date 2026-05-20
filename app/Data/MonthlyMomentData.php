@@ -14,5 +14,9 @@ class MonthlyMomentData extends Data
         public ?string $icon,
         public ?string $color,
         public ?string $status,
+        /**
+         * Completion percentage (0–100) for this moment across the current month.
+         */
+        public ?int $progress = null,
     ) {}
 }

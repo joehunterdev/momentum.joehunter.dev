@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
-import type { SlotMoment } from '@/features/weekly/types';
-// TODO(PR#9): SlotMomentIcon + useSwipeComplete move to shared/components/calendar
-// along with the swipe hook. Until then this import reaches into features/weekly.
-import SlotMomentIcon from '@/features/weekly/components/SlotMomentIcon';
+import type { SlotMoment } from '@/features/calendar/types';
+import SlotMomentIcon from '@/features/calendar/components/SlotMomentIcon';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
 
 //TODO: index store update methods maby ? 

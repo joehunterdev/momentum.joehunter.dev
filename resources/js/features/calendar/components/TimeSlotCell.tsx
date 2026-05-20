@@ -3,6 +3,7 @@ import type { TimeSlot, WeeklyConfig } from '../types';
 import { isOutOfOffice } from '@/shared/components/calendar';
 import AddSlotPopover from './AddSlotPopover';
 import { CalendarMomentCard } from '@/shared/components/calendar';
+import { MomentActionItem } from '@/features/calendar';
 
 interface Props {
     slot: TimeSlot;
@@ -69,7 +70,7 @@ export default function TimeSlotCell({
                 </span>
                 <div className="weekly-slot__content">
                     {slot.moment ? (
-                        <CalendarMomentCard moment={slot.moment} variant="read" />
+                        <MomentActionItem moment={slot.moment} />
                     ) : ooo ? (
                         <span className="weekly-slot__ooo-dot" aria-hidden />
                     ) : (
@@ -115,6 +116,7 @@ export default function TimeSlotCell({
                             implementation_intention: null,
                             habit_stack_after: null,
                             environment_prompt: null,
+                            progress: null,
                         }}
                         variant="draft"
                         onDraftNameChange={onGhostNameChange}

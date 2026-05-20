@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { CalendarNav, CalendarProgressBar, MomentFrequencyConfig } from '@/shared/components/calendar';
-import { MonthlyScheduleRow, MonthlyVerticalView } from '@/features/monthly';
+import { MonthlyScheduleRow, MonthlyVerticalView } from '@/features/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import { addMonths, format, parseISO, subMonths } from 'date-fns';

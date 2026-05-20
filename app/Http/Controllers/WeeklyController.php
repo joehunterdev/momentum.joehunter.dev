@@ -54,6 +54,31 @@ class WeeklyController extends Controller
 
         $slots = $this->calendar->buildTimeSlots($wakeTime, $sleepTime);
 
+        // Compute per-moment weekly progress (completed ÷ scheduled across the 7 days)
+        $momentProgress = [];
+        $tempDate = $weekStart->copy();
+        for ($d = 0; $d < 7; $d++) {
+            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($tempDate));
+            foreach ($dayMoments as $moment) {
+                if (! isset($momentProgress[$moment->id])) {
+                    $momentProgress[$moment->id] = ['completed' => 0, 'total' => 0];
+                }
+                $momentProgress[$moment->id]['total']++;
+                $instance = $moment->instances->first(fn($i) => $i->date->toDateString() === $tempDate->toDateString());
+                if ($instance?->completed_at !== null) {
+                    $momentProgress[$moment->id]['completed']++;
+                }
+            }
+            $tempDate->addDay();
+        }
+
+        // Convert to percentage (0-100)
+        foreach ($momentProgress as $momentId => $stats) {
+            $momentProgress[$momentId] = $stats['total'] > 0
+                ? (int) round(($stats['completed'] / $stats['total']) * 100)
+                : 0;
+        }
+
         $days = [];
         $date = $weekStart->copy();
         $dayCount = $date->diffInDays($weekEnd) + 1;
@@ -69,6 +94,7 @@ class WeeklyController extends Controller
                 isToday: $date->equalTo($today),
                 consistencyWindow: $consistencyWindow,
                 today: $today,
+                momentProgress: $momentProgress,
             );
 
             $date = $date->addDay();
