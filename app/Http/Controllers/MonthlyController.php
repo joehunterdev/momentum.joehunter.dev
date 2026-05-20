@@ -104,6 +104,16 @@ class MonthlyController extends Controller
             );
         }
 
+        $completedCount = 0;
+        $totalCount = 0;
+        foreach ($days as $monthDay) {
+            if (! $monthDay->isCurrentMonth) {
+                continue;
+            }
+            $completedCount += $monthDay->completedCount;
+            $totalCount += $monthDay->totalCount;
+        }
+
         $pageData = new MonthlyPageData(
             month: $monthStart->format('Y-m'),
             monthStart: $monthStart->toDateString(),
@@ -116,6 +126,8 @@ class MonthlyController extends Controller
             ),
             days: $days,
             scheduleRows: $scheduleRows,
+            completedCount: $completedCount,
+            totalCount: $totalCount,
         );
 
         return Inertia::render('Monthly/Index', $pageData);

@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import { CalendarNav, MomentFrequencyConfig } from '@/shared/components/calendar';
+import { CalendarNav, CalendarProgressBar, MomentFrequencyConfig } from '@/shared/components/calendar';
 import {
     MonthlyGrid,
     MonthlyScheduleGrid,
@@ -16,7 +16,7 @@ interface Props extends PageProps, App.Data.MonthlyPageData { }
 
 const ALL_DAYS: IsoDayNumber[] = [1, 2, 3, 4, 5, 6, 7];
 
-export default function Index({ month, monthStart, days, scheduleRows }: Props) {
+export default function Index({ month, monthStart, days, scheduleRows, completedCount, totalCount }: Props) {
     const current = parseISO(monthStart);
     const prev = subMonths(current, 1);
     const next = addMonths(current, 1);
@@ -45,31 +45,39 @@ export default function Index({ month, monthStart, days, scheduleRows }: Props) 
         <AuthenticatedLayout
             header={
                 <div className="monthly-header">
-                    <CalendarNav
-                        prevLabel={format(prev, 'MMMM yyyy')}
-                        currentLabel={format(current, 'MMMM yyyy')}
-                        nextLabel={format(next, 'MMMM yyyy')}
-                        prevParam={{ month: format(prev, 'yyyy-MM') }}
-                        nextParam={{ month: format(next, 'yyyy-MM') }}
-                        routeName="monthly"
-                    />
-                    {scheduling.mode === 'overview' ? (
-                        <button
-                            type="button"
-                            className="monthly-header__mode-btn"
-                            title="Configure schedule"
-                            onClick={() => scheduling.setMode('configure')}
-                        >
-                            ⚙️
-                        </button>
-                    ) : (
-                        <button
-                            type="button"
-                            className="monthly-header__mode-btn monthly-header__mode-btn--done"
-                            onClick={scheduling.exit}
-                        >
-                            ✕ Done
-                        </button>
+                    <div className="monthly-header__row">
+                        <CalendarNav
+                            prevLabel={format(prev, 'MMMM yyyy')}
+                            currentLabel={format(current, 'MMMM yyyy')}
+                            nextLabel={format(next, 'MMMM yyyy')}
+                            prevParam={{ month: format(prev, 'yyyy-MM') }}
+                            nextParam={{ month: format(next, 'yyyy-MM') }}
+                            routeName="monthly"
+                        />
+                        {scheduling.mode === 'overview' ? (
+                            <button
+                                type="button"
+                                className="monthly-header__mode-btn"
+                                title="Configure schedule"
+                                onClick={() => scheduling.setMode('configure')}
+                            >
+                                ⚙️
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                className="monthly-header__mode-btn monthly-header__mode-btn--done"
+                                onClick={scheduling.exit}
+                            >
+                                ✕ Done
+                            </button>
+                        )}
+                    </div>
+                    {scheduling.mode === 'overview' && totalCount > 0 && (
+                        <CalendarProgressBar
+                            completedCount={completedCount}
+                            totalCount={totalCount}
+                        />
                     )}
                 </div>
             }

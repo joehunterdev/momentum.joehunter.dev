@@ -5,7 +5,7 @@ import { WeeklyGrid, FrequencyBar } from '@/features/weekly';
 import type { WeeklyPageProps } from '@/features/weekly';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
-import { CalendarNav, jsToIsoDay } from '@/shared/components/calendar';
+import { CalendarNav, CalendarProgressBar, jsToIsoDay } from '@/shared/components/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import {
@@ -23,7 +23,7 @@ interface Props extends PageProps, WeeklyPageProps { }
 
 const WEEKDAYS: IsoDayNumber[] = [1, 2, 3, 4, 5];
 
-export default function Index({ weekStart, config, days }: Props) {
+export default function Index({ weekStart, config, days, completedCount, totalCount }: Props) {
     const scheduling = useScheduling({ redirectTo: route('weekly') });
 
     // ── Edit-via-modal flow (kept for editing existing moments) ───────────────
@@ -123,31 +123,39 @@ export default function Index({ weekStart, config, days }: Props) {
         <AuthenticatedLayout
             header={
                 <div className="weekly-header">
-                    <CalendarNav
-                        prevLabel={weekLabel(prevWeekStart)}
-                        currentLabel={weekLabel(currentWeekStart)}
-                        nextLabel={weekLabel(nextWeekStart)}
-                        prevParam={{ week: format(prevWeekStart, 'yyyy-MM-dd') }}
-                        nextParam={{ week: format(nextWeekStart, 'yyyy-MM-dd') }}
-                        routeName="weekly"
-                    />
-                    {scheduling.mode === 'overview' ? (
-                        <button
-                            type="button"
-                            className="weekly-header__mode-btn"
-                            title="Configure schedule"
-                            onClick={() => scheduling.setMode('configure')}
-                        >
-                            ⚙️
-                        </button>
-                    ) : (
-                        <button
-                            type="button"
-                            className="weekly-header__mode-btn weekly-header__mode-btn--done"
-                            onClick={scheduling.exit}
-                        >
-                            ✕ Done
-                        </button>
+                    <div className="weekly-header__row">
+                        <CalendarNav
+                            prevLabel={weekLabel(prevWeekStart)}
+                            currentLabel={weekLabel(currentWeekStart)}
+                            nextLabel={weekLabel(nextWeekStart)}
+                            prevParam={{ week: format(prevWeekStart, 'yyyy-MM-dd') }}
+                            nextParam={{ week: format(nextWeekStart, 'yyyy-MM-dd') }}
+                            routeName="weekly"
+                        />
+                        {scheduling.mode === 'overview' ? (
+                            <button
+                                type="button"
+                                className="weekly-header__mode-btn"
+                                title="Configure schedule"
+                                onClick={() => scheduling.setMode('configure')}
+                            >
+                                ⚙️
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                className="weekly-header__mode-btn weekly-header__mode-btn--done"
+                                onClick={scheduling.exit}
+                            >
+                                ✕ Done
+                            </button>
+                        )}
+                    </div>
+                    {scheduling.mode === 'overview' && totalCount > 0 && (
+                        <CalendarProgressBar
+                            completedCount={completedCount}
+                            totalCount={totalCount}
+                        />
                     )}
                 </div>
             }

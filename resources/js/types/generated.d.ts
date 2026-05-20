@@ -53,6 +53,8 @@ declare namespace App {
             config: App.Data.UserConfigData;
             days: App.Data.MonthlyDayData[];
             scheduleRows: App.Data.MonthlyScheduleRowData[];
+            completedCount: number;
+            totalCount: number;
         };
         export type MonthlyScheduleRowData = {
             isoDayNumber: number;
@@ -99,6 +101,8 @@ declare namespace App {
             weekEnd: string;
             config: App.Data.UserConfigData;
             days: App.Data.WeekDayData[];
+            completedCount: number;
+            totalCount: number;
         };
     }
     namespace Enums {

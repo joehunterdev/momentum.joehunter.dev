@@ -14,5 +14,7 @@ class WeeklyPageData extends Data
         public UserConfigData $config,
         /** @var WeekDayData[] */
         public array $days,
+        public int $completedCount,
+        public int $totalCount,
     ) {}
 }

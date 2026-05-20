@@ -74,6 +74,19 @@ class WeeklyController extends Controller
             $date = $date->addDay();
         }
 
+        $completedCount = 0;
+        $totalCount = 0;
+        foreach ($days as $weekDay) {
+            foreach ($weekDay->slots as $slot) {
+                if ($slot->moment !== null) {
+                    $totalCount++;
+                    if ($slot->moment->status === 'completed') {
+                        $completedCount++;
+                    }
+                }
+            }
+        }
+
         $pageData = new WeeklyPageData(
             weekStart: $weekStart->toDateString(),
             weekEnd: $weekEnd->toDateString(),
@@ -84,6 +97,8 @@ class WeeklyController extends Controller
                 office_end: substr($officeEnd, 0, 5),
             ),
             days: $days,
+            completedCount: $completedCount,
+            totalCount: $totalCount,
         );
 
         return Inertia::render('Weekly/Index', $pageData);

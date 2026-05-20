@@ -187,6 +187,13 @@ $monthly-cell-min-h: 5rem;
 
 .monthly-header {
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.monthly-header__row {
+    display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;

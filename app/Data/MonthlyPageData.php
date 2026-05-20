@@ -17,5 +17,7 @@ class MonthlyPageData extends Data
         public array $days,
         /** @var MonthlyScheduleRowData[] */
         public array $scheduleRows,
+        public int $completedCount,
+        public int $totalCount,
     ) {}
 }

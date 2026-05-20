@@ -29,6 +29,13 @@ $border-light: #f3f4f6;
 
 .weekly-header {
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.weekly-header__row {
+    display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
