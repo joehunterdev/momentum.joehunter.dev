@@ -14,7 +14,7 @@ class MonthlyDayData extends Data
         public bool $isToday,
         public bool $isWeekend,
         public bool $isCurrentMonth,
-        /** @var MonthlyMomentData[] */
+        /** @var SlotMomentData[] */
         public array $moments,
         public int $completedCount,
         public int $totalCount,

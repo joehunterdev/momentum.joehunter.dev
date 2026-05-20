@@ -15,5 +15,22 @@ Then secondarily and more imporantly i want a really clean rethink and refactor 
 
 The aim in short is to do a quick analysis moment-action-plan.md here and then start creating a reusable moment action component for each article row. Lets just asume werre starting from scratch if it helps E:\www\momentum.joehunter.dev\.docs\calendar-components\moment-action\the-row-currently.png forget any complex ui interactions lets just simply display information to start with. The icons, the title & description. The progress bar now will be highlighted as the whole background row. moment-action-plan.md lets get startted wit hthe plan. ask me any questoins
 
-Slow moment data so slot feels alot more like MomentActionData ? or should we stick with slot domain wise
+Slot moment data so slot feels alot more like MomentActionData ? or should we stick with slot domain wise
 - `app/Data/SlotMomentData.php`
+
+
+MonthlyMomentData
+E:\www\momentum.joehunter.dev\app\Data\MomentData.php
+
+    public function __construct(
+        public int $id,
+        public string $name,
+        public ?string $description,
+        public ?string $color,
+        public ?string $icon,
+        public bool $is_active,
+        public int $sort_order,
+        public ?MomentScheduleData $schedule,
+        public ?CueData $cue,
+        public ?RewardData $reward,
+    ) {}

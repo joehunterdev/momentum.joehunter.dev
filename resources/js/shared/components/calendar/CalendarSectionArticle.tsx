@@ -1,6 +1,6 @@
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice, jsToIsoDay } from './utils';
-import type { CalendarConfig, SlotMoment } from './types';
+import type { CalendarConfig, CalendarMoment } from './types';
 import CalendarMomentCard from './CalendarMomentCard';
 import { MomentActionItem } from '@/features/calendar';
 
@@ -31,7 +31,7 @@ interface Props {
     isoDayNumber?: number;
 
     /** Moment payload — null = empty article. */
-    moment: SlotMoment | null;
+    moment: CalendarMoment | null;
 
     /** Calendar config — required when capabilities.outOfOffice is set. */
     config?: CalendarConfig;
@@ -84,7 +84,7 @@ function articleTargetsScheduling(
     return false;
 }
 
-function makeDraftMoment(scheduling: SchedulingState | null): SlotMoment {
+function makeDraftMoment(scheduling: SchedulingState | null): CalendarMoment {
     return {
         id: 0,
         name: scheduling?.name || 'New Moment',

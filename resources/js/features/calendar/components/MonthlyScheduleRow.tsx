@@ -16,7 +16,11 @@ interface Props {
 
 const WEEKEND_ISO_DAYS = [6, 7];
 
-function toSlotMoment(m: App.Data.MomentData): App.Data.SlotMomentData {
+/**
+ * Converts full MomentData (entity with schedule/cue/reward) to SlotMomentData.
+ * Used for recurring schedule rows where we show moment templates, not instances.
+ */
+function toCalendarMoment(m: App.Data.MomentData): App.Data.SlotMomentData {
     return {
         id: m.id,
         name: m.name,
@@ -62,7 +66,7 @@ export default function MonthlyScheduleRow({
                     key={m.id}
                     slotKey={`${row.isoDayNumber}:moment-${m.id}`}
                     isoDayNumber={row.isoDayNumber}
-                    moment={toSlotMoment(m)}
+                    moment={toCalendarMoment(m)}
                     mode={mode}
                     scheduling={scheduling}
                     capabilities={{ editButton: true }}

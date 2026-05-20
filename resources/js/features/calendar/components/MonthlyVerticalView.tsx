@@ -29,24 +29,6 @@ function groupByIsoWeek(days: App.Data.MonthlyDayData[]): WeekGroup[] {
         .map(([weekStartIso, days]) => ({ weekStartIso, days }));
 }
 
-function toSlotMoment(moment: App.Data.MonthlyMomentData): App.Data.SlotMomentData {
-    return {
-        id: moment.id,
-        name: moment.name,
-        icon: moment.icon,
-        color: moment.color,
-        status: moment.status,
-        description: null,
-        frequency: null,
-        consistency: null,
-        instance_id: null,
-        implementation_intention: null,
-        habit_stack_after: null,
-        environment_prompt: null,
-        progress: moment.progress,
-    };
-}
-
 /**
  * Mobile monthly view. Section = ISO week, article = one day (24h "slot").
  * Each day-article carries the day label in its leading column and stacks any
@@ -92,7 +74,7 @@ export default function MonthlyVerticalView({ days, onStartScheduling }: Props) 
                                             day.moments.map((m) => (
                                                 <MomentActionItem
                                                     key={m.id}
-                                                    moment={toSlotMoment(m)}
+                                                    moment={m}
                                                 />
                                             ))
                                         ) : (

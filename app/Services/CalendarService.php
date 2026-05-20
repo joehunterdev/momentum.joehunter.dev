@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Data\MonthlyDayData;
-use App\Data\MonthlyMomentData;
 use App\Data\SlotMomentData;
 use App\Data\TimeSlotData;
 use App\Data\WeekDayData;
@@ -232,12 +231,19 @@ class CalendarService
 
             $progress = $momentProgress[$m->id] ?? null;
 
-            return new MonthlyMomentData(
+            return new SlotMomentData(
                 id: $m->id,
                 name: $m->name,
+                description: $m->description,
                 icon: $m->icon,
                 color: $m->color,
+                frequency: $m->schedule?->frequency ? Frequency::from($m->schedule->frequency) : null,
+                consistency: null,
                 status: $status,
+                instance_id: $instance?->id,
+                implementation_intention: $m->cue?->implementation_intention,
+                habit_stack_after: $m->cue?->habit_stack_after,
+                environment_prompt: $m->cue?->environment_prompt,
                 progress: $progress,
             );
         })->values()->all();

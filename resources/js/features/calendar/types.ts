@@ -4,7 +4,7 @@
 export type SlotStatus = 'completed' | 'missed' | 'pending' | null;
 
 // Re-export generated types under the names the feature uses
-export type SlotMoment = App.Data.SlotMomentData;
+export type CalendarMoment = App.Data.SlotMomentData;
 export type TimeSlot = App.Data.TimeSlotData;
 export type WeekDay = App.Data.WeekDayData;
 export type WeeklyConfig = App.Data.UserConfigData;

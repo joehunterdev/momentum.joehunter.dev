@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import type { SlotMoment } from '../types';
+import type { CalendarMoment } from '../types';
 
 interface Slide {
     label: string;
     text: string;
 }
 
-function buildSlides(moment: SlotMoment): Slide[] {
+function buildSlides(moment: CalendarMoment): Slide[] {
     const slides: Slide[] = [];
     if (moment.description) slides.push({ label: 'About', text: moment.description });
     if (moment.implementation_intention) slides.push({ label: 'Cue', text: moment.implementation_intention });
@@ -20,7 +20,7 @@ type SharedState = { active: number; animating: boolean; slides: Slide[] };
 const shared = new Map<number, SharedState>();
 const listeners = new Map<number, Set<() => void>>();
 
-function getState(moment: SlotMoment): SharedState {
+function getState(moment: CalendarMoment): SharedState {
     if (!shared.has(moment.id)) {
         shared.set(moment.id, { active: 0, animating: false, slides: buildSlides(moment) });
         listeners.set(moment.id, new Set());
@@ -32,7 +32,7 @@ function notify(id: number) {
     listeners.get(id)?.forEach((fn) => fn());
 }
 
-function useSharedTicker(moment: SlotMoment) {
+function useSharedTicker(moment: CalendarMoment) {
     const [, forceRender] = useState(0);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ function useSharedTicker(moment: SlotMoment) {
 }
 
 interface Props {
-    moment: SlotMoment;
+    moment: CalendarMoment;
     part: 'badge' | 'track';
 }
 

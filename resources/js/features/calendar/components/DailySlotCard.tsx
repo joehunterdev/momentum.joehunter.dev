@@ -1,10 +1,10 @@
 import ConsistencyBar from './ConsistencyBar';
 import MomentDetailTicker from './MomentDetailTicker';
-import SlotMomentIcon from './SlotMomentIcon';
-import type { SlotMoment } from '@/shared/components/calendar';
+import CalendarMomentIcon from './CalendarMomentIcon';
+import type { CalendarMoment } from '@/shared/components/calendar';
 
 interface Props {
-    moment: SlotMoment;
+    moment: CalendarMoment;
     date: string;
     isNext?: boolean;
     onToggle: (momentId: number, instanceId: number | null, date: string) => void;
@@ -29,7 +29,7 @@ export default function DailySlotCard({ moment, date, isNext, onToggle, onSwipeP
                 </div>
             )}
             <div className="moment-card__row">
-                <SlotMomentIcon
+                <CalendarMomentIcon
                     moment={moment}
                     date={date}
                     onToggle={onToggle}

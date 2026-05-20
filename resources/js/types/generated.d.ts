@@ -35,17 +35,9 @@ declare namespace App {
             isToday: boolean;
             isWeekend: boolean;
             isCurrentMonth: boolean;
-            moments: App.Data.MonthlyMomentData[];
+            moments: App.Data.SlotMomentData[];
             completedCount: number;
             totalCount: number;
-        };
-        export type MonthlyMomentData = {
-            id: number;
-            name: string;
-            icon: string | null;
-            color: string | null;
-            status: string | null;
-            progress: number | null;
         };
         export type MonthlyPageData = {
             month: string;

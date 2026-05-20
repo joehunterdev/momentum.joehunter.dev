@@ -1,7 +1,7 @@
-import type { SlotMoment } from '@/features/calendar/types';
+import type { CalendarMoment } from '@/features/calendar/types';
 
 interface Props {
-    moment: SlotMoment;
+    moment: CalendarMoment;
     /** Override fill (0–100). Defaults to `moment.progress ?? 0`. */
     progress?: number;
 }

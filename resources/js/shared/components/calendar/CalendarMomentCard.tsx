@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
-import type { SlotMoment } from '@/features/calendar/types';
-import SlotMomentIcon from '@/features/calendar/components/SlotMomentIcon';
+import type { CalendarMoment } from '@/features/calendar/types';
+import CalendarMomentIcon from '@/features/calendar/components/CalendarMomentIcon';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
 
 //TODO: index store update methods maby ? 
 export type CalendarMomentCardVariant = 'read' | 'edit' | 'draft';
 
 interface Props {
-    moment: SlotMoment;
+    moment: CalendarMoment;
     variant?: CalendarMomentCardVariant;
     onDraftNameChange?: (name: string) => void;
     onDraftIconChange?: (icon: string | null) => void;
@@ -121,7 +121,7 @@ export default function CalendarMomentCard({
     return (
         <div className={cardCls}>
             <div className="moment-card__row">
-                <SlotMomentIcon
+                <CalendarMomentIcon
                     moment={moment}
                     date=""
                     onToggle={() => { }}

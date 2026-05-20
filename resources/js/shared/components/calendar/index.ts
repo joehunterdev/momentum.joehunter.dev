@@ -8,6 +8,6 @@ export type { ArticleCapabilities } from './CalendarSectionArticle';
 export { default as CalendarSectionHeader } from './CalendarSectionHeader';
 export { default as CalendarViewToggle } from './CalendarViewToggle';
 export { default as MomentFrequencyConfig } from './MomentFrequencyConfig';
-export type { CalendarConfig, SlotMoment, TimeSlot, WeekDay } from './types';
+export type { CalendarConfig, CalendarMoment, TimeSlot, WeekDay } from './types';
 export * from './utils';
 

@@ -4,6 +4,7 @@ import type { SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice } from '@/shared/components/calendar';
 import DailySlotCard from './DailySlotCard';
 import { CalendarMomentCard } from '@/shared/components/calendar';
+import { MomentActionItem } from '@/features/calendar';
 
 type DailyMode = 'overview' | 'configure';
 
@@ -128,7 +129,7 @@ export default function DailyTimeSlotCell({
                         />
                         <span className="weekly-slot__conflict-badge" title="Scheduling conflict">⚠️</span>
                     </>
-                ) : slot.moment ? (
+                ) : mode === 'configure' && slot.moment ? (
                     <DailySlotCard
                         moment={slot.moment}
                         date={date}
@@ -137,6 +138,8 @@ export default function DailyTimeSlotCell({
                         onSwipeProgress={handleSwipeProgress}
                         swipeProgress={swipeProgress}
                     />
+                ) : slot.moment ? (
+                    <MomentActionItem moment={slot.moment} />
                 ) : ooo ? (
                     <span className="weekly-slot__ooo-dot" aria-hidden />
                 ) : mode === 'configure' && !isGhost ? (
