@@ -1,115 +1,113 @@
-import { format, parseISO } from 'date-fns';
-import { CalendarSection, CalendarSectionHeader, CalendarSectionArticle } from '@/shared/components/calendar';
-import type { CalendarMode, SchedulingState } from '@/features/scheduling';
+import { format, parseISO, startOfDay, startOfISOWeek } from 'date-fns';
+import {
+    CalendarMomentCard,
+    CalendarSection,
+    CalendarSectionHeader,
+} from '@/shared/components/calendar';
 
 interface Props {
     days: App.Data.MonthlyDayData[];
-    mode: CalendarMode;
-    scheduling: SchedulingState | null;
-    onDayClick: (date: string) => void;
     onStartScheduling: (date: string) => void;
-    onDraftNameChange?: (name: string) => void;
-    onDraftIconChange?: (icon: string | null) => void;
+}
+
+interface WeekGroup {
+    weekStartIso: string;
+    days: App.Data.MonthlyDayData[];
+}
+
+function groupByIsoWeek(days: App.Data.MonthlyDayData[]): WeekGroup[] {
+    const buckets = new Map<string, App.Data.MonthlyDayData[]>();
+    for (const day of days) {
+        const weekStart = format(startOfISOWeek(parseISO(day.date)), 'yyyy-MM-dd');
+        const bucket = buckets.get(weekStart) ?? [];
+        bucket.push(day);
+        buckets.set(weekStart, bucket);
+    }
+    return [...buckets.entries()]
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([weekStartIso, days]) => ({ weekStartIso, days }));
+}
+
+function toSlotMoment(moment: App.Data.MonthlyMomentData): App.Data.SlotMomentData {
+    return {
+        id: moment.id,
+        name: moment.name,
+        icon: moment.icon,
+        color: moment.color,
+        status: moment.status,
+        description: null,
+        frequency: null,
+        consistency: null,
+        instance_id: null,
+        implementation_intention: null,
+        habit_stack_after: null,
+        environment_prompt: null,
+    };
 }
 
 /**
- * Mobile-optimized vertical monthly view.
- * Shows each day as a row with its moments, using CalendarSectionArticle
- * for consistency with daily/weekly views (per calendar-components-refactor-plan.md §4.6).
+ * Mobile monthly view. Section = ISO week, article = one day (24h "slot").
+ * Each day-article carries the day label in its leading column and stacks any
+ * scheduled moments inside, or shows a `+` add button when empty.
  */
-export default function MonthlyVerticalView({
-    days,
-    mode,
-    scheduling,
-    onDayClick,
-    onStartScheduling,
-    onDraftNameChange,
-    onDraftIconChange,
-}: Props) {
-    // Filter to only days with moments or today onwards
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+export default function MonthlyVerticalView({ days, onStartScheduling }: Props) {
+    const today = startOfDay(new Date());
+    const isCurrentMonthView = days.some((d) => d.isToday);
+    const visibleDays = isCurrentMonthView
+        ? days.filter((d) => parseISO(d.date) >= today)
+        : days;
 
-    const relevantDays = days.filter(day => {
-        const dayDate = parseISO(day.date);
-        dayDate.setHours(0, 0, 0, 0);
-        return day.moments.length > 0 || day.isToday || dayDate >= today;
-    });
+    const weeks = groupByIsoWeek(visibleDays);
 
     return (
         <div className="monthly-vertical-view">
-            {relevantDays.map((day) => {
-                const dateObj = parseISO(day.date);
-                const dayNumber = format(dateObj, 'd');
-                const monthName = format(dateObj, 'MMM');
+            {weeks.map(({ weekStartIso, days: weekDays }) => {
+                const weekLabel = `Week of ${format(parseISO(weekStartIso), 'd MMM')}`;
 
                 return (
                     <CalendarSection
-                        key={day.date}
-                        isToday={day.isToday}
-                        isWeekend={day.isWeekend}
+                        key={weekStartIso}
                         layout="vertical"
-                        header={
-                            <CalendarSectionHeader
-                                label={day.dayName}
-                                sublabel={`${dayNumber} ${monthName}`}
-                                badge={day.isToday ? 'Today' : undefined}
-                            />
-                        }
+                        header={<CalendarSectionHeader label={weekLabel} />}
                     >
-                        {day.moments.length > 0 ? (
-                            day.moments.map((moment) => {
-                                // Convert MonthlyMomentData to SlotMoment format
-                                const slotMoment: App.Data.SlotMomentData = {
-                                    id: moment.id,
-                                    name: moment.name,
-                                    icon: moment.icon,
-                                    color: moment.color,
-                                    status: moment.status,
-                                    description: null,
-                                    frequency: null,
-                                    consistency: null,
-                                    instance_id: null,
-                                    implementation_intention: null,
-                                    habit_stack_after: null,
-                                    environment_prompt: null,
-                                };
+                        {weekDays.map((day) => {
+                            const dayLabel = format(parseISO(day.date), 'EEE d').toUpperCase();
+                            const rowCls = [
+                                'calendar-article',
+                                'weekly-slot',
+                                'weekly-slot--monthly-day',
+                                day.isToday && 'calendar-article--today weekly-slot--today',
+                                day.isWeekend && 'calendar-article--weekend weekly-slot--weekend',
+                            ].filter(Boolean).join(' ');
 
-                                return (
-                                    <CalendarSectionArticle
-                                        key={moment.id}
-                                        slotKey={`${day.date}:${moment.id}`}
-                                        date={day.date}
-                                        moment={slotMoment}
-                                        mode={mode}
-                                        scheduling={scheduling}
-                                        capabilities={{
-                                            addOnEmpty: false,
-                                            draftEdit: false,
-                                            conflictBadge: false,
-                                            editButton: true,
-                                            outOfOffice: false,
-                                        }}
-                                    />
-                                );
-                            })
-                        ) : (
-                            <CalendarSectionArticle
-                                slotKey={`${day.date}:empty`}
-                                date={day.date}
-                                moment={null}
-                                mode={mode}
-                                scheduling={scheduling}
-                                capabilities={{
-                                    addOnEmpty: true,
-                                    draftEdit: false,
-                                    conflictBadge: false,
-                                    editButton: false,
-                                    outOfOffice: false,
-                                }}
-                                onStartScheduling={() => onStartScheduling(day.date)}
-                            />
-                        )}
+                            return (
+                                <div key={day.date} className={rowCls}>
+                                    <span className="calendar-article__time weekly-slot__time">
+                                        {dayLabel}
+                                    </span>
+                                    <div className="calendar-article__content weekly-slot__content">
+                                        {day.moments.length > 0 ? (
+                                            day.moments.map((m) => (
+                                                <CalendarMomentCard
+                                                    key={m.id}
+                                                    moment={toSlotMoment(m)}
+                                                    variant="read"
+                                                />
+                                            ))
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                className="calendar-article__add-btn weekly-slot__add-btn weekly-slot__add-btn--always-visible"
+                                                title={`Add moment on ${dayLabel}`}
+                                                onClick={() => onStartScheduling(day.date)}
+                                            >
+                                                +
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </CalendarSection>
                 );
             })}

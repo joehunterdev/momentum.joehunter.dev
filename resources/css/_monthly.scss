@@ -258,3 +258,29 @@ $monthly-cell-min-h: 5rem;
     gap: 0;
     background: #fff;
 }
+
+// Day-as-article: 24h slot. Wider leading column (day label), stacked moments.
+.weekly-slot--monthly-day {
+    align-items: stretch;
+
+    .weekly-slot__time {
+        width: 4.5rem;
+        padding-top: 0.875rem;
+        align-items: flex-start;
+    }
+
+    .weekly-slot__content {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+
+        > .moment-card {
+            border-bottom: 1px solid #f3f4f6;
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+    }
+}
