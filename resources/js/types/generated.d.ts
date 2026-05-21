@@ -51,7 +51,6 @@ declare namespace App {
         };
         export type MonthlyScheduleRowData = {
             isoDayNumber: number;
-            dayLabel: string;
             moments: App.Data.MomentData[];
         };
         export type RewardData = {
@@ -66,7 +65,7 @@ declare namespace App {
             color: string | null;
             frequency: App.Enums.Frequency | null;
             consistency: number | null;
-            status: string | null;
+            status: App.Enums.MomentStatus | null;
             instance_id: number | null;
             implementation_intention: string | null;
             habit_stack_after: string | null;
@@ -100,6 +99,12 @@ declare namespace App {
         };
     }
     namespace Enums {
-        export type Frequency = "daily" | "weekly" | "custom" | "once";
+        export type Frequency = "daily" | "recurring" | "once";
+        export type MomentStatus =
+            | "pending"
+            | "completed"
+            | "missed"
+            | "skipped";
+        export type UserRole = "super_admin" | "admin" | "basic" | "demo";
     }
 }

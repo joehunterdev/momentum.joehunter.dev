@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cue extends Model
 {
+    protected $table = 'moment_cues';
+
     protected $fillable = [
         'moment_id',
         'implementation_intention',

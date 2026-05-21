@@ -11,19 +11,13 @@ interface UseSchedulingOptions {
     onConfirm?: () => void;
 }
 
-const WEEKDAYS: IsoDayNumber[] = [1, 2, 3, 4, 5];
-
-function inferLegacyFrequency(days: IsoDayNumber[]): 'daily' | 'weekly' | 'custom' {
-    if (days.length === 7) {
-        return 'daily';
-    }
-    if (
-        days.length === WEEKDAYS.length
-        && WEEKDAYS.every((d) => days.includes(d))
-    ) {
-        return 'weekly';
-    }
-    return 'custom';
+/**
+ * Derive the storage Frequency from a recurring day selection.
+ * 7 days = daily; anything else = recurring (the days_of_week carry the detail).
+ * One-off scheduling is handled separately in confirm().
+ */
+function deriveFrequency(days: IsoDayNumber[]): 'daily' | 'recurring' {
+    return days.length === 7 ? 'daily' : 'recurring';
 }
 
 export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
@@ -65,23 +59,27 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
             return;
         }
 
-        const payload = state.kind === SchedulingKind.OneOff
-            ? {
+        let payload;
+        if (state.kind === SchedulingKind.OneOff) {
+            payload = {
                 name: state.name.trim() || null,
                 frequency: 'once' as const,
                 days_of_week: null,
                 preferred_time: state.time,
                 icon: state.icon,
                 scheduled_date: state.date,
-            }
-            : {
+            };
+        } else {
+            const derivedFreq = deriveFrequency(state.daysOfWeek);
+            payload = {
                 name: state.name.trim() || null,
-                frequency: inferLegacyFrequency(state.daysOfWeek),
-                days_of_week: state.daysOfWeek,
+                frequency: derivedFreq,
+                days_of_week: derivedFreq === 'daily' ? null : state.daysOfWeek,
                 preferred_time: state.time,
                 icon: state.icon,
                 scheduled_date: null,
             };
+        }
 
         router.post(
             route('moments.store'),

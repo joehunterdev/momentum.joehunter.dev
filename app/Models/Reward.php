@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Reward extends Model
 {
+    protected $table = 'moment_rewards';
+
     protected $fillable = [
         'moment_id',
         'description',

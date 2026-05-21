@@ -84,7 +84,7 @@ class CalendarService
         while ($cursor->lte($today)) {
             $due = match ($schedule?->frequency) {
                 Frequency::Daily => true,
-                Frequency::Weekly, Frequency::Custom => $schedule->days_of_week !== null
+                Frequency::Recurring => $schedule->days_of_week !== null
                     && in_array($cursor->dayOfWeekIso, $schedule->days_of_week, strict: true),
                 default => false,
             };
@@ -103,7 +103,6 @@ class CalendarService
         $completed = $moment->instances->filter(
             fn($i) => $i->date->toDateString() >= $windowStart->toDateString()
                 && $i->date->toDateString() <= $today->toDateString()
-                && $i->completed_at !== null
         )->count();
 
         return (int) round(($completed / $scheduled) * 100);
@@ -122,7 +121,7 @@ class CalendarService
     ): SlotMomentData {
         $instance = $match->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
         $status = match (true) {
-            $instance?->completed_at !== null => MomentStatus::Completed,
+            $instance !== null => MomentStatus::Completed,
             $isPast => MomentStatus::Missed,
             $isToday => MomentStatus::Pending,
             default => null,
@@ -227,7 +226,7 @@ class CalendarService
             $instance = $m->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
 
             $status = match (true) {
-                $instance?->completed_at !== null => MomentStatus::Completed,
+                $instance !== null => MomentStatus::Completed,
                 $isPast => MomentStatus::Missed,
                 $isToday => MomentStatus::Pending,
                 default => null,

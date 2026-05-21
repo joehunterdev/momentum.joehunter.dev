@@ -63,4 +63,15 @@ lerna-debug.log*
 *.swp
 *.swo
 *~
-
+# Ignore any images in .docs
+.docs/**/*.png
+.docs/**/*.jpg
+.docs/**/*.jpeg
+.docs/**/*.gif
+.docs/**/*.webp
+.docs/**/*.svg
+.docs/**/*.ico
+.docs/**/*.bmp
+.docs/**/*.tif
+.docs/**/*.tiff
+.docs/**/*.avif

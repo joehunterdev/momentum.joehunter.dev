@@ -1,13 +1,17 @@
-import { FREQUENCY_OPTIONS, WEEK_DAYS } from '@/shared/constants/moments';
+import {
+    SCHEDULE_PRESETS,
+    WEEK_DAYS,
+    type SchedulePreset,
+} from '@/shared/constants/moments';
 
 interface Props {
     time?: string | null;
-    frequency: App.Enums.Frequency;
+    preset: SchedulePreset;
     daysOfWeek: number[];
     /** Optional override labels for day pills — defaults to WEEK_DAYS constants */
     dayLabels?: string[];
     conflictCount?: number;
-    onChange: (frequency: App.Enums.Frequency, days: number[]) => void;
+    onChange: (preset: SchedulePreset, days: number[]) => void;
     onConfirm: () => void;
     onCancel: () => void;
 }
@@ -17,19 +21,19 @@ const WEEKDAYS = [1, 2, 3, 4, 5];
 
 export default function FrequencyBadge({
     time,
-    frequency,
+    preset,
     daysOfWeek,
     conflictCount = 0,
     onChange,
     onConfirm,
     onCancel,
 }: Props) {
-    function handleFrequency(freq: App.Enums.Frequency) {
-        if (freq === 'daily') {
+    function handlePreset(next: SchedulePreset) {
+        if (next === 'daily') {
             onChange('daily', ALL_DAYS);
-        } else if (freq === 'weekly') {
-            onChange('weekly', WEEKDAYS);
-        } else if (freq === 'once') {
+        } else if (next === 'weekdays') {
+            onChange('weekdays', WEEKDAYS);
+        } else if (next === 'once') {
             onChange('once', []);
         } else {
             onChange('custom', daysOfWeek);
@@ -37,7 +41,7 @@ export default function FrequencyBadge({
     }
 
     function toggleDay(day: number) {
-        if (frequency !== 'custom') { return; }
+        if (preset !== 'custom') { return; }
         const next = daysOfWeek.includes(day)
             ? daysOfWeek.filter((d) => d !== day)
             : [...daysOfWeek, day].sort((a, b) => a - b);
@@ -49,22 +53,28 @@ export default function FrequencyBadge({
             {time && <span className="frequency-bar__time">{time}</span>}
 
             <div className="frequency-bar__freq-group" role="group" aria-label="Frequency">
-                {FREQUENCY_OPTIONS.map((opt) => (
+                {SCHEDULE_PRESETS.map((opt) => (
                     <button
                         key={opt.value}
                         type="button"
                         className={[
                             'frequency-bar__freq-btn',
-                            frequency === opt.value ? 'frequency-bar__freq-btn--active' : '',
+                            preset === opt.value ? 'frequency-bar__freq-btn--active' : '',
                         ].filter(Boolean).join(' ')}
-                        onClick={() => handleFrequency(opt.value)}
+                        onClick={() => handlePreset(opt.value)}
                     >
                         {opt.label}
                     </button>
                 ))}
             </div>
 
-            <div className="frequency-bar__days" role="group" aria-label="Days of week" aria-hidden={frequency === 'once'} style={frequency === 'once' ? { display: 'none' } : undefined}>
+            <div
+                className="frequency-bar__days"
+                role="group"
+                aria-label="Days of week"
+                aria-hidden={preset === 'once'}
+                style={preset === 'once' ? { display: 'none' } : undefined}
+            >
                 {WEEK_DAYS.map((day) => (
                     <button
                         key={day.value}
@@ -75,7 +85,7 @@ export default function FrequencyBadge({
                         ].filter(Boolean).join(' ')}
                         aria-label={day.full}
                         aria-pressed={daysOfWeek.includes(day.value)}
-                        disabled={frequency !== 'custom'}
+                        disabled={preset !== 'custom'}
                         onClick={() => toggleDay(day.value)}
                     >
                         {day.label}

@@ -8,12 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Moment extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
         'user_id',
         'name',
@@ -71,10 +68,8 @@ class Moment extends Model
 
         return match ($schedule->frequency) {
             Frequency::Daily => true,
-            Frequency::Weekly,
-            Frequency::Custom => in_array($date->dayOfWeekIso, $schedule->days_of_week ?? [], strict: true),
+            Frequency::Recurring => in_array($date->dayOfWeekIso, $schedule->days_of_week ?? [], strict: true),
             Frequency::Once => $schedule->scheduled_date !== null && $date->toDateString() === $schedule->scheduled_date,
-            default => false,
         };
     }
 }

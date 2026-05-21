@@ -84,7 +84,6 @@ class MomentExportService
     ): array {
         $completedDates = MomentInstance::where('moment_id', $moment->id)
             ->whereBetween('date', [$periodStart->toDateString(), $periodEnd->toDateString()])
-            ->whereNotNull('completed_at')
             ->pluck('date')
             ->map(fn ($d) => $d instanceof Carbon ? $d->toDateString() : (string) $d)
             ->all();
@@ -142,7 +141,7 @@ class MomentExportService
     {
         return match ($frequency) {
             Frequency::Daily => true,
-            Frequency::Weekly, Frequency::Custom => $daysOfWeek !== null
+            Frequency::Recurring => $daysOfWeek !== null
                 && in_array($date->dayOfWeekIso, $daysOfWeek, strict: true),
             default => false,
         };

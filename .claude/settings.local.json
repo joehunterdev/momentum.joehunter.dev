@@ -5,7 +5,8 @@
       "Bash(echo \"EXIT: $?\")",
       "Bash(git rm *)",
       "Bash(git mv *)",
-      "Bash(xargs grep \"from '@/features/\")"
+      "Bash(xargs grep \"from '@/features/\")",
+      "Bash(php -r ' *)"
     ]
   }
 }

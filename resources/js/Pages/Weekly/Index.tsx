@@ -19,7 +19,7 @@ import {
     startOfISOWeek,
     subWeeks,
 } from 'date-fns';
-import { WEEK_DAYS } from '@/shared/constants/moments';
+import { WEEK_DAYS, type SchedulePreset } from '@/shared/constants/moments';
 import type { PageProps } from '@/types';
 
 interface Props extends PageProps, WeeklyPageProps { }
@@ -67,8 +67,8 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
         });
     }
 
-    function handleFrequencyChange(frequency: App.Enums.Frequency, daysOfWeek: number[]) {
-        if (frequency === 'once') {
+    function handlePresetChange(preset: SchedulePreset, daysOfWeek: number[]) {
+        if (preset === 'once') {
             scheduling.setKind(SchedulingKind.OneOff, weekStart);
             return;
         }
@@ -78,9 +78,9 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
 
     const schedulingState = scheduling.state;
 
-    // FrequencyBadge still speaks the App.Enums.Frequency vocabulary; derive it
-    // from the union here rather than reintroducing a shared adapter.
-    const frequencyForBar: App.Enums.Frequency = !schedulingState
+    // FrequencyBadge operates in UX preset vocabulary; derive the active preset
+    // from the scheduling state (kind + daysOfWeek).
+    const presetForBar: SchedulePreset = !schedulingState
         ? 'once'
         : schedulingState.kind === SchedulingKind.OneOff
             ? 'once'
@@ -88,7 +88,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                 ? 'daily'
                 : schedulingState.daysOfWeek.length === WEEKDAYS.length
                     && WEEKDAYS.every((d) => schedulingState.daysOfWeek.includes(d))
-                    ? 'weekly'
+                    ? 'weekdays'
                     : 'custom';
     const daysOfWeekForBar: number[] = !schedulingState || schedulingState.kind === SchedulingKind.OneOff
         ? []
@@ -167,11 +167,11 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
             {scheduling.mode === 'configure' && schedulingState && (
                 <FrequencyBadge
                     time={schedulingState.time}
-                    frequency={frequencyForBar}
+                    preset={presetForBar}
                     daysOfWeek={daysOfWeekForBar}
                     dayLabels={dayLabels}
                     conflictCount={conflictCount}
-                    onChange={handleFrequencyChange}
+                    onChange={handlePresetChange}
                     onConfirm={scheduling.confirm}
                     onCancel={scheduling.cancel}
                 />
