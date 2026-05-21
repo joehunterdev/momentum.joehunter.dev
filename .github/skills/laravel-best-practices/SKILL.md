@@ -10,6 +10,124 @@ metadata:
 
 Best practices for Laravel, prioritized by impact. Each rule teaches what to do and why. For exact API syntax, verify with `search-docs`.
 
+---
+
+## Project-Specific Patterns (Momentum)
+
+The generic rules below apply, but this codebase has established patterns to follow. **Match them before applying any generic rule.**
+
+### Layering
+
+```
+Controller (thin orchestrator)
+    │
+    ├── FormRequest    → validation (StoreMomentRequest, UpdateMomentRequest, UpdateUserConfigRequest)
+    ├── Service        → computation (CalendarService for calendar/progress, *Service for domain logic)
+    ├── Eloquent       → persistence (Moment, MomentSchedule, MomentInstance, Cue, Reward, UserConfig)
+    └── DTO            → Inertia response (always — never raw models)
+```
+
+### Canonical controller shape
+
+```php
+class DailyController extends Controller
+{
+    public function __construct(private CalendarService $calendar) {}
+
+    public function index(Request $request): Response
+    {
+        // 1. Pull request data
+        $user = $request->user();
+        $date = $request->filled('date')
+            ? Carbon::parse($request->input('date'))
+            : Carbon::today();
+
+        // 2. Query with eager loading
+        $moments = Moment::query()
+            ->where('user_id', $user->id)
+            ->with(['schedule', 'cue', 'reward', 'instances'])
+            ->get();
+
+        // 3. Delegate computation to service
+        $slots = $this->calendar->buildTimeSlots($config->wake_time, $config->sleep_time);
+        $day   = $this->calendar->buildWeekDayData($date, $slots, $dayMoments, …);
+
+        // 4. Return as DTO via Inertia
+        return Inertia::render('Daily/Index', new DailyPageData(
+            date: $date->toDateString(),
+            day: $day,
+            config: UserConfigData::fromModel($config),
+            completedCount: $completed,
+            totalCount: $total,
+        ));
+    }
+}
+```
+
+### FormRequests for every write
+
+* `StoreMomentRequest`, `UpdateMomentRequest`, `UpdateUserConfigRequest` already exist
+* All new `store`/`update` actions get a FormRequest
+* `$request->validated()` only — never `$request->all()`
+* Inline `$request->validate()` is acceptable **only** for read-only GET filtering
+
+### Service layer
+
+* `app/Services/CalendarService.php` — calendar aggregation, time-slot building, progress, consistency
+* `MomentExportService`, `MomentImportService` — CSV I/O
+* Inject via constructor: `private CalendarService $calendar`
+* Don't create empty service classes (YAGNI). Extract when controller logic exceeds ~30 lines or is reused
+
+### DTOs
+
+* Every Inertia response uses a DTO (see `app/Data/`)
+* Mark with `#[TypeScript]` for type generation
+* Two moment shapes — don't conflate:
+  * `SlotMomentData` — slot-rendered (has `progress`, `status`, `instance_id`)
+  * `MomentData` — CRUD shape (has `is_active`, nested schedule/cue/reward)
+* Regenerate frontend types after DTO changes: `php artisan typescript:transform`
+* Full DTO rules: `.github/copilot-dto-instructions.md`
+
+### Models — lightweight
+
+* Cast enums explicitly: `'frequency' => Frequency::class`
+* Relationships, scopes, simple accessors — fine
+* Complex query logic → Service
+
+### Eager loading is mandatory
+
+Every controller query loads relations up front:
+
+```php
+->with(['schedule', 'cue', 'reward', 'instances' => fn ($q) =>
+    $q->whereBetween('date', [$windowStart, $today])
+])
+```
+
+Lazy loading is a bug — the consistency window pulls 28 days of instances, so N+1 here is catastrophic.
+
+### Routes — use `name()` always
+
+Ziggy generates client-side `route()` helpers from names. Every route gets `->name('…')`.
+
+```php
+Route::get('/daily', [DailyController::class, 'index'])->name('daily');
+Route::resource('moments', MomentController::class)
+    ->only(['create', 'store', 'edit', 'update', 'destroy']);
+Route::post('/moments/{moment}/toggle', [MomentInstanceController::class, 'toggle'])
+    ->name('moments.toggle');
+```
+
+### Anti-patterns specific to this project
+
+* Returning raw Eloquent models to Inertia (always use a DTO)
+* Computing progress/consistency in the controller (belongs in `CalendarService`)
+* Lazy loading in calendar queries
+* Inline `$request->validate()` for store/update
+* Creating new services for trivial logic that fits in a controller method
+
+---
+
 ## Consistency First
 
 Before applying any rule, check what the application already does. Laravel offers multiple valid approaches — the best choice is the one the codebase already uses, even if another pattern would be theoretically better. Inconsistency is worse than a suboptimal pattern.

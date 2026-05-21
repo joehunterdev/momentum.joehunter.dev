@@ -274,8 +274,10 @@ $monthly-cell-min-h: 5rem;
         flex-direction: column;
         gap: 0;
         padding: 0;
+        justify-content: flex-start;
+        align-items: stretch;
 
-        > .moment-card {
+        >.moment-card {
             border-bottom: 1px solid #f3f4f6;
 
             &:last-child {

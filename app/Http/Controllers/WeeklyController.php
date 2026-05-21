@@ -26,7 +26,7 @@ class WeeklyController extends Controller
             $weekAnchor = Carbon::parse($request->input('week'));
             $weekStart = $weekAnchor->copy()->startOfWeek(Carbon::MONDAY);
         } else {
-            $weekStart = $today->copy();
+            $weekStart = $today->copy()->startOfWeek(Carbon::MONDAY);
         }
 
         $weekEnd = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);

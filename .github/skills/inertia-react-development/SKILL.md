@@ -1,363 +1,226 @@
 ---
 name: inertia-react-development
-description: "Develops Inertia.js v2 React client-side applications. Activates when creating React pages, forms, or navigation; using <Link>, <Form>, useForm, or router; working with deferred props, prefetching, or polling; or when user mentions React with Inertia, React pages, React forms, or React navigation."
+description: "Develops the Momentum app's Inertia.js v2 + React frontend. Activates when creating or editing files under resources/js/Pages, resources/js/features/, or resources/js/shared/components/; when working with calendar views (Daily/Weekly/Monthly), moment forms, or scheduling; when using <Link>, <Form>, useForm, router; or when the user mentions React pages, forms, calendar containers, or MomentAction/TimeSlotCell."
 license: MIT
 metadata:
-  author: laravel
+  author: project
 ---
 
-# Inertia React Development
+# Inertia React Development — Momentum Project
+
+This skill captures the patterns that apply to **this specific codebase**. For generic Inertia v2 docs, use `search-docs` with a relevant query.
 
 ## When to Apply
 
-Activate this skill when:
+Activate when:
+- Creating or modifying anything under `resources/js/Pages/`, `resources/js/features/`, or `resources/js/shared/components/`
+- Adding calendar functionality (Daily/Weekly/Monthly views, slot rendering, moment toggling)
+- Touching moment CRUD forms (Create/Edit moments)
+- Wiring scheduling state, swipe gestures, or completion toggles
+- Adding a new Inertia page
 
-- Creating or modifying React page components for Inertia
-- Working with forms in React (using `<Form>` or `useForm`)
-- Implementing client-side navigation with `<Link>` or `router`
-- Using v2 features: deferred props, prefetching, WhenVisible, InfiniteScroll, once props, flash data, or polling
-- Building React-specific features with the Inertia protocol
+---
 
-## Documentation
+## Project Layout (post-refactor)
 
-Use `search-docs` for detailed Inertia v2 React patterns and documentation.
+```
+resources/js/
+├── Pages/                        # Thin Inertia shells, 1:1 with routes
+│   ├── Daily/Index.tsx
+│   ├── Weekly/Index.tsx
+│   ├── Monthly/Index.tsx
+│   ├── Moments/{Create,Edit}.tsx
+│   └── Config/Edit.tsx
+├── features/
+│   ├── calendar/
+│   │   ├── daily/DailyContainer.tsx
+│   │   ├── weekly/{WeeklyContainer,DayRow,DaySection}.tsx
+│   │   ├── monthly/{MonthlyContainer,MonthlyDayCell,MonthlyScheduleRow}.tsx
+│   │   ├── components/
+│   │   │   ├── MomentAction.tsx        # Canonical row — used by all 3 views
+│   │   │   └── TimeSlotCell.tsx        # Cell wrapper (mode/swipe/scheduling)
+│   │   ├── hooks/{useCalendarActions,useSwipeComplete}.ts
+│   │   ├── utils.ts                    # getVisibleTimeSlots, snapToSlot, …
+│   │   ├── types.ts                    # Re-exports App.Data.* under aliases
+│   │   └── index.ts                    # Barrel
+│   ├── moments/                        # MomentForm, MomentModal, useMomentForm
+│   ├── config/                         # ConfigForm, SleepHelper
+│   └── scheduling/                     # useScheduling, transition.ts
+├── shared/components/calendar/         # CalendarNav, CalendarSection, MomentIcon, …
+├── types/generated.d.ts                # ⚠️ DTO-generated — do not edit
+└── Layouts/, Components/               # Breeze (don't modify)
+```
 
-## Basic Usage
+**Casing convention:** Breeze scaffolding (`Pages/`, `Components/`, `Layouts/`) is capitalised; our code (`features/`, `shared/`) is lowercase. Keep this split.
 
-### Page Components Location
+---
 
-React page components should be placed in the `resources/js/Pages` directory.
+## Core Patterns
 
-### Page Component Structure
+### Pages are thin
 
-<!-- Basic React Page Component -->
-```react
-export default function UsersIndex({ users }) {
+A page composes layout + container + modals, nothing more.
+
+```tsx
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head } from '@inertiajs/react';
+import { DailyContainer, useCalendarActions } from '@/features/calendar';
+import { CalendarNav, CalendarProgressBar } from '@/shared/components/calendar';
+
+export default function DailyIndex(props: App.Data.DailyPageData) {
+    const { toggleMoment } = useCalendarActions();
+
     return (
-        <div>
-            <h1>Users</h1>
-            <ul>
-                {users.map(user => <li key={user.id}>{user.name}</li>)}
-            </ul>
-        </div>
-    )
+        <AuthenticatedLayout>
+            <Head title="Daily" />
+            <CalendarNav view="daily" date={props.date} />
+            <CalendarProgressBar completed={props.completedCount} total={props.totalCount} />
+            <DailyContainer day={props.day} config={props.config} onToggle={toggleMoment} />
+        </AuthenticatedLayout>
+    );
 }
 ```
 
-## Client-Side Navigation
+### View containers orchestrate
 
-### Basic Link Component
+Containers live in `features/calendar/{view}/`. They:
+- Receive typed props from the page
+- Compute visible slots (`getVisibleTimeSlots` from `features/calendar/utils.ts`)
+- Map slots to `<TimeSlotCell />`
+- Never reach across to other features (except type-only imports from `scheduling`)
 
-Use `<Link>` for client-side navigation instead of traditional `<a>` tags:
+### Calendar row UI is canonical
 
-<!-- Inertia React Navigation -->
-```react
-import { Link, router } from '@inertiajs/react'
+The shared row UI is exactly **two files** in `features/calendar/components/`:
 
-<Link href="/">Home</Link>
-<Link href="/users">Users</Link>
-<Link href={`/users/${user.id}`}>View User</Link>
+| File | Purpose | Props |
+|---|---|---|
+| `MomentAction.tsx` | Pure presentation row | `moment: App.Data.SlotMomentData`, optional `progress` |
+| `TimeSlotCell.tsx` | Cell wrapper | `slot`, `date`, `config`, `mode: 'overview' \| 'configure'`, scheduling flags & callbacks |
+
+If you find yourself writing a third row component, stop — extend `MomentAction` or `TimeSlotCell` instead. Adding a new view should require **zero** new row UI.
+
+### Types come from DTOs
+
+Source of truth: `resources/js/types/generated.d.ts`. Consume via `App.Data.*`:
+
+```ts
+function MyContainer({ day }: { day: App.Data.WeekDayData }) { … }
 ```
 
-### Link with Method
+Regenerate after backend DTO changes:
 
-<!-- Link with POST Method -->
-```react
-import { Link } from '@inertiajs/react'
-
-<Link href="/logout" method="post" as="button">
-    Logout
-</Link>
+```bash
+php artisan typescript:transform
 ```
 
-### Prefetching
+**Never** redefine a shape that exists as a DTO. Re-export under a feature alias if you want a domain-friendly name:
 
-Prefetch pages to improve perceived performance:
-
-<!-- Prefetch on Hover -->
-```react
-import { Link } from '@inertiajs/react'
-
-<Link href="/users" prefetch>
-    Users
-</Link>
+```ts
+// features/calendar/types.ts
+export type CalendarMoment = App.Data.SlotMomentData;
+export type TimeSlot = App.Data.TimeSlotData;
 ```
 
-### Programmatic Navigation
+---
 
-<!-- Router Visit -->
-```react
-import { router } from '@inertiajs/react'
+## Forms
 
-function handleClick() {
-    router.visit('/users')
-}
+### Use `useForm` for moment/config forms
 
-// Or with options
-router.visit('/users', {
-    method: 'post',
-    data: { name: 'John' },
-    onSuccess: () => console.log('Success!'),
-})
-```
+The project standard is `useForm` (programmatic control, fits the multi-section MomentForm pattern). The `<Form>` component is fine for simple cases but not the established pattern here.
 
-## Form Handling
+```tsx
+import { useForm } from '@inertiajs/react';
 
-### Form Component (Recommended)
+const { data, setData, post, processing, errors } = useForm<App.Data.MomentData>({
+    name: '',
+    description: '',
+    icon: '',
+    color: '',
+    // …
+});
 
-The recommended way to build forms is with the `<Form>` component:
-
-<!-- Form Component Example -->
-```react
-import { Form } from '@inertiajs/react'
-
-export default function CreateUser() {
-    return (
-        <Form action="/users" method="post">
-            {({ errors, processing, wasSuccessful }) => (
-                <>
-                    <input type="text" name="name" />
-                    {errors.name && <div>{errors.name}</div>}
-
-                    <input type="email" name="email" />
-                    {errors.email && <div>{errors.email}</div>}
-
-                    <button type="submit" disabled={processing}>
-                        {processing ? 'Creating...' : 'Create User'}
-                    </button>
-
-                    {wasSuccessful && <div>User created!</div>}
-                </>
-            )}
-        </Form>
-    )
+function submit(e: React.FormEvent) {
+    e.preventDefault();
+    post(route('moments.store'));
 }
 ```
 
-### Form Component With All Props
+Errors come back from the matching `FormRequest` (`StoreMomentRequest`, `UpdateMomentRequest`, `UpdateUserConfigRequest`). Don't duplicate validation client-side.
 
-<!-- Form Component Full Example -->
-```react
-import { Form } from '@inertiajs/react'
+---
 
-<Form action="/users" method="post">
-    {({
-        errors,
-        hasErrors,
-        processing,
-        progress,
-        wasSuccessful,
-        recentlySuccessful,
-        clearErrors,
-        resetAndClearErrors,
-        defaults,
-        isDirty,
-        reset,
-        submit
-    }) => (
-        <>
-            <input type="text" name="name" defaultValue={defaults.name} />
-            {errors.name && <div>{errors.name}</div>}
+## Mutations & Partial Reloads
 
-            <button type="submit" disabled={processing}>
-                {processing ? 'Saving...' : 'Save'}
-            </button>
+### Toggle completion (canonical pattern)
 
-            {progress && (
-                <progress value={progress.percentage} max="100">
-                    {progress.percentage}%
-                </progress>
-            )}
-
-            {wasSuccessful && <div>Saved!</div>}
-        </>
-    )}
-</Form>
-```
-
-### Form Component Reset Props
-
-The `<Form>` component supports automatic resetting:
-
-- `resetOnError` - Reset form data when the request fails
-- `resetOnSuccess` - Reset form data when the request succeeds
-- `setDefaultsOnSuccess` - Update default values on success
-
-Use the `search-docs` tool with a query of `form component resetting` for detailed guidance.
-
-<!-- Form with Reset Props -->
-```react
-import { Form } from '@inertiajs/react'
-
-<Form
-    action="/users"
-    method="post"
-    resetOnSuccess
-    setDefaultsOnSuccess
->
-    {({ errors, processing, wasSuccessful }) => (
-        <>
-            <input type="text" name="name" />
-            {errors.name && <div>{errors.name}</div>}
-
-            <button type="submit" disabled={processing}>
-                Submit
-            </button>
-        </>
-    )}
-</Form>
-```
-
-Forms can also be built using the `useForm` helper for more programmatic control. Use the `search-docs` tool with a query of `useForm helper` for guidance.
-
-### `useForm` Hook
-
-For more programmatic control or to follow existing conventions, use the `useForm` hook:
-
-<!-- useForm Hook Example -->
-```react
-import { useForm } from '@inertiajs/react'
-
-export default function CreateUser() {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        email: '',
-        password: '',
-    })
-
-    function submit(e) {
-        e.preventDefault()
-        post('/users', {
-            onSuccess: () => reset('password'),
-        })
+```ts
+// features/calendar/hooks/useCalendarActions.ts
+router.post(
+    route('moments.toggle', { moment: momentId }),
+    { date, time },
+    {
+        only: ['day', 'days', 'completedCount', 'totalCount'],
+        preserveScroll: true,
     }
-
-    return (
-        <form onSubmit={submit}>
-            <input
-                type="text"
-                value={data.name}
-                onChange={e => setData('name', e.target.value)}
-            />
-            {errors.name && <div>{errors.name}</div>}
-
-            <input
-                type="email"
-                value={data.email}
-                onChange={e => setData('email', e.target.value)}
-            />
-            {errors.email && <div>{errors.email}</div>}
-
-            <input
-                type="password"
-                value={data.password}
-                onChange={e => setData('password', e.target.value)}
-            />
-            {errors.password && <div>{errors.password}</div>}
-
-            <button type="submit" disabled={processing}>
-                Create User
-            </button>
-        </form>
-    )
-}
+);
 ```
 
-## Inertia v2 Features
+Note the `only: [...]` — partial reloads keep the UI snappy and avoid full page re-renders.
 
-### Deferred Props
+### Navigation
 
-Use deferred props to load data after initial page render:
+- `<Link href={route('weekly')}>` for internal navigation
+- `router.visit(route('weekly'))` for programmatic navigation
+- Always use `route()` (Ziggy) — never hardcode URLs
 
-<!-- Deferred Props with Empty State -->
-```react
-export default function UsersIndex({ users }) {
-    // users will be undefined initially, then populated
-    return (
-        <div>
-            <h1>Users</h1>
-            {!users ? (
-                <div className="animate-pulse">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                </div>
-            ) : (
-                <ul>
-                    {users.map(user => (
-                        <li key={user.id}>{user.name}</li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    )
-}
-```
+### When to use `axios`
 
-### Polling
+Only when a route returns raw JSON (no Inertia redirect). CSRF is preconfigured. The toggle uses `router.post` with partial reload — that's almost always the better choice.
 
-Automatically refresh data at intervals:
+---
 
-<!-- Polling Example -->
-```react
-import { router } from '@inertiajs/react'
-import { useEffect } from 'react'
+## Hooks Reference
 
-export default function Dashboard({ stats }) {
-    useEffect(() => {
-        const interval = setInterval(() => {
-            router.reload({ only: ['stats'] })
-        }, 5000) // Poll every 5 seconds
+| Hook | Location | Purpose |
+|---|---|---|
+| `useCalendarActions` | `features/calendar/hooks/` | `toggleMoment({ momentId, date, time?, reloadOnly? })` |
+| `useSwipeComplete` | `features/calendar/hooks/` | Drag-to-confirm gesture (returns pointer handlers + drag state) |
+| `useScheduling` | `features/scheduling/` | Scheduling state machine (mode, kind transitions, day/time selection) |
+| `useMomentForm` | `features/moments/hooks/` | Moment create/edit form state |
 
-        return () => clearInterval(interval)
-    }, [])
+Cross-feature **type-only** imports from `scheduling` are allowed (e.g. `SchedulingState`, `IsoDayNumber`). Runtime cross-feature imports are not.
 
-    return (
-        <div>
-            <h1>Dashboard</h1>
-            <div>Active Users: {stats.activeUsers}</div>
-        </div>
-    )
-}
-```
+---
 
-### WhenVisible
+## Naming — Don't Reintroduce Old Names
 
-Lazy-load a prop when an element scrolls into view. Useful for deferring expensive data that sits below the fold:
+These were removed in the refactor. Don't bring them back:
 
-<!-- WhenVisible Example -->
-```react
-import { WhenVisible } from '@inertiajs/react'
+`MomentDisplay`, `MomentActionItem`, `DailyTimeSlotCell`, `WeeklyGrid`, `MonthlyVerticalView`, `DailySlotCard`, `ConsistencyBar`, `CalendarMomentIcon`, `FrequencyBar`, `AddSlotPopover`, `MomentDetailTicker`.
 
-export default function Dashboard({ stats }) {
-    return (
-        <div>
-            <h1>Dashboard</h1>
+Use: `MomentAction`, `TimeSlotCell`, `WeeklyContainer`, `MonthlyContainer`, `DailyContainer`, `MomentIcon`, `FrequencyBadge`, `AddMomentPopover`.
 
-            {/* stats prop is loaded only when this section scrolls into view */}
-            <WhenVisible data="stats" buffer={200} fallback={<div className="animate-pulse">Loading stats...</div>}>
-                {({ fetching }) => (
-                    <div>
-                        <p>Total Users: {stats.total_users}</p>
-                        <p>Revenue: {stats.revenue}</p>
-                        {fetching && <span>Refreshing...</span>}
-                    </div>
-                )}
-            </WhenVisible>
-        </div>
-    )
-}
-```
+---
 
-## Server-Side Patterns
+## v2 Features in Use
 
-Server-side patterns (Inertia::render, props, middleware) are covered in inertia-laravel guidelines.
+- **Partial reloads** (`only: [...]`) — used heavily for toggle/scheduling actions
+- **`<Head>`** — set per page
+- **Ziggy `route()`** — required for all URLs
+
+Deferred props, prefetching, polling, and `<WhenVisible>` are **not** currently used. If you reach for them, justify it — they add complexity that hasn't been needed.
+
+---
 
 ## Common Pitfalls
 
-- Using traditional `<a>` links instead of Inertia's `<Link>` component (breaks SPA behavior)
-- Forgetting to add loading states (skeleton screens) when using deferred props
-- Not handling the `undefined` state of deferred props before data loads
-- Using `<form>` without preventing default submission (use `<Form>` component or `e.preventDefault()`)
-- Forgetting to check if `<Form>` component is available in your Inertia version
-
-
+- Syncing Inertia props into `useState` via `useEffect` — derive instead
+- Hardcoding URL strings — always `route('name')`
+- Duplicating row UI per view — reuse `MomentAction`
+- Cross-feature runtime imports — promote to `shared/` if it's truly shared
+- Redefining a DTO shape in TypeScript — consume `App.Data.*`
+- Using `fetch()` — use `router.*` or `axios`
+- Putting domain components in `Components/` — that's Breeze generics only
+- Skipping the barrel: `import X from '@/features/calendar/daily/DailyContainer'` — import from `@/features/calendar` instead

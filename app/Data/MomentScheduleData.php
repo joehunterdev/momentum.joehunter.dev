@@ -20,7 +20,7 @@ class MomentScheduleData extends Data
     public static function fromModel(MomentSchedule $schedule): self
     {
         return new self(
-            frequency: Frequency::from($schedule->frequency),
+            frequency: $schedule->frequency,
             days_of_week: $schedule->days_of_week,
             preferred_time: $schedule->preferred_time ? substr($schedule->preferred_time, 0, 5) : null,
         );
