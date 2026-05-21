@@ -29,6 +29,7 @@
 		},
 
 		"search.exclude": {
+			"**/.docs": true,
 			"**/node_modules": true,
 			"**/vendor": true,
 			"**/storage/framework": true,
