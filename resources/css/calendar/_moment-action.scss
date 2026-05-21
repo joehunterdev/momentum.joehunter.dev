@@ -1,0 +1,152 @@
+// _moment-action.scss — the moment row rendered inside .calendar-article.
+//
+// One BEM block, three variants:
+//   --read   overview mode: icon + name + desc + progress wash + (later)
+//            swipe-to-complete target. Baseline sizing.
+//   --edit   configure mode: icon + name + desc + edit pencil. Tighter
+//            padding; icon-only on desktop column layout.
+//   --draft  configure mode while scheduling a new moment: icon-picker
+//            trigger + name input, dashed primary border.
+
+.moment-action {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.75rem 0.875rem;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    background: #fff;
+    overflow: hidden;
+    isolation: isolate;
+
+    &__progress-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        width: var(--moment-progress, 0%);
+        background: rgba(var(--mm-primary-rgb), 0.10);
+        transition: width 0.3s ease;
+        pointer-events: none;
+    }
+
+    &__icon {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+        width: 2.75rem;
+        height: 2.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.5rem;
+        background: rgba(0, 0, 0, 0.03);
+        font-size: 1.5rem;
+        line-height: 1;
+    }
+
+    &__body {
+        position: relative;
+        z-index: 1;
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+    }
+
+    &__name {
+        font-weight: 600;
+        font-size: 0.9375rem;
+        color: var(--mm-text-strong);
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__desc {
+        font-size: 0.8125rem;
+        color: var(--mm-text-mute);
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__edit-btn {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+        padding: 0.25rem;
+        font-size: 0.85rem;
+        line-height: 1;
+        background: none;
+        border: none;
+        cursor: pointer;
+        opacity: 0.55;
+        transition: opacity 0.15s ease;
+
+        &:hover,
+        &:focus-visible {
+            opacity: 1;
+            outline: none;
+        }
+    }
+
+    // ── Variants ─────────────────────────────────────────────────────────
+
+    // --read is the baseline; nothing additional. Adaptive drag wash below.
+
+    &--edit {
+        gap: 0.625rem;
+        padding: 0.375rem 0.875rem 0.5rem;
+        min-height: 2.75rem;
+
+        .moment-action__name {
+            font-size: 0.8125rem;
+        }
+
+        .moment-action__desc {
+            font-size: 0.6875rem;
+        }
+
+        // On desktop the slot is a narrow column — icon-only, hide body text
+        @media (min-width: 768px) {
+            .moment-action__body {
+                display: none;
+            }
+        }
+    }
+
+    &--draft {
+        gap: 0.625rem;
+        padding: 0.375rem 0.875rem 0.5rem;
+        min-height: 2.75rem;
+        border: 1.5px dashed var(--mm-primary, #6366f1);
+        background: rgba(99, 102, 241, 0.04);
+        border-radius: 0;
+    }
+}
+
+// ─── Adaptive drag wash (read variant only) ───────────────────────────────
+// Green fill grows left→right with --drag-progress (0–1).
+
+.moment-action--read::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to right,
+            rgba(0, 229, 170, calc(var(--drag-progress, 0) * 0.18)),
+            transparent calc(var(--drag-progress, 0) * 100% + 20%));
+    border-radius: inherit;
+    transition: background 0.05s linear;
+    z-index: 0;
+}
+
+.moment-action--read > * {
+    position: relative;
+    z-index: 1;
+}

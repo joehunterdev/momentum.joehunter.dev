@@ -32,6 +32,16 @@
   --mm-muted-light: #9CA3AF;
   --mm-muted-dark: #4B5563;
 
+  // ─── Neutrals (greys used across calendar surfaces) ───
+  --mm-border:       #e5e7eb;
+  --mm-border-light: #f3f4f6;
+  --mm-surface-alt:  #fafafa;
+  --mm-text-strong:  #111827;
+  --mm-text-body:    #374151;
+  --mm-text-mute:    #6b7280;
+  --mm-text-faint:   #9ca3af;
+  --mm-text-ghost:   #d1d5db;
+
   // ─── Legacy/Accent (kept for compatibility) ───
   --mm-accent: var(--mm-success);
   --mm-accent-glow: rgba(16, 185, 129, 0.3);

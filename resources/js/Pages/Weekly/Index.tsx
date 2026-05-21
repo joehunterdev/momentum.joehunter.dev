@@ -124,8 +124,8 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
     return (
         <AuthenticatedLayout
             header={
-                <div className="weekly-header">
-                    <div className="weekly-header__row">
+                <div className="calendar-page-header">
+                    <div className="calendar-page-header__row">
                         <CalendarNav
                             prevLabel={weekLabel(prevWeekStart)}
                             currentLabel={weekLabel(currentWeekStart)}
@@ -137,7 +137,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                         {scheduling.mode === 'overview' ? (
                             <button
                                 type="button"
-                                className="weekly-header__mode-btn"
+                                className="calendar-page-header__mode-btn"
                                 title="Configure schedule"
                                 onClick={() => scheduling.setMode('configure')}
                             >
@@ -146,7 +146,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                         ) : (
                             <button
                                 type="button"
-                                className="weekly-header__mode-btn weekly-header__mode-btn--done"
+                                className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"
                                 onClick={scheduling.exit}
                             >
                                 ✕ Done

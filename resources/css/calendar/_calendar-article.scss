@@ -1,0 +1,335 @@
+// _calendar-article.scss — one slot inside a .calendar-section.
+//
+// Mobile: row layout (key/time-label left, content right).
+// Desktop ≥768px: column layout (key top, content below).
+
+$slot-min-w: 4.5rem;
+$slot-h: 5rem;
+$border: var(--mm-border);
+$border-light: var(--mm-border-light);
+
+.calendar-article {
+    display: flex;
+    transition: background 0.1s;
+    touch-action: pan-y; // don't cancel horizontal child drags at this level
+
+    // ── Mobile: horizontal row — time label left, content right ───────────
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid $border-light;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &__key {
+        flex-shrink: 0;
+        width: 3.5rem;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        color: var(--mm-text-faint);
+        text-align: right;
+        border-right: 1px solid $border-light;
+        background: var(--mm-surface-alt);
+        letter-spacing: 0.03em;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0.5rem 0.875rem;
+        min-height: 3rem;
+        position: relative;
+
+        // Edit/draft variants go edge-to-edge; read keeps wrapper padding
+        // so the progress wash doesn't bleed into the time gutter.
+        &:has(.moment-action--edit, .moment-action--draft) {
+            padding: 0;
+            align-items: stretch;
+        }
+    }
+
+    // ── Desktop: vertical column — time label top, content below ──────────
+    @media (min-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+        border-bottom: none;
+        border-right: 1px solid $border-light;
+        min-width: $slot-min-w;
+
+        &:last-child {
+            border-right: none;
+        }
+
+        &__key {
+            width: 100%;
+            padding: 0.3rem 0.25rem;
+            font-size: 0.625rem;
+            text-align: center;
+            border-right: none;
+            border-bottom: 1px solid $border-light;
+            background: var(--mm-surface-alt);
+            align-self: auto;
+            justify-content: center;
+        }
+
+        &__content {
+            flex: 1;
+            justify-content: center;
+            padding: 0.5rem 0.25rem;
+            min-height: $slot-h;
+        }
+    }
+
+    &--ooo {
+        background: rgba(100, 116, 139, 0.04);
+
+        .calendar-article__key {
+            color: var(--mm-text-ghost);
+        }
+
+        .calendar-article__add-btn {
+            opacity: 0.35;
+        }
+
+        &:hover {
+            background: rgba(99, 102, 241, 0.04);
+
+            .calendar-article__add-btn {
+                opacity: 0.65;
+                border-color: var(--mm-primary, #6366f1);
+                color: var(--mm-primary, #6366f1);
+            }
+        }
+    }
+
+    &--weekend {
+        background: rgba(100, 116, 139, 0.02);
+    }
+
+    &--today {
+        .calendar-article__key {
+            color: var(--mm-primary, #6366f1);
+            background: rgba(99, 102, 241, 0.05);
+        }
+    }
+
+    &--empty {
+        cursor: pointer;
+
+        .calendar-article__add-btn {
+            opacity: 0.35;
+        }
+
+        &:hover {
+            background: rgba(99, 102, 241, 0.04);
+
+            .calendar-article__add-btn {
+                opacity: 1;
+                border-color: var(--mm-primary, #6366f1);
+                color: var(--mm-primary, #6366f1);
+            }
+        }
+    }
+
+    &__add-btn {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        border: 1.5px dashed var(--mm-text-ghost);
+        background: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: var(--mm-text-ghost);
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.15s, border-color 0.15s, color 0.15s;
+
+        // Always-visible variant used in overview mode
+        &--always-visible {
+            opacity: 0.45;
+
+            &:hover {
+                opacity: 1;
+                border-color: var(--mm-primary, #6366f1);
+                color: var(--mm-primary, #6366f1);
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--mm-primary, #6366f1);
+                outline-offset: -2px;
+                opacity: 1;
+            }
+
+            // Dimmer inside OOO slots
+            .calendar-article--ooo & {
+                opacity: 0.22;
+
+                &:hover {
+                    opacity: 0.75;
+                }
+            }
+        }
+    }
+}
+
+// ─── Conflict indicator ────────────────────────────────────────────────────────
+
+.calendar-article--conflict {
+    border-left: 3px solid #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+}
+
+.calendar-article__conflict-badge {
+    font-size: 0.75rem;
+    position: absolute;
+    top: 0.2rem;
+    right: 0.25rem;
+}
+
+// ─── Clickable time label — empty slots in both overview and configure modes ──
+
+.calendar-article__key--clickable {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+// ─── No-time slot — used in monthly configure mode (no time gutter) ──────────
+
+.calendar-article--no-time {
+    .calendar-article__key {
+        display: none;
+    }
+
+    .calendar-article__content {
+        padding-left: 0.875rem;
+    }
+}
+
+// ─── Overview empty slot — clickable to enter configure mode ─────────────────
+
+.calendar-article--overview-empty {
+    cursor: default;
+    position: relative;
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.03);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--mm-primary, #6366f1);
+        outline-offset: -2px;
+    }
+}
+
+// ─── Monthly day-as-article: 24h slot ────────────────────────────────────────
+// Wider leading column (day label), stacked moments.
+
+.calendar-article--monthly-day {
+    align-items: stretch;
+
+    .calendar-article__key {
+        width: 4.5rem;
+        padding-top: 0.875rem;
+        align-items: flex-start;
+    }
+
+    .calendar-article__content {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        padding: 0;
+        justify-content: flex-start;
+        align-items: stretch;
+
+        >.moment-action {
+            border-bottom: 1px solid var(--mm-border-light);
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+    }
+}
+
+// ─── Row-level swipe highlight ────────────────────────────────────────────────
+
+.calendar-article--swiping {
+    // Green wash that grows with drag progress via --swipe-progress (0–1)
+    background: rgba(16, 185, 129, calc(0.06 + var(--swipe-progress, 0) * 0.18)) !important;
+    transition: background 0.05s linear;
+
+    .calendar-article__key {
+        color: #10b981;
+        border-right-color: rgba(16, 185, 129, 0.2);
+    }
+}
+
+.calendar-article--swipe-done {
+    animation: slot-row-flash 0.65s ease forwards;
+
+    .calendar-article__key {
+        color: #10b981;
+    }
+}
+
+// Persistent green wash once a moment is marked completed
+.calendar-article--completed {
+    background: rgba(var(--mm-primary-rgb), 0.06);
+
+    .calendar-article__key {
+        color: var(--mm-primary);
+        font-weight: 600;
+    }
+}
+
+@keyframes slot-row-flash {
+    0% {
+        background: rgba(var(--mm-primary-rgb), 0.28);
+    }
+
+    50% {
+        background: rgba(16, 185, 129, 0.14);
+    }
+
+    100% {
+        background: transparent;
+    }
+}
+
+// ─── Slot Highlight (recurring preview) ──────────────────────────────────────
+
+.calendar-article--highlight {
+    animation: slot-pulse 1.5s ease-in-out infinite;
+
+    .calendar-article__add-btn {
+        opacity: 1;
+        border-color: var(--mm-primary, #6366f1);
+        color: var(--mm-primary, #6366f1);
+    }
+}
+
+@keyframes slot-pulse {
+
+    0%,
+    100% {
+        background: rgba(99, 102, 241, 0.06);
+    }
+
+    50% {
+        background: rgba(99, 102, 241, 0.14);
+    }
+}

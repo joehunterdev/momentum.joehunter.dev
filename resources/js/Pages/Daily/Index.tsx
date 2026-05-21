@@ -33,7 +33,7 @@ export default function Index({ date, day, config, completedCount, totalCount }:
     return (
         <AuthenticatedLayout
             header={
-                <div className="daily-header">
+                <div className="calendar-page-header">
                     <CalendarNav
                         prevLabel={format(prevDate, 'EEE d MMM')}
                         currentLabel={format(currentDate, 'EEE d MMM')}

@@ -1,0 +1,36 @@
+// _calendar.scss — page-level calendar wrappers
+//
+// These are the outer containers each view's <Index.tsx> renders the
+// calendar tree inside. They'll be collapsed into a single .calendar block
+// once the page wrappers (.weekly-grid, .monthly-vertical-view,
+// .monthly-schedule-grid) are unified.
+
+$border: var(--mm-border);
+$border-light: var(--mm-border-light);
+
+.weekly-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: $border-light;
+    overflow: hidden;
+
+    @media (min-width: 640px) {
+        border: 1px solid $border;
+        border-radius: 0;
+        overflow: hidden;
+        padding: 0.5rem;
+    }
+}
+
+.monthly-vertical-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: #fff;
+}
+
+.monthly-schedule-grid {
+    background: #fff;
+    overflow: hidden;
+}

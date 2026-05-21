@@ -1,0 +1,75 @@
+// _draft.scss — the icon picker + name input shown inside
+// `.moment-action--draft` (and the legacy `.draft-*` helper classes that the
+// component renders).
+
+.draft-icon-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.draft-icon-trigger {
+    // inherits .slot-icon sizing via those classes
+    border: none;
+    padding: 0;
+    background: none;
+}
+
+.draft-icon-picker {
+    background: #fff;
+    border: 1px solid var(--mm-border);
+    border-radius: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 0.5rem;
+    max-height: 260px;
+    overflow-y: auto;
+
+    &__grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.125rem;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.75rem;
+        height: 1.75rem;
+        border: none;
+        background: none;
+        border-radius: 0;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.1s;
+
+        &:hover {
+            background: var(--mm-border-light);
+        }
+
+        &--active {
+            background: rgba(99, 102, 241, 0.12);
+            outline: 2px solid var(--mm-primary, #6366f1);
+        }
+    }
+}
+
+.draft-name-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--mm-text-body);
+    padding: 0;
+
+    &::placeholder {
+        color: var(--mm-primary, #6366f1);
+        opacity: 0.6;
+        font-style: italic;
+    }
+
+    &:focus {
+        color: var(--mm-text-body);
+    }
+}

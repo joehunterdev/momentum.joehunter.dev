@@ -1,0 +1,20 @@
+// _flash.scss — toast/flash message styling.
+
+.mm-flash {
+  animation: mm-flash-in 300ms var(--mm-ease) forwards;
+  backdrop-filter: blur(12px);
+  border-radius: var(--mm-radius-md);
+  box-shadow: var(--mm-shadow-md);
+
+  &--success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--mm-accent);
+  }
+
+  &--error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--mm-danger);
+  }
+}
