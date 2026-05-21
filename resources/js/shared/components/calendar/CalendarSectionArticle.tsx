@@ -130,7 +130,7 @@ export default function CalendarSectionArticle({
         isWeekend && 'calendar-article--weekend',
         ooo && 'calendar-article--ooo',
         !moment && !ooo && mode === 'configure' && 'calendar-article--empty',
-        moment?.status === MomentStatus.Completed && 'calendar-article--completed',
+        // moment?.status === MomentStatus.Completed && 'calendar-article--completed',
         isConflict && 'calendar-article--conflict',
         time === undefined && 'calendar-article--no-time',
     ].filter(Boolean).join(' ');

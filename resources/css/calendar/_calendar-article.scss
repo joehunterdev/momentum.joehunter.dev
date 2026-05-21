@@ -42,10 +42,10 @@ $border-light: var(--mm-border-light);
     &__content {
         flex: 1;
         display: flex;
-        align-items: center;
+        align-items: stretch;
         justify-content: flex-start;
-        padding: 0.5rem 0.875rem;
-        min-height: 3rem;
+        padding: 0;
+        min-height: 2.5rem;
         position: relative;
 
         // Edit/draft variants go edge-to-edge; read keeps wrapper padding
@@ -116,8 +116,8 @@ $border-light: var(--mm-border-light);
 
     &--today {
         .calendar-article__key {
-            color: var(--mm-primary, #6366f1);
-            background: rgba(99, 102, 241, 0.05);
+            color: var(--mm-primary);
+            background: rgba(var(--mm-primary-rgb), 0.05);
         }
     }
 
@@ -271,29 +271,15 @@ $border-light: var(--mm-border-light);
     // Green wash that grows with drag progress via --swipe-progress (0–1)
     background: rgba(16, 185, 129, calc(0.06 + var(--swipe-progress, 0) * 0.18)) !important;
     transition: background 0.05s linear;
-
-    .calendar-article__key {
-        color: #10b981;
-        border-right-color: rgba(16, 185, 129, 0.2);
-    }
 }
 
 .calendar-article--swipe-done {
     animation: slot-row-flash 0.65s ease forwards;
-
-    .calendar-article__key {
-        color: #10b981;
-    }
 }
 
 // Persistent green wash once a moment is marked completed
 .calendar-article--completed {
     background: rgba(var(--mm-primary-rgb), 0.06);
-
-    .calendar-article__key {
-        color: var(--mm-primary);
-        font-weight: 600;
-    }
 }
 
 @keyframes slot-row-flash {

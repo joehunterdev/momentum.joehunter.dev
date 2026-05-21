@@ -33,14 +33,14 @@
   --mm-muted-dark: #4B5563;
 
   // ─── Neutrals (greys used across calendar surfaces) ───
-  --mm-border:       #e5e7eb;
+  --mm-border: #e5e7eb;
   --mm-border-light: #f3f4f6;
-  --mm-surface-alt:  #fafafa;
-  --mm-text-strong:  #111827;
-  --mm-text-body:    #374151;
-  --mm-text-mute:    #6b7280;
-  --mm-text-faint:   #9ca3af;
-  --mm-text-ghost:   #d1d5db;
+  --mm-surface-alt: #fafafa;
+  --mm-text-strong: #111827;
+  --mm-text-body: #374151;
+  --mm-text-mute: #6b7280;
+  --mm-text-faint: #9ca3af;
+  --mm-text-ghost: #d1d5db;
 
   // ─── Legacy/Accent (kept for compatibility) ───
   --mm-accent: var(--mm-success);
@@ -82,6 +82,12 @@
   --mm-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
   --mm-duration: 200ms;
   --mm-duration-slow: 400ms;
+
+  // ─── Progress Gradient (purple base → green completion) ───
+  --mm-progress-base: #8B5CF6; // Purple
+  --mm-progress-complete: #00CFA0; // Teal/Cyan
+  --mm-progress-base-rgb: 139, 92, 246;
+  --mm-progress-complete-rgb: 0, 207, 160;
 }
 
 // ─── Light mode override (post-MVP) ───

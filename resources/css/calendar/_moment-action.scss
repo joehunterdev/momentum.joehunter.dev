@@ -25,9 +25,13 @@
         position: absolute;
         inset: 0;
         z-index: 0;
-        width: var(--moment-progress, 0%);
-        background: rgba(var(--mm-primary-rgb), 0.10);
-        transition: width 0.3s ease;
+        background:
+            linear-gradient(90deg,
+                rgba(var(--mm-progress-complete-rgb), 0.15) 0%,
+                rgba(var(--mm-progress-complete-rgb), 0.15) var(--moment-progress, 0%),
+                rgba(var(--mm-progress-base-rgb), 0.12) var(--moment-progress, 0%),
+                rgba(var(--mm-progress-base-rgb), 0.12) 100%);
+        transition: background 0.3s ease;
         pointer-events: none;
     }
 
@@ -40,7 +44,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 0.375rem;
         background: rgba(0, 0, 0, 0.03);
         font-size: 1.125rem;
         line-height: 1;

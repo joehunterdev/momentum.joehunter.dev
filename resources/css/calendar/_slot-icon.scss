@@ -70,7 +70,6 @@
             content: '';
             position: absolute;
             inset: -4px;
-            border-radius: 4px;
             background: conic-gradient(rgba(16, 185, 129, 0.9) calc(var(--hold-progress, 0) * 360deg),
                     rgba(16, 185, 129, 0.15) 0);
             mask: radial-gradient(farthest-side,
