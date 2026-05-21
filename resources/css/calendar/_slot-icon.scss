@@ -42,7 +42,7 @@
     }
 
     &--future {
-        background: rgba(99, 102, 241, 0.06);
+        background: rgba(var(--mm-primary-rgb), 0.06);
         border-color: var(--mm-border);
     }
 

@@ -149,14 +149,14 @@ export default function MomentAction({
     }
 
     // ── Read variant (default) ──────────────────────────────────────────────
-    const pct = Math.max(0, Math.min(100, progress ?? moment.progress ?? 0));
+    // const pct = Math.max(0, Math.min(100, progress ?? moment.progress ?? 0));
 
     return (
         <div
             className={cls}
-            style={{ '--moment-progress': `${pct}%` } as React.CSSProperties}
+        // style={{ '--moment-progress': `${pct}%` } as React.CSSProperties}
         >
-            <span className="moment-action__progress-bg" aria-hidden />
+            {/* <span className="moment-action__progress-bg" aria-hidden /> */}
             <span className="moment-action__icon">{moment.icon ?? '📌'}</span>
             <div className="moment-action__body">
                 <span className="moment-action__name">{name}</span>

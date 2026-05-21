@@ -33,7 +33,7 @@
         gap: 0.375rem;
         padding: 0.375rem 0.625rem;
         border: 1px solid var(--mm-border);
-        background: #fff;
+        background: var(--mm-surface);
         font-size: 0.8125rem;
         font-weight: 500;
         color: var(--mm-text-mute);
@@ -45,7 +45,7 @@
         &:hover {
             border-color: var(--mm-primary, #6366f1);
             color: var(--mm-primary, #6366f1);
-            background: rgba(99, 102, 241, 0.04);
+            background: rgba(var(--mm-primary-rgb), 0.04);
         }
 
         &--done {

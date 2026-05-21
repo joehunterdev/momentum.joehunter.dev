@@ -27,10 +27,10 @@ $border-light: var(--mm-border-light);
     display: flex;
     flex-direction: column;
     gap: 0;
-    background: #fff;
+    background: var(--mm-surface);
 }
 
 .monthly-schedule-grid {
-    background: #fff;
+    background: var(--mm-surface);
     overflow: hidden;
 }

@@ -15,7 +15,7 @@
 }
 
 .draft-icon-picker {
-    background: #fff;
+    background: var(--mm-surface);
     border: 1px solid var(--mm-border);
     border-radius: 0;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
@@ -47,7 +47,7 @@
         }
 
         &--active {
-            background: rgba(99, 102, 241, 0.12);
+            background: rgba(var(--mm-primary-rgb), 0.12);
             outline: 2px solid var(--mm-primary, #6366f1);
         }
     }

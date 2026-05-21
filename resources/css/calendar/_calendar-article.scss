@@ -44,7 +44,8 @@ $border-light: var(--mm-border-light);
         display: flex;
         align-items: stretch;
         justify-content: flex-start;
-        padding: 0;
+        padding: 0.5rem;
+        gap: 0.625rem;
         min-height: 2.5rem;
         position: relative;
 
@@ -89,7 +90,7 @@ $border-light: var(--mm-border-light);
     }
 
     &--ooo {
-        background: rgba(100, 116, 139, 0.04);
+        background: var(--mm-surface-alt);
 
         .calendar-article__key {
             color: var(--mm-text-ghost);
@@ -100,7 +101,7 @@ $border-light: var(--mm-border-light);
         }
 
         &:hover {
-            background: rgba(99, 102, 241, 0.04);
+            background: rgba(var(--mm-primary-rgb), 0.04);
 
             .calendar-article__add-btn {
                 opacity: 0.65;
@@ -111,7 +112,7 @@ $border-light: var(--mm-border-light);
     }
 
     &--weekend {
-        background: rgba(100, 116, 139, 0.02);
+        background: rgba(var(--mm-muted-dark), 0.02);
     }
 
     &--today {
@@ -129,7 +130,7 @@ $border-light: var(--mm-border-light);
         }
 
         &:hover {
-            background: rgba(99, 102, 241, 0.04);
+            background: rgba(var(--mm-primary-rgb), 0.04);
 
             .calendar-article__add-btn {
                 opacity: 1;
@@ -140,15 +141,16 @@ $border-light: var(--mm-border-light);
     }
 
     &__add-btn {
-        width: 2.25rem;
-        height: 2.25rem;
-        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        // border-radius: 50%;
         border: 1.5px dashed var(--mm-text-faint);
         background: none;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
+        font-size: 1.125rem;
+        line-height: 1;
         color: var(--mm-text-faint);
         cursor: pointer;
         opacity: 0;
@@ -185,8 +187,8 @@ $border-light: var(--mm-border-light);
 // ─── Conflict indicator ────────────────────────────────────────────────────────
 
 .calendar-article--conflict {
-    border-left: 3px solid #f59e0b;
-    background: rgba(245, 158, 11, 0.05);
+    border-left: 3px solid var(--mm-warning);
+    background: rgba(var(--mm-warning), 0.05);
 }
 
 .calendar-article__conflict-badge {
@@ -226,7 +228,7 @@ $border-light: var(--mm-border-light);
     position: relative;
 
     &:hover {
-        background: rgba(99, 102, 241, 0.03);
+        background: rgba(var(--mm-primary-rgb), 0.03);
     }
 
     &:focus-visible {
@@ -312,10 +314,10 @@ $border-light: var(--mm-border-light);
 
     0%,
     100% {
-        background: rgba(99, 102, 241, 0.06);
+        background: rgba(var(--mm-primary-rgb), 0.06);
     }
 
     50% {
-        background: rgba(99, 102, 241, 0.14);
+        background: rgba(var(--mm-primary-rgb), 0.14);
     }
 }

@@ -6,7 +6,7 @@
     align-items: center;
     gap: 0.625rem;
     padding: 0.625rem 1rem;
-    background: #fff;
+    background: var(--mm-surface);
     border-bottom: 2px solid var(--mm-secondary);
     flex-wrap: wrap;
     position: sticky;
@@ -41,7 +41,7 @@
         letter-spacing: 0.04em;
 
         &--active {
-            background: #fff;
+            background: var(--mm-surface);
             color: var(--mm-secondary);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
         }
@@ -59,7 +59,7 @@
         text-transform: uppercase;
         letter-spacing: 0.04em;
         border: 1px solid var(--mm-border);
-        background: #fff;
+        background: var(--mm-surface);
         color: var(--mm-text-mute);
         cursor: pointer;
         transition: all 0.15s;
@@ -84,7 +84,7 @@
     &__day-pill {
         width: 1.625rem;
         height: 1.625rem;
-        border-radius: 50%;
+        // border-radius: 50%;
         border: 1.5px solid var(--mm-text-ghost);
         background: none;
         font-size: 0.625rem;

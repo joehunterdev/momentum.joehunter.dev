@@ -92,7 +92,7 @@ export default function MonthlyContainer({
                             const rowCls = [
                                 'calendar-article',
                                 'calendar-article--monthly-day',
-                                day.isToday && 'calendar-article--today',
+                                // day.isToday && 'calendar-article--today',
                                 day.isWeekend && 'calendar-article--weekend',
                             ].filter(Boolean).join(' ');
 

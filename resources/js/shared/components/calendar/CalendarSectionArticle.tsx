@@ -126,7 +126,7 @@ export default function CalendarSectionArticle({
 
     const cls = [
         'calendar-article',
-        isToday && 'calendar-article--today',
+        // isToday && 'calendar-article--today',
         isWeekend && 'calendar-article--weekend',
         ooo && 'calendar-article--ooo',
         !moment && !ooo && mode === 'configure' && 'calendar-article--empty',

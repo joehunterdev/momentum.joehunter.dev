@@ -22,7 +22,7 @@ export default function CalendarSection({
 }: Props) {
     const sectionCls = [
         'calendar-section',
-        isToday ? 'calendar-section--today' : '',
+        // isToday ? 'calendar-section--today' : '',
         isWeekend ? 'calendar-section--weekend' : '',
     ].filter(Boolean).join(' ');
 
