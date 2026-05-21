@@ -10,7 +10,6 @@ class MonthlyScheduleRowData extends Data
 {
     public function __construct(
         public int $isoDayNumber,
-        public string $dayLabel,
         /** @var MomentData[] */
         public array $moments,
     ) {}

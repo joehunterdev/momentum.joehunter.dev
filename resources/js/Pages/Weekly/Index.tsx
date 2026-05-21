@@ -57,7 +57,6 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
         const clickedIso = jsToIsoDay(new Date(date).getDay()) as IsoDayNumber;
         const isWeekday = clickedIso >= 1 && clickedIso <= 5;
 
-        //TODO: Cant we identify this as a recurring type
         scheduling.start({
             kind: SchedulingKind.Recurring,
             daysOfWeek: isWeekday ? [...WEEKDAYS] : [clickedIso],

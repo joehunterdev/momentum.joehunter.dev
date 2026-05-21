@@ -4,6 +4,7 @@ import {
     CalendarSectionArticle,
     CalendarSectionHeader,
 } from '@/shared/components/calendar';
+import { WEEK_DAYS } from '@/shared/constants/moments';
 
 interface Props {
     row: App.Data.MonthlyScheduleRowData;
@@ -48,6 +49,7 @@ export default function MonthlyScheduleRow({
 }: Props) {
     const isWeekend = WEEKEND_ISO_DAYS.includes(row.isoDayNumber);
     const isoDayNumber = row.isoDayNumber as IsoDayNumber;
+    const dayLabel = WEEK_DAYS[row.isoDayNumber - 1].full;
 
     const targetsThisDay =
         scheduling !== null
@@ -58,7 +60,7 @@ export default function MonthlyScheduleRow({
         <CalendarSection
             isWeekend={isWeekend}
             layout="horizontal"
-            header={<CalendarSectionHeader label={row.dayLabel} />}
+            header={<CalendarSectionHeader label={dayLabel} />}
         >
             {/* One article per existing moment */}
             {row.moments.map((m) => (

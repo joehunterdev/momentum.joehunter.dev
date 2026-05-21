@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -l app/Services/MomentExportService.php)",
+      "Bash(php -l app/Services/MomentImportService.php)",
+      "Bash(php -l app/Enums/UserRole.php)",
+      "Bash(php -l app/Enums/MomentStatus.php)",
+      "Bash(php -l app/Models/User.php)",
+      "Bash(php -l database/migrations/0001_01_01_000000_create_users_table.php)",
+      "Bash(php -l database/seeders/BaseUserSeeder.php)",
+      "Bash(php -l app/Data/SlotMomentData.php)",
+      "Bash(php -l app/Services/CalendarService.php)",
+      "Bash(php -l app/Http/Controllers/DailyController.php)",
+      "Bash(php -l app/Http/Controllers/WeeklyController.php)",
+      "Bash(php -l app/Http/Controllers/MonthlyController.php)"
+    ]
+  }
+}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Data\UserConfigData;
 use App\Data\WeeklyPageData;
+use App\Enums\MomentStatus;
 use App\Models\Moment;
 use App\Models\UserConfig;
 use App\Services\CalendarService;
@@ -106,7 +107,7 @@ class WeeklyController extends Controller
             foreach ($weekDay->slots as $slot) {
                 if ($slot->moment !== null) {
                     $totalCount++;
-                    if ($slot->moment->status === 'completed') {
+                    if ($slot->moment->status === MomentStatus::Completed) {
                         $completedCount++;
                     }
                 }

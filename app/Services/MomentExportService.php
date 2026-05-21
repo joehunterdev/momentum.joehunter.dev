@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\Frequency;
 use App\Models\Moment;
 use App\Models\MomentInstance;
 use App\Models\User;
@@ -39,7 +40,7 @@ class MomentExportService
 
             [$rateStart, $rateEnd] = $this->completionRates(
                 moment: $moment,
-                frequency: $schedule?->frequency ?? 'daily',
+                frequency: $schedule?->frequency ?? Frequency::Daily,
                 daysOfWeek: $schedule?->days_of_week,
                 periodStart: $periodStart,
                 midpoint: $midpoint,
@@ -51,7 +52,7 @@ class MomentExportService
                 'description' => $moment->description,
                 'icon' => $moment->icon,
                 'color' => $moment->color,
-                'frequency' => $schedule?->frequency ?? 'daily',
+                'frequency' => ($schedule?->frequency ?? Frequency::Daily)->value,
                 'days_of_week' => $schedule?->days_of_week,
                 'preferred_time' => $this->formatTime($schedule?->preferred_time),
                 'implementation_intention' => $cue?->implementation_intention,
@@ -75,7 +76,7 @@ class MomentExportService
      */
     private function completionRates(
         Moment $moment,
-        string $frequency,
+        Frequency $frequency,
         ?array $daysOfWeek,
         Carbon $periodStart,
         Carbon $midpoint,
@@ -107,7 +108,7 @@ class MomentExportService
     private function countWindow(
         Carbon $start,
         Carbon $end,
-        string $frequency,
+        Frequency $frequency,
         ?array $daysOfWeek,
         array $completedSet,
     ): array {
@@ -137,11 +138,12 @@ class MomentExportService
     }
 
     /** @param  int[]|null  $daysOfWeek */
-    private function isScheduledOn(Carbon $date, string $frequency, ?array $daysOfWeek): bool
+    private function isScheduledOn(Carbon $date, Frequency $frequency, ?array $daysOfWeek): bool
     {
         return match ($frequency) {
-            'daily' => true,
-            'weekly', 'custom' => $daysOfWeek !== null && in_array($date->dayOfWeek, $daysOfWeek, strict: true),
+            Frequency::Daily => true,
+            Frequency::Weekly, Frequency::Custom => $daysOfWeek !== null
+                && in_array($date->dayOfWeekIso, $daysOfWeek, strict: true),
             default => false,
         };
     }

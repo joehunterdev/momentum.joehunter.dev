@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Data\DailyPageData;
 use App\Data\UserConfigData;
+use App\Enums\MomentStatus;
 use App\Models\Moment;
 use App\Models\UserConfig;
 use App\Services\CalendarService;
@@ -65,7 +66,7 @@ class DailyController extends Controller
         );
 
         $completedCount = collect($day->slots)
-            ->filter(fn($slot) => $slot->moment?->status === 'completed')
+            ->filter(fn($slot) => $slot->moment?->status === MomentStatus::Completed)
             ->count();
 
         $totalCount = collect($day->slots)

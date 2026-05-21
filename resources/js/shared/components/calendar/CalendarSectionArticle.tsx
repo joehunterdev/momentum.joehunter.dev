@@ -1,5 +1,6 @@
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice, jsToIsoDay } from '@/features/calendar/utils';
+import { MomentStatus } from '@/shared/types/enums';
 import type { CalendarConfig, CalendarMoment } from './types';
 import CalendarMomentCard from './CalendarMomentCard';
 import type { CalendarMomentCardVariant } from './CalendarMomentCard';
@@ -134,7 +135,7 @@ export default function CalendarSectionArticle({
         isWeekend && 'calendar-article--weekend weekly-slot--weekend',
         ooo && 'calendar-article--ooo weekly-slot--ooo',
         !moment && !ooo && mode === 'configure' && 'calendar-article--empty weekly-slot--empty',
-        moment?.status === 'completed' && 'calendar-article--completed weekly-slot--completed',
+        moment?.status === MomentStatus.Completed && 'calendar-article--completed weekly-slot--completed',
         isConflict && 'calendar-article--conflict weekly-slot--conflict',
         time === undefined && 'weekly-slot--no-time',
     ].filter(Boolean).join(' ');

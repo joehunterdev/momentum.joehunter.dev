@@ -6,7 +6,7 @@ export interface User {
     last_name: string;
     email: string;
     email_verified_at?: string;
-    role: 'user' | 'admin' | 'super_admin';
+    role: App.Enums.UserRole;
 }
 
 export type PageProps<

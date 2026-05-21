@@ -7,13 +7,20 @@ import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar/type
 
 /**
  * Filter time slots to those inside the user's wake→sleep window.
+ * When sleep_time <= wake_time the window crosses midnight (e.g. wake 08:15,
+ * sleep 00:15) and a slot is inside the window if it's after wake OR before sleep.
  */
 export function getVisibleTimeSlots(
     slots: TimeSlot[],
     config: CalendarConfig,
 ): TimeSlot[] {
-    return slots.filter(
-        (s) => s.time >= config.wake_time && s.time < config.sleep_time,
+    const { wake_time, sleep_time } = config;
+    const crossesMidnight = sleep_time <= wake_time;
+
+    return slots.filter((s) =>
+        crossesMidnight
+            ? s.time >= wake_time || s.time < sleep_time
+            : s.time >= wake_time && s.time < sleep_time,
     );
 }
 

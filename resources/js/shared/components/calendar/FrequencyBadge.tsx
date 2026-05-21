@@ -1,4 +1,4 @@
-import { WEEK_DAYS } from '@/shared/constants/moments';
+import { FREQUENCY_OPTIONS, WEEK_DAYS } from '@/shared/constants/moments';
 
 interface Props {
     time?: string | null;
@@ -11,13 +11,6 @@ interface Props {
     onConfirm: () => void;
     onCancel: () => void;
 }
-//TODO: Refactor to use a single source of truth for frequency options (currently duplicated in Daily/Index, Monthly/Index, and here)
-const FREQ_OPTIONS: { label: string; value: App.Enums.Frequency }[] = [
-    { label: 'Daily', value: 'daily' },
-    { label: 'Weekdays', value: 'weekly' },
-    { label: 'Custom', value: 'custom' },
-    { label: 'Once', value: 'once' },
-];
 
 const ALL_DAYS = WEEK_DAYS.map((d) => d.value) as number[];
 const WEEKDAYS = [1, 2, 3, 4, 5];
@@ -56,7 +49,7 @@ export default function FrequencyBadge({
             {time && <span className="frequency-bar__time">{time}</span>}
 
             <div className="frequency-bar__freq-group" role="group" aria-label="Frequency">
-                {FREQ_OPTIONS.map((opt) => (
+                {FREQUENCY_OPTIONS.map((opt) => (
                     <button
                         key={opt.value}
                         type="button"

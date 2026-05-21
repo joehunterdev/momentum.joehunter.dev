@@ -5,7 +5,6 @@ import type { CalendarMoment } from './types';
 import MomentIcon from './MomentIcon';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
 
-//TODO: index store update methods maby ? 
 export type CalendarMomentCardVariant = 'read' | 'edit' | 'draft';
 
 interface Props {

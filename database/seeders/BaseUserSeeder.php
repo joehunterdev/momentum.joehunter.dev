@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -43,7 +44,7 @@ class BaseUserSeeder extends Seeder
                 'first_name' => config('users.super_admin.first_name'),
                 'last_name' => config('users.super_admin.last_name'),
                 'password' => bcrypt($password),
-                'role' => 'super_admin',
+                'role' => UserRole::SuperAdmin,
                 'email_verified_at' => now(),
             ]
         );
@@ -67,7 +68,7 @@ class BaseUserSeeder extends Seeder
                 'first_name' => config('users.admin.first_name'),
                 'last_name' => config('users.admin.last_name'),
                 'password' => bcrypt($password),
-                'role' => 'admin',
+                'role' => UserRole::Admin,
                 'email_verified_at' => now(),
             ]
         );

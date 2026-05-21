@@ -3,6 +3,7 @@
 namespace App\Data;
 
 use App\Enums\Frequency;
+use App\Enums\MomentStatus;
 use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
@@ -20,7 +21,7 @@ class SlotMomentData extends Data
         public ?string $color,
         public ?Frequency $frequency,
         public ?int $consistency,
-        public ?string $status,
+        public ?MomentStatus $status,
         public ?int $instance_id,
         public ?string $implementation_intention,
         public ?string $habit_stack_after,

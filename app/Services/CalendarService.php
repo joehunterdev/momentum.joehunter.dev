@@ -7,6 +7,7 @@ use App\Data\SlotMomentData;
 use App\Data\TimeSlotData;
 use App\Data\WeekDayData;
 use App\Enums\Frequency;
+use App\Enums\MomentStatus;
 use App\Models\Moment;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -80,12 +81,11 @@ class CalendarService
         $schedule = $moment->schedule;
         $scheduled = 0;
         $cursor = $windowStart->copy();
-        // TODO: Daily Weekly Custom both front and back should just have their own types
         while ($cursor->lte($today)) {
             $due = match ($schedule?->frequency) {
-                'daily' => true,
-                'weekly', 'custom' => $schedule->days_of_week !== null
-                    && in_array($cursor->dayOfWeek, $schedule->days_of_week, strict: true),
+                Frequency::Daily => true,
+                Frequency::Weekly, Frequency::Custom => $schedule->days_of_week !== null
+                    && in_array($cursor->dayOfWeekIso, $schedule->days_of_week, strict: true),
                 default => false,
             };
 
@@ -121,18 +121,17 @@ class CalendarService
         Carbon $today,
     ): SlotMomentData {
         $instance = $match->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
-        // TODO: missed, pending,passed need their own enum both front and back
         $status = match (true) {
-            $instance?->completed_at !== null => 'completed',
-            $isPast => 'missed',
-            $isToday => 'pending',
+            $instance?->completed_at !== null => MomentStatus::Completed,
+            $isPast => MomentStatus::Missed,
+            $isToday => MomentStatus::Pending,
             default => null,
         };
 
         $consistency = $this->calculateConsistency($match, $consistencyWindow, $today);
 
         // Daily view progress: 100 if completed today, else 0
-        $progress = $status === 'completed' ? 100 : 0;
+        $progress = $status === MomentStatus::Completed ? 100 : 0;
 
         return new SlotMomentData(
             id: $match->id,
@@ -140,7 +139,7 @@ class CalendarService
             description: $match->description,
             icon: $match->icon,
             color: $match->color,
-            frequency: $match->schedule?->frequency ? Frequency::from($match->schedule->frequency) : null,
+            frequency: $match->schedule?->frequency,
             consistency: $consistency,
             status: $status,
             instance_id: $instance?->id,
@@ -228,9 +227,9 @@ class CalendarService
             $instance = $m->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
 
             $status = match (true) {
-                $instance?->completed_at !== null => 'completed',
-                $isPast => 'missed',
-                $isToday => 'pending',
+                $instance?->completed_at !== null => MomentStatus::Completed,
+                $isPast => MomentStatus::Missed,
+                $isToday => MomentStatus::Pending,
                 default => null,
             };
 
@@ -253,7 +252,7 @@ class CalendarService
             );
         })->values()->all();
 
-        $completedCount = collect($moments)->filter(fn($m) => $m->status === 'completed')->count();
+        $completedCount = collect($moments)->filter(fn($m) => $m->status === MomentStatus::Completed)->count();
         $totalCount = count($moments);
 
         return new MonthlyDayData(

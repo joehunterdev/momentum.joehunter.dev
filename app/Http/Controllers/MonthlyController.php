@@ -6,6 +6,7 @@ use App\Data\MomentData;
 use App\Data\MonthlyPageData;
 use App\Data\MonthlyScheduleRowData;
 use App\Data\UserConfigData;
+use App\Enums\Frequency;
 use App\Models\Moment;
 use App\Models\UserConfig;
 use App\Services\CalendarService;
@@ -100,8 +101,7 @@ class MonthlyController extends Controller
 
             $cursor->addDay();
         }
-        // TODO: Why we repeating cant be enum ?
-        $dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
         $scheduleRows = [];
 
         foreach (range(1, 7) as $iso) {
@@ -112,11 +112,10 @@ class MonthlyController extends Controller
                     return true; // no schedule = daily
                 }
 
-                // TODO: Why we repeating cant be enum ?
                 return match ($schedule->frequency) {
-                    'daily' => true,
-                    'weekly' => $iso >= 1 && $iso <= 5,
-                    'custom' => in_array($iso, $schedule->days_of_week ?? [], strict: true),
+                    Frequency::Daily => true,
+                    Frequency::Weekly => $iso >= 1 && $iso <= 5,
+                    Frequency::Custom => in_array($iso, $schedule->days_of_week ?? [], strict: true),
                     default => false,
                 };
             })
@@ -126,7 +125,6 @@ class MonthlyController extends Controller
 
             $scheduleRows[] = new MonthlyScheduleRowData(
                 isoDayNumber: $iso,
-                dayLabel: $dayNames[$iso - 1],
                 moments: $rowMoments,
             );
         }

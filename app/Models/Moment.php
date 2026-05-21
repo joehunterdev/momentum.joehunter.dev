@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Frequency;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -69,10 +70,10 @@ class Moment extends Model
         }
 
         return match ($schedule->frequency) {
-            'daily' => true,
-            'weekly',
-            'custom' => in_array($date->dayOfWeekIso, $schedule->days_of_week ?? [], strict: true),
-            'once' => $schedule->scheduled_date !== null && $date->toDateString() === $schedule->scheduled_date,
+            Frequency::Daily => true,
+            Frequency::Weekly,
+            Frequency::Custom => in_array($date->dayOfWeekIso, $schedule->days_of_week ?? [], strict: true),
+            Frequency::Once => $schedule->scheduled_date !== null && $date->toDateString() === $schedule->scheduled_date,
             default => false,
         };
     }

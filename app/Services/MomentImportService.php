@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
  * {
  *   name, description, icon, color,
  *   frequency (daily|weekly|custom|once),
- *   days_of_week (int[] 0=Sun…6=Sat, or null),
+ *   days_of_week (int[] 1=Mon…7=Sun ISO, or null),
  *   preferred_time (HH:MM),
  *   implementation_intention, habit_stack_after, environment_prompt,
  *   reward_description, temptation_bundle,
@@ -178,12 +178,12 @@ class MomentImportService
         }
     }
 
-    /** @param  int[]|null  $daysOfWeek  0=Sun … 6=Sat */
+    /** @param  int[]|null  $daysOfWeek  1=Mon … 7=Sun (ISO) */
     private function isScheduledOn(Carbon $date, string $frequency, ?array $daysOfWeek): bool
     {
         return match ($frequency) {
             'daily' => true,
-            'weekly', 'custom' => $daysOfWeek !== null && in_array($date->dayOfWeek, $daysOfWeek, strict: true),
+            'weekly', 'custom' => $daysOfWeek !== null && in_array($date->dayOfWeekIso, $daysOfWeek, strict: true),
             default => false,
         };
     }

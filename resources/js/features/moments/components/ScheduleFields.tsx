@@ -1,6 +1,6 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import { WEEK_DAYS, SCHEDULE_FREQUENCIES } from '@/shared/constants/moments';
+import { WEEK_DAYS, RECURRING_FREQUENCY_OPTIONS } from '@/shared/constants/moments';
 
 interface ScheduleFieldsProps {
     frequency: string;
@@ -29,7 +29,7 @@ export default function ScheduleFields({
             <div>
                 <InputLabel value="Frequency" />
                 <div className="mt-1 inline-flex border border-gray-200 bg-gray-50 p-1">
-                    {SCHEDULE_FREQUENCIES.map((freq) => (
+                    {RECURRING_FREQUENCY_OPTIONS.map((freq) => (
                         <button
                             key={freq.value}
                             type="button"
