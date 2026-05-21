@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react';
 import type { TimeSlot, WeeklyConfig } from '../types';
-import { isOutOfOffice, CalendarMomentCard, AddMomentPopover } from '@/shared/components/calendar';
+import { CalendarMomentCard } from '@/shared/components/calendar';
+import { isOutOfOffice } from '../utils';
 import MomentAction from './MomentAction';
+import { MomentStatus } from '@/shared/types/enums';
 
 interface Props {
     slot: TimeSlot;
@@ -10,96 +11,65 @@ interface Props {
     mode: 'overview' | 'configure';
     isGhost?: boolean;
     isConflict?: boolean;
+    ghostName?: string;
+    ghostIcon?: string | null;
     onStartScheduling: (date: string, time: string) => void;
-    onGhostNameChange: (name: string) => void;
-    onGhostIconChange: (icon: string | null) => void;
-    ghostName: string;
-    ghostIcon: string | null;
-    isWeekend?: boolean;
+    onGhostNameChange?: (name: string) => void;
+    onGhostIconChange?: (icon: string | null) => void;
     isToday?: boolean;
+    isWeekend?: boolean;
 }
 
+/**
+ * Single cell wrapper for any calendar view. Renders MomentAction for filled
+ * slots, the draft/edit card in configure mode, the OOO dot, or an add button.
+ * Used by both DailyContainer and Weekly's DaySection/DayRow.
+ */
 export default function TimeSlotCell({
     slot,
     date,
     config,
     mode,
-    isGhost,
-    isConflict,
+    isGhost = false,
+    isConflict = false,
+    ghostName = '',
+    ghostIcon = null,
     onStartScheduling,
     onGhostNameChange,
     onGhostIconChange,
-    ghostName,
-    ghostIcon,
-    isWeekend,
     isToday,
+    isWeekend,
 }: Props) {
-    const [popoverOpen, setPopoverOpen] = useState(false);
-    const addBtnRef = useRef<HTMLButtonElement>(null);
-    const ooo = isOutOfOffice(slot.time, config);
+    const ooo = !slot.moment && isOutOfOffice(slot.time, config);
 
     const cls = [
         'weekly-slot',
-        ooo && !slot.moment ? 'weekly-slot--ooo' : '',
-        isWeekend ? 'weekly-slot--weekend' : '',
+        ooo ? 'weekly-slot--ooo' : '',
         isToday ? 'weekly-slot--today' : '',
-        !slot.moment && !ooo && mode === 'configure' ? 'weekly-slot--empty' : '',
+        isWeekend ? 'weekly-slot--weekend' : '',
+        !slot.moment && !ooo && !isGhost ? 'weekly-slot--empty' : '',
+        slot.moment?.status === MomentStatus.Completed ? 'weekly-slot--completed' : '',
         isConflict ? 'weekly-slot--conflict' : '',
-    ]
-        .filter(Boolean)
-        .join(' ');
+        mode === 'configure' && !slot.moment && !ooo && !isGhost ? 'weekly-slot--configure-empty' : '',
+    ].filter(Boolean).join(' ');
 
-    // ── Overview mode ─────────────────────────────────────────────────────────
-    if (mode === 'overview') {
-        const emptyClickable = !slot.moment;
-        return (
-            <div
-                className={[
-                    cls,
-                    emptyClickable && !ooo ? 'weekly-slot--overview-empty' : '',
-                ].filter(Boolean).join(' ')}
-            >
-                <span
-                    className={`weekly-slot__time${emptyClickable ? ' weekly-slot__time--clickable' : ''}`}
-                    onClick={emptyClickable ? () => onStartScheduling(date, slot.time) : undefined}
-                    title={emptyClickable ? `Add moment at ${slot.time}` : undefined}
-                >
-                    {slot.time}
-                </span>
-                <div className="weekly-slot__content">
-                    {slot.moment ? (
-                        <MomentAction moment={slot.moment} />
-                    ) : ooo ? (
-                        <span className="weekly-slot__ooo-dot" aria-hidden />
-                    ) : (
-                        <button
-                            type="button"
-                            className="weekly-slot__add-btn weekly-slot__add-btn--always-visible"
-                            title={`Add moment at ${slot.time}`}
-                            onClick={() => onStartScheduling(date, slot.time)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onStartScheduling(date, slot.time); }}
-                        >
-                            +
-                        </button>
-                    )}
-                </div>
-            </div>
-        );
+    const timeClickable = mode === 'overview' ? !slot.moment : (!slot.moment && !ooo && !isGhost);
+
+    function handleStartScheduling() {
+        onStartScheduling(date, slot.time);
     }
 
-    // ── Configure mode ────────────────────────────────────────────────────────
-    const configEmptyClickable = !slot.moment && !isGhost && !ooo;
     return (
         <div className={cls}>
             <span
-                className={`weekly-slot__time${configEmptyClickable ? ' weekly-slot__time--clickable' : ''}`}
-                onClick={configEmptyClickable ? () => onStartScheduling(date, slot.time) : undefined}
-                title={configEmptyClickable ? `Add moment at ${slot.time}` : undefined}
+                className={`weekly-slot__time${timeClickable ? ' weekly-slot__time--clickable' : ''}`}
+                onClick={timeClickable ? handleStartScheduling : undefined}
+                title={timeClickable ? `Add moment at ${slot.time}` : undefined}
             >
                 {slot.time}
             </span>
             <div className="weekly-slot__content" style={{ position: 'relative' }}>
-                {isGhost ? (
+                {mode === 'configure' && isGhost ? (
                     <CalendarMomentCard
                         moment={{
                             id: 0,
@@ -120,30 +90,27 @@ export default function TimeSlotCell({
                         onDraftNameChange={onGhostNameChange}
                         onDraftIconChange={onGhostIconChange}
                     />
-                ) : slot.moment ? (
+                ) : mode === 'configure' && slot.moment ? (
                     <>
                         <CalendarMomentCard moment={slot.moment} variant="edit" />
-                        {isConflict && <span className="weekly-slot__conflict-badge" title="Scheduling conflict">⚠️</span>}
+                        {isConflict && (
+                            <span className="weekly-slot__conflict-badge" title="Scheduling conflict">⚠️</span>
+                        )}
                     </>
+                ) : slot.moment ? (
+                    <MomentAction moment={slot.moment} />
+                ) : ooo ? (
+                    <span className="weekly-slot__ooo-dot" aria-hidden />
                 ) : (
-                    <>
-                        <button
-                            ref={addBtnRef}
-                            type="button"
-                            className="weekly-slot__add-btn"
-                            title={`Add moment at ${slot.time}`}
-                            onClick={() => onStartScheduling(date, slot.time)}
-                        >
-                            +
-                        </button>
-                        <AddMomentPopover
-                            isOpen={popoverOpen}
-                            anchorRef={addBtnRef}
-                            onClose={() => setPopoverOpen(false)}
-                            onSelectOnce={() => { setPopoverOpen(false); onStartScheduling(date, slot.time); }}
-                            onSelectRecurring={() => { setPopoverOpen(false); onStartScheduling(date, slot.time); }}
-                        />
-                    </>
+                    <button
+                        type="button"
+                        className={`weekly-slot__add-btn${mode === 'overview' ? ' weekly-slot__add-btn--always-visible' : ''}`}
+                        title={`Add moment at ${slot.time}`}
+                        onClick={handleStartScheduling}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleStartScheduling(); }}
+                    >
+                        +
+                    </button>
                 )}
             </div>
         </div>

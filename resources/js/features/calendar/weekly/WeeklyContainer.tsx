@@ -1,6 +1,6 @@
 import type { WeekDay, WeeklyConfig } from '../types';
 import type { SchedulingState } from '@/features/scheduling';
-import { computeWindowStart } from '@/shared/components/calendar';
+import { computeWindowStart } from '../utils';
 import DaySection from './DaySection';
 
 const VISIBLE_SLOTS = 6;

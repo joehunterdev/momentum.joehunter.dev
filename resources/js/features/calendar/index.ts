@@ -5,7 +5,6 @@ export { default as MonthlyContainer } from './monthly/MonthlyContainer';
 
 // Shared row components (cross-view)
 export { default as MomentAction } from './components/MomentAction';
-export { default as DailyTimeSlotCell } from './components/DailyTimeSlotCell';
 export { default as TimeSlotCell } from './components/TimeSlotCell';
 
 // Hooks

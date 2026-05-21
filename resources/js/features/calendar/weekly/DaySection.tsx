@@ -1,7 +1,7 @@
 import { format, parseISO } from 'date-fns';
 import type { TimeSlot, WeekDay, WeeklyConfig } from '../types';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
-import { jsToIsoDay } from '@/shared/components/calendar';
+import { jsToIsoDay } from '../utils';
 import { CalendarSection, CalendarSectionHeader } from '@/shared/components/calendar';
 import TimeSlotCell from '../components/TimeSlotCell';
 

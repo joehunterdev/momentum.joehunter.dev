@@ -1,5 +1,5 @@
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
-import { isOutOfOffice, jsToIsoDay } from './utils';
+import { isOutOfOffice, jsToIsoDay } from '@/features/calendar/utils';
 import type { CalendarConfig, CalendarMoment } from './types';
 import CalendarMomentCard from './CalendarMomentCard';
 import type { CalendarMomentCardVariant } from './CalendarMomentCard';

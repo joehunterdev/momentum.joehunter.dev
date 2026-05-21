@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { DailyContainer, useCalendarActions } from '@/features/calendar';
+import { DailyContainer } from '@/features/calendar';
 import { Head } from '@inertiajs/react';
 import {
     CalendarNav,
@@ -15,27 +15,14 @@ interface Props extends PageProps, App.Data.DailyPageData { }
 
 export default function Index({ date, day, config, completedCount, totalCount }: Props) {
     const scheduling = useScheduling({ redirectTo: route('daily', { date }) });
-    const { toggleMoment } = useCalendarActions();
 
-    function handleStartScheduling(time: string) {
+    function handleStartScheduling(targetDate: string, time: string) {
         scheduling.start({
             kind: SchedulingKind.OneOff,
-            date,
+            date: targetDate,
             time,
             name: '',
             icon: null,
-        });
-    }
-
-    async function handleToggleMoment(
-        momentId: number,
-        _instanceId: number | null,
-        date: string,
-    ) {
-        await toggleMoment({
-            momentId,
-            date,
-            reloadOnly: ['day', 'completedCount', 'totalCount'],
         });
     }
 
@@ -83,7 +70,6 @@ export default function Index({ date, day, config, completedCount, totalCount }:
                         config={config}
                         mode={scheduling.mode}
                         scheduling={scheduling.state}
-                        onToggleMoment={handleToggleMoment}
                         onStartScheduling={handleStartScheduling}
                         onGhostNameChange={scheduling.setName}
                         onGhostIconChange={scheduling.setIcon}

@@ -15,5 +15,4 @@ export { default as FrequencyBadge } from './FrequencyBadge';
 export { default as AddMomentPopover } from './AddMomentPopover';
 
 export type { CalendarConfig, CalendarMoment, TimeSlot, WeekDay } from './types';
-export * from './utils';
 
