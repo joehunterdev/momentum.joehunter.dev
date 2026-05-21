@@ -89,8 +89,7 @@ export function isScheduledOn(
 
     return (
         frequency === 'daily' ||
-        (frequency === 'weekly' && daysOfWeek !== null && daysOfWeek.includes(isoDay)) ||
-        (frequency === 'custom' && daysOfWeek !== null && daysOfWeek.includes(isoDay)) ||
+        (frequency === 'recurring' && daysOfWeek !== null && daysOfWeek.includes(isoDay)) ||
         frequency === 'once'
     );
 }

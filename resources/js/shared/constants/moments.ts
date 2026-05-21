@@ -1,6 +1,6 @@
 /**
  * Shared constants for moment-related UI.
- * Used by ScheduleFields, ColorPicker, MomentForm, ConfigForm.
+ * Used by ScheduleFields, ColorPicker, MomentForm, ConfigForm, FrequencyBadge.
  */
 export const MOMENT_COLOR_PALETTE: string[] = [
     '#3B82F6', // blue
@@ -25,22 +25,72 @@ export const WEEK_DAYS = [
     { label: 'S', value: 7, full: 'Sunday' },
 ] as const;
 
-export interface FrequencyOption {
-    value: App.Enums.Frequency;
+/**
+ * UX schedule presets — what the user picks in the buttons. Distinct from the
+ * storage enum `App.Enums.Frequency` (daily/recurring/once).
+ *
+ *   daily    → frequency=daily,     days_of_week=[]
+ *   weekdays → frequency=recurring, days_of_week=[1,2,3,4,5]
+ *   custom   → frequency=recurring, days_of_week=user-picked
+ *   once     → frequency=once,      scheduled_date=X
+ */
+export type SchedulePreset = 'daily' | 'weekdays' | 'custom' | 'once';
+
+export interface SchedulePresetOption {
+    value: SchedulePreset;
     label: string;
-    /** Whether this option represents a recurring schedule (false = one-off). */
+    /** Whether this preset represents a recurring schedule (false = one-off). */
     recurring: boolean;
 }
 
-export const FREQUENCY_OPTIONS: readonly FrequencyOption[] = [
+export const SCHEDULE_PRESETS: readonly SchedulePresetOption[] = [
     { value: 'daily', label: 'Daily', recurring: true },
-    { value: 'weekly', label: 'Weekdays', recurring: true },
+    { value: 'weekdays', label: 'Weekdays', recurring: true },
     { value: 'custom', label: 'Custom', recurring: true },
     { value: 'once', label: 'Once', recurring: false },
 ] as const;
 
-export const RECURRING_FREQUENCY_OPTIONS: readonly FrequencyOption[] =
-    FREQUENCY_OPTIONS.filter((o) => o.recurring);
+export const RECURRING_SCHEDULE_PRESETS: readonly SchedulePresetOption[] =
+    SCHEDULE_PRESETS.filter((o) => o.recurring);
+
+const WEEKDAYS_DAYS = [1, 2, 3, 4, 5];
+
+/** Derive the active UX preset from stored (frequency, daysOfWeek). */
+export function presetFromSchedule(
+    frequency: App.Enums.Frequency,
+    daysOfWeek: number[],
+): SchedulePreset {
+    if (frequency === 'once') {
+        return 'once';
+    }
+    if (frequency === 'daily') {
+        return 'daily';
+    }
+    if (
+        daysOfWeek.length === WEEKDAYS_DAYS.length
+        && WEEKDAYS_DAYS.every((d) => daysOfWeek.includes(d))
+    ) {
+        return 'weekdays';
+    }
+    return 'custom';
+}
+
+/** Translate a UX preset into the storable (frequency, daysOfWeek) shape. */
+export function scheduleFromPreset(
+    preset: SchedulePreset,
+    currentDays: number[],
+): { frequency: App.Enums.Frequency; days_of_week: number[] } {
+    switch (preset) {
+        case 'daily':
+            return { frequency: 'daily', days_of_week: [] };
+        case 'weekdays':
+            return { frequency: 'recurring', days_of_week: [1, 2, 3, 4, 5] };
+        case 'custom':
+            return { frequency: 'recurring', days_of_week: currentDays };
+        case 'once':
+            return { frequency: 'once', days_of_week: [] };
+    }
+}
 
 export interface MomentFormSection {
     id: string;

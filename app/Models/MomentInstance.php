@@ -11,7 +11,6 @@ class MomentInstance extends Model
         'moment_id',
         'date',
         'completed_at',
-        'notes',
     ];
 
     protected $casts = [
@@ -19,23 +18,8 @@ class MomentInstance extends Model
         'completed_at' => 'datetime',
     ];
 
-    // ─── Relationships ───────────────────────────────────────────────────────
-
     public function moment(): BelongsTo
     {
         return $this->belongsTo(Moment::class);
-    }
-
-    // ─── Helpers ─────────────────────────────────────────────────────────────
-
-    public function isCompleted(): bool
-    {
-        return $this->completed_at !== null;
-    }
-
-    public function toggle(): void
-    {
-        $this->completed_at = $this->isCompleted() ? null : now();
-        $this->save();
     }
 }

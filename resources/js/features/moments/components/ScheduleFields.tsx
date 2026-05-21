@@ -1,9 +1,14 @@
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
-import { WEEK_DAYS, RECURRING_FREQUENCY_OPTIONS } from '@/shared/constants/moments';
+import {
+    WEEK_DAYS,
+    RECURRING_SCHEDULE_PRESETS,
+    presetFromSchedule,
+    scheduleFromPreset,
+} from '@/shared/constants/moments';
 
 interface ScheduleFieldsProps {
-    frequency: string;
+    frequency: App.Enums.Frequency;
     daysOfWeek: number[];
     preferredTime: string;
     errors: Partial<Record<string, string>>;
@@ -17,11 +22,19 @@ export default function ScheduleFields({
     errors,
     onChange,
 }: ScheduleFieldsProps) {
+    const activePreset = presetFromSchedule(frequency, daysOfWeek);
+
+    function selectPreset(preset: typeof activePreset) {
+        const next = scheduleFromPreset(preset, daysOfWeek);
+        onChange('frequency', next.frequency);
+        onChange('days_of_week', next.days_of_week);
+    }
+
     function toggleDay(day: number) {
         const next = daysOfWeek.includes(day)
             ? daysOfWeek.filter((d) => d !== day)
-            : [...daysOfWeek, day];
-        onChange('days_of_week', next.sort((a, b) => a - b));
+            : [...daysOfWeek, day].sort((a, b) => a - b);
+        onChange('days_of_week', next);
     }
 
     return (
@@ -29,24 +42,24 @@ export default function ScheduleFields({
             <div>
                 <InputLabel value="Frequency" />
                 <div className="mt-1 inline-flex border border-gray-200 bg-gray-50 p-1">
-                    {RECURRING_FREQUENCY_OPTIONS.map((freq) => (
+                    {RECURRING_SCHEDULE_PRESETS.map((preset) => (
                         <button
-                            key={freq.value}
+                            key={preset.value}
                             type="button"
-                            onClick={() => onChange('frequency', freq.value)}
-                            className={`px-4 py-1.5 text-sm font-medium transition-all ${frequency === freq.value
+                            onClick={() => selectPreset(preset.value)}
+                            className={`px-4 py-1.5 text-sm font-medium transition-all ${activePreset === preset.value
                                 ? 'bg-white text-indigo-600 shadow-sm'
                                 : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
-                            {freq.label}
+                            {preset.label}
                         </button>
                     ))}
                 </div>
                 <InputError message={errors.frequency} className="mt-1" />
             </div>
 
-            {frequency !== 'daily' && (
+            {frequency === 'recurring' && (
                 <div>
                     <InputLabel value="Days of the week" />
                     <div className="mt-1 flex gap-2">

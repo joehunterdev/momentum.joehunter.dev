@@ -66,7 +66,7 @@ class WeeklyController extends Controller
                 }
                 $momentProgress[$moment->id]['total']++;
                 $instance = $moment->instances->first(fn($i) => $i->date->toDateString() === $tempDate->toDateString());
-                if ($instance?->completed_at !== null) {
+                if ($instance !== null) {
                     $momentProgress[$moment->id]['completed']++;
                 }
             }

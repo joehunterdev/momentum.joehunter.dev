@@ -8,17 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('rewards', function (Blueprint $table) {
+        Schema::create('moment_cues', function (Blueprint $table) {
             $table->id();
             $table->foreignId('moment_id')->unique()->constrained()->cascadeOnDelete();
-            $table->string('description')->nullable();
-            $table->string('temptation_bundle')->nullable();
+            $table->string('implementation_intention')->nullable();
+            $table->string('habit_stack_after')->nullable();
+            $table->string('environment_prompt')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('rewards');
+        Schema::dropIfExists('moment_cues');
     }
 };

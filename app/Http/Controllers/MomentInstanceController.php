@@ -4,15 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Moment;
 use App\Models\MomentInstance;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MomentInstanceController extends Controller
 {
     /**
-     * Toggle the completed state of a moment instance for a given date.
-     * Upserts the instance row, then flips completed_at.
+     * Toggle the completion of a moment for a given date.
+     * Row exists ⇒ completed. Tap to create, tap again to delete.
      */
     public function toggle(Request $request, Moment $moment): JsonResponse
     {
@@ -22,17 +21,27 @@ class MomentInstanceController extends Controller
             'date' => ['required', 'date_format:Y-m-d'],
         ]);
 
-        $date = Carbon::parse($data['date']);
+        $instance = MomentInstance::where('moment_id', $moment->id)
+            ->whereDate('date', $data['date'])
+            ->first();
 
-        $instance = MomentInstance::firstOrCreate(
-            ['moment_id' => $moment->id, 'date' => $date->toDateString()],
-            ['completed_at' => null]
-        );
+        if ($instance) {
+            $instance->delete();
 
-        $instance->toggle();
+            return response()->json([
+                'completed_at' => null,
+                'instance_id'  => null,
+            ]);
+        }
+
+        $instance = MomentInstance::create([
+            'moment_id'    => $moment->id,
+            'date'         => $data['date'],
+            'completed_at' => now(),
+        ]);
 
         return response()->json([
-            'completed_at' => $instance->completed_at?->toIso8601String(),
+            'completed_at' => $instance->completed_at->toIso8601String(),
             'instance_id'  => $instance->id,
         ]);
     }

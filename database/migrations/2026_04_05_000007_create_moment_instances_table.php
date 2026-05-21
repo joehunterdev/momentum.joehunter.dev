@@ -12,12 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('moment_id')->constrained()->cascadeOnDelete();
             $table->date('date');
-            $table->timestamp('completed_at')->nullable();
-            $table->text('notes')->nullable();
+            $table->timestamp('completed_at');
             $table->timestamps();
 
             $table->unique(['moment_id', 'date']);
-            $table->index(['moment_id', 'date']);
         });
     }
 

@@ -183,7 +183,7 @@ class MomentImportService
     {
         return match ($frequency) {
             'daily' => true,
-            'weekly', 'custom' => $daysOfWeek !== null && in_array($date->dayOfWeekIso, $daysOfWeek, strict: true),
+            'recurring' => $daysOfWeek !== null && in_array($date->dayOfWeekIso, $daysOfWeek, strict: true),
             default => false,
         };
     }
