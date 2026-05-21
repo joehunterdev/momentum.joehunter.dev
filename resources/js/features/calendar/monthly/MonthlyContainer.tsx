@@ -91,18 +91,17 @@ export default function MonthlyContainer({
                             const dayLabel = format(parseISO(day.date), 'EEE d').toUpperCase();
                             const rowCls = [
                                 'calendar-article',
-                                'weekly-slot',
-                                'weekly-slot--monthly-day',
-                                day.isToday && 'calendar-article--today weekly-slot--today',
-                                day.isWeekend && 'calendar-article--weekend weekly-slot--weekend',
+                                'calendar-article--monthly-day',
+                                // day.isToday && 'calendar-article--today',
+                                day.isWeekend && 'calendar-article--weekend',
                             ].filter(Boolean).join(' ');
 
                             return (
                                 <div key={day.date} className={rowCls}>
-                                    <span className="calendar-article__time weekly-slot__time">
+                                    <span className="calendar-article__key">
                                         {dayLabel}
                                     </span>
-                                    <div className="calendar-article__content weekly-slot__content">
+                                    <div className="calendar-article__content">
                                         {day.moments.length > 0 ? (
                                             day.moments.map((m) => (
                                                 <MomentAction
@@ -113,7 +112,7 @@ export default function MonthlyContainer({
                                         ) : (
                                             <button
                                                 type="button"
-                                                className="calendar-article__add-btn weekly-slot__add-btn weekly-slot__add-btn--always-visible"
+                                                className="calendar-article__add-btn calendar-article__add-btn--always-visible"
                                                 title={`Add moment on ${dayLabel}`}
                                                 onClick={() => onStartSchedulingFromDate(day.date)}
                                             >

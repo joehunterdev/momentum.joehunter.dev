@@ -1,0 +1,157 @@
+// _slot-icon.scss — the icon button rendered inside a moment card. Handles
+// the completed/missed/pending/future state styling, the swipe-to-complete
+// drag affordance, the hold-to-confirm ring, and the draft placeholder.
+
+.slot-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0;
+    font-size: 1.125rem;
+    border: 2px solid transparent;
+    transition: box-shadow 0.15s ease; // NO transform transition — kills drag smoothness
+    position: relative;
+    z-index: 1;
+    touch-action: pan-y; // allow vertical scroll, intercept horizontal drag
+    user-select: none;
+    // Suppress transform transition during drag — applied only on non-drag states
+    will-change: transform;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+
+    &--completed {
+        background: rgba(16, 185, 129, 0.15);
+        border-color: rgba(16, 185, 129, 0.6);
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+    }
+
+    &--missed {
+        background: rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.25);
+        border-style: dashed;
+        opacity: 0.8;
+    }
+
+    &--pending {
+        background: rgba(100, 116, 139, 0.08);
+        border-color: var(--mm-border);
+    }
+
+    &--future {
+        background: rgba(var(--mm-primary-rgb), 0.06);
+        border-color: var(--mm-border);
+    }
+
+    // Default logo fallback styling
+    &__default-logo {
+        width: 1.25rem;
+        height: 1.25rem;
+        object-fit: contain;
+        filter: grayscale(0.7) opacity(0.4);
+    }
+
+    &--swiping {
+        box-shadow: 2px 0 6px rgba(0, 0, 0, 0.12);
+        transition: none; // no transition during active drag
+    }
+
+    // Hold-to-confirm zone: ring fills as user holds at threshold
+    &--holding {
+        border-color: rgba(16, 185, 129, 0.85);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2), 2px 0 8px rgba(16, 185, 129, 0.3);
+        transition: none;
+
+        // Conic-gradient confirmation ring
+        &::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            background: conic-gradient(rgba(16, 185, 129, 0.9) calc(var(--hold-progress, 0) * 360deg),
+                    rgba(16, 185, 129, 0.15) 0);
+            mask: radial-gradient(farthest-side,
+                    transparent calc(100% - 3px),
+                    #000 calc(100% - 3px));
+            pointer-events: none;
+            z-index: 2;
+        }
+    }
+
+    &--done {
+        animation: slot-icon-shake 0.45s ease forwards;
+    }
+
+    // Draft placeholder — used in the draft card when scheduling a new moment
+    &--draft-placeholder {
+        border: 2px dashed var(--mm-primary);
+        background: rgba(var(--mm-primary-rgb), 0.08);
+        color: var(--mm-primary);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer; // clickable — opens icon picker
+
+        &:hover {
+            background: rgba(var(--mm-primary-rgb), 0.14);
+            transform: none;
+        }
+    }
+}
+
+// ─── Swipe-to-complete track ──────────────────────────────────────────────────
+
+.slot-icon-track {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 0;
+    overflow: visible; // icon must be able to translate outside the track bounds
+    min-width: 2.25rem; // always at least as wide as the icon itself
+
+    &__check {
+        position: absolute;
+        left: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #10b981;
+        opacity: 0;
+        transition: opacity 0.1s;
+        pointer-events: none;
+    }
+
+    &:has(.slot-icon--swiping) .slot-icon-track__check {
+        opacity: 1;
+    }
+}
+
+@keyframes slot-icon-shake {
+    0% {
+        transform: translateX(0);
+    }
+
+    15% {
+        transform: translateX(-6px);
+    }
+
+    35% {
+        transform: translateX(5px);
+    }
+
+    55% {
+        transform: translateX(-4px);
+    }
+
+    70% {
+        transform: translateX(3px);
+    }
+
+    85% {
+        transform: translateX(-2px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}

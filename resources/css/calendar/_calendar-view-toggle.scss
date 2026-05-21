@@ -1,0 +1,34 @@
+// _calendar-view-toggle.scss — 3-icon toggle for daily/weekly/monthly views
+// shown on mobile.
+
+.calendar-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-right: 0.25rem;
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0;
+    color: var(--mm-muted);
+    transition: color 0.12s, background 0.12s;
+
+    &:hover {
+      color: var(--mm-secondary);
+      background: rgba(var(--mm-secondary-rgb), 0.08);
+    }
+
+    &--active {
+      color: var(--mm-secondary);
+      background: rgba(var(--mm-secondary-rgb), 0.12);
+
+      &:hover {
+        background: rgba(var(--mm-secondary-rgb), 0.16);
+      }
+    }
+  }
+}

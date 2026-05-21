@@ -1,0 +1,62 @@
+// _calendar-page-header.scss — the page-level header used by Daily, Weekly,
+// and Monthly views. Holds the CalendarNav on the left and the mode toggle
+// (⚙️ / ✕ Done) on the right, with the optional CalendarProgressBar
+// underneath in overview mode.
+
+.calendar-page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+
+    &__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        min-width: 0;
+        gap: 0.75rem;
+        overflow: hidden;
+
+        // CalendarNav takes all remaining space but must not overflow
+        > :first-child {
+            flex: 1 1 0;
+            min-width: 0;
+            overflow: hidden;
+        }
+    }
+
+    &__mode-btn {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.625rem;
+        border: 1px solid var(--mm-border);
+        background: var(--mm-surface);
+        font-size: 0.8125rem;
+        font-weight: 500;
+        color: var(--mm-text-mute);
+        cursor: pointer;
+        border-radius: 0;
+        transition: all 0.15s;
+        white-space: nowrap;
+
+        &:hover {
+            border-color: var(--mm-primary, #6366f1);
+            color: var(--mm-primary, #6366f1);
+            background: rgba(var(--mm-primary-rgb), 0.04);
+        }
+
+        &--done {
+            color: var(--mm-text-body);
+            font-weight: 600;
+
+            &:hover {
+                border-color: var(--mm-text-faint);
+                color: var(--mm-text-body);
+                background: #f9fafb;
+            }
+        }
+    }
+}

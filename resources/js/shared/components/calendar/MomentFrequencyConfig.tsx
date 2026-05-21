@@ -49,30 +49,30 @@ export default function MomentFrequencyConfig({
 
     function kindBtnCls(active: boolean) {
         return [
-            'moment-frequency-config__kind-btn',
-            active ? 'moment-frequency-config__kind-btn--active' : '',
+            'calendar-frequency-config__kind-btn',
+            active ? 'calendar-frequency-config__kind-btn--active' : '',
         ].filter(Boolean).join(' ');
     }
 
     function presetBtnCls(active: boolean) {
         return [
-            'moment-frequency-config__preset',
-            active ? 'moment-frequency-config__preset--active' : '',
+            'calendar-frequency-config__preset',
+            active ? 'calendar-frequency-config__preset--active' : '',
         ].filter(Boolean).join(' ');
     }
 
     function dayPillCls(active: boolean) {
         return [
-            'moment-frequency-config__day-pill',
-            active ? 'moment-frequency-config__day-pill--active' : '',
+            'calendar-frequency-config__day-pill',
+            active ? 'calendar-frequency-config__day-pill--active' : '',
         ].filter(Boolean).join(' ');
     }
 
     return (
-        <div className="moment-frequency-config">
-            {time && <span className="moment-frequency-config__time">{time}</span>}
+        <div className="calendar-frequency-config">
+            {time && <span className="calendar-frequency-config__time">{time}</span>}
 
-            <div className="moment-frequency-config__kind-group" role="group" aria-label="Schedule kind">
+            <div className="calendar-frequency-config__kind-group" role="group" aria-label="Schedule kind">
                 <button
                     type="button"
                     className={kindBtnCls(kind === SchedulingKind.OneOff)}
@@ -91,7 +91,7 @@ export default function MomentFrequencyConfig({
 
             {kind === 'recurring' && (
                 <>
-                    <div className="moment-frequency-config__presets" role="group" aria-label="Preset day patterns">
+                    <div className="calendar-frequency-config__presets" role="group" aria-label="Preset day patterns">
                         <button
                             type="button"
                             className={presetBtnCls(isAllDays)}
@@ -108,7 +108,7 @@ export default function MomentFrequencyConfig({
                         </button>
                     </div>
 
-                    <div className="moment-frequency-config__days" role="group" aria-label="Days of week">
+                    <div className="calendar-frequency-config__days" role="group" aria-label="Days of week">
                         {WEEK_DAYS.map((day, i) => (
                             <button
                                 key={day.value}
@@ -127,24 +127,24 @@ export default function MomentFrequencyConfig({
 
             {conflictCount > 0 && (
                 <span
-                    className="moment-frequency-config__conflicts"
+                    className="calendar-frequency-config__conflicts"
                     title={`${conflictCount} time slot(s) already have a moment`}
                 >
                     ⚠️ {conflictCount} conflict{conflictCount > 1 ? 's' : ''}
                 </span>
             )}
 
-            <div className="moment-frequency-config__actions">
+            <div className="calendar-frequency-config__actions">
                 <button
                     type="button"
-                    className="moment-frequency-config__cancel"
+                    className="calendar-frequency-config__cancel"
                     onClick={onCancel}
                 >
                     ✕
                 </button>
                 <button
                     type="button"
-                    className="moment-frequency-config__confirm"
+                    className="calendar-frequency-config__confirm"
                     onClick={onConfirm}
                 >
                     ✓ Confirm

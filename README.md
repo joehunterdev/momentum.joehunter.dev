@@ -1,14 +1,48 @@
-<p align="center">
-  <img src="public/logo.png" alt="Momentum" width="75" />
-</p>
+  # Momentum
 
-<h1 align="center">Momentum</h1>
-<p align="center"><strong>Build momentum, one habit at a time.</strong></p>
-<p align="center">
-  A behaviour-science-backed habit tracker built with Laravel, React & Inertia
-  <br />
-  <a href="https://momentum.joehunter.dev">momentum.joehunter.dev</a> &middot;
-  Built by <a href="https://joehunter.es">Joe Hunter</a>
+  **Build momentum, one habit at a time.**
+
+  🚀 Build streaks. 🎯 Hit your goals. ✨ Small wins, big momentum. Momentum is an open-source habit tracker that uses behaviour‑science principles (cue→routine→reward, habit stacking, implementation intentions) to help you form lasting routines — built with Laravel, React & Inertia.
+
+  [Live site • momentum.joehunter.dev](https://momentum.joehunter.dev) · Built by [Joe Hunter](https://joehunter.es)
+
+  ![Site live](https://img.shields.io/badge/%E2%98%89%20Site-live-0078D7?style=flat&logo=web) ![Docs](https://img.shields.io/badge/%F0%9F%93%9A%20Docs-readme-6f42c1?style=flat) ![License MIT](https://img.shields.io/badge/license-MIT-green?style=flat)
+
+  <p align="center">
+    <img src="https://img.shields.io/badge/%E2%98%89%20Site-live-0078D7?style=flat&logo=web" alt="Live site" />
+    <img src="https://img.shields.io/badge/%F0%9F%93%9A%20Docs-readme-6f42c1?style=flat" alt="Docs" />
+    <img src="https://img.shields.io/badge/license-MIT-green?style=flat" alt="MIT License" />
+  </p>
+
+  <!--
+  Recommended head tags (place in Blade / Vite HTML template / <Head>):
+  <meta name="description" content="Momentum — a behaviour‑science habit tracker that helps you build lasting routines with cue→routine→reward design." />
+  <meta name="keywords" content="habit tracker, habit stacking, Laravel, React, Inertia, productivity, behaviour design" />
+  <link rel="canonical" href="https://momentum.joehunter.dev" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Momentum — Build momentum, one habit at a time." />
+  <meta property="og:description" content="A habit‑tracking app grounded in behaviour science: habit stacking, implementation intentions, and environment design." />
+  <meta property="og:image" content="https://momentum.joehunter.dev/og-image.png" />
+  <meta property="og:url" content="https://momentum.joehunter.dev" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@joehunterdev" />
+
+  <!-- JSON‑LD structured data (Website) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://momentum.joehunter.dev",
+    "name": "Momentum",
+    "description": "Build momentum, one habit at a time."
+  }
+  </script>
+  -->
 </p>
 
 <p align="center">

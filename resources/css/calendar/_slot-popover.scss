@@ -1,0 +1,37 @@
+// _slot-popover.scss — the small "+ add" popover anchored to a calendar slot.
+
+.slot-popover {
+    position: absolute;
+    transform: translateX(-50%);
+    z-index: 9999;
+    min-width: 10rem;
+    background: var(--mm-surface);
+    border: 1px solid var(--mm-border);
+    border-radius: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    &__option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.8125rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        color: var(--mm-text-body);
+        transition: background 0.1s;
+
+        &:hover {
+            background: rgba(var(--mm-primary-rgb), 0.06);
+            color: var(--mm-primary, #6366f1);
+        }
+
+        &+& {
+            border-top: 1px solid var(--mm-border-light);
+        }
+    }
+}

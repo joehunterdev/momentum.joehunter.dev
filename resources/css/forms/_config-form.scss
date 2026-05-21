@@ -1,0 +1,27 @@
+// _config-form.scss — Config page form styling.
+
+.config-section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mm-text-muted, var(--mm-text-mute));
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--mm-surface-border, var(--mm-border));
+  margin-bottom: 1rem;
+}
+
+.config-section-hint {
+  font-size: 0.8125rem;
+  color: var(--mm-text-muted, var(--mm-text-faint));
+  margin-top: 0.25rem;
+}
+
+.config-char-count {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--mm-text-muted, var(--mm-text-faint));
+  pointer-events: none;
+}

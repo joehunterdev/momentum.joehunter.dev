@@ -2,8 +2,6 @@ import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/sch
 import { isOutOfOffice, jsToIsoDay } from '@/features/calendar/utils';
 import { MomentStatus } from '@/shared/types/enums';
 import type { CalendarConfig, CalendarMoment } from './types';
-import CalendarMomentCard from './CalendarMomentCard';
-import type { CalendarMomentCardVariant } from './CalendarMomentCard';
 import MomentAction from '@/features/calendar/components/MomentAction';
 
 export interface ArticleCapabilities {
@@ -15,7 +13,7 @@ export interface ArticleCapabilities {
     draftEdit?: boolean;
     /** Show ⚠️ when scheduling collides with an existing moment in this article. */
     conflictBadge?: boolean;
-    /** Render the moment card's edit button. (Currently always shown by CalendarMomentCard.) */
+    /** Render the moment row's edit button. (Currently always shown by MomentAction edit variant.) */
     editButton?: boolean;
     /** Shade out-of-office times. */
     outOfOffice?: boolean;
@@ -126,18 +124,15 @@ export default function CalendarSectionArticle({
         ? isOutOfOffice(time, config)
         : false;
 
-    // Transitional dual classes: keep `weekly-slot*` aliases until the
-    // cross-cutting CSS sweep (PR #12) so existing styles still apply.
     const cls = [
         'calendar-article',
-        'weekly-slot',
-        isToday && 'calendar-article--today weekly-slot--today',
-        isWeekend && 'calendar-article--weekend weekly-slot--weekend',
-        ooo && 'calendar-article--ooo weekly-slot--ooo',
-        !moment && !ooo && mode === 'configure' && 'calendar-article--empty weekly-slot--empty',
-        moment?.status === MomentStatus.Completed && 'calendar-article--completed weekly-slot--completed',
-        isConflict && 'calendar-article--conflict weekly-slot--conflict',
-        time === undefined && 'weekly-slot--no-time',
+        // isToday && 'calendar-article--today',
+        isWeekend && 'calendar-article--weekend',
+        ooo && 'calendar-article--ooo',
+        !moment && !ooo && mode === 'configure' && 'calendar-article--empty',
+        // moment?.status === MomentStatus.Completed && 'calendar-article--completed',
+        isConflict && 'calendar-article--conflict',
+        time === undefined && 'calendar-article--no-time',
     ].filter(Boolean).join(' ');
 
     const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !ooo;
@@ -146,17 +141,16 @@ export default function CalendarSectionArticle({
         <div className={cls}>
             {time !== undefined && (
                 <span
-                    className={`calendar-article__time weekly-slot__time${emptyClickable ? ' calendar-article__time--clickable weekly-slot__time--clickable' : ''
-                        }`}
+                    className={`calendar-article__key${emptyClickable ? ' calendar-article__key--clickable' : ''}`}
                     onClick={emptyClickable ? onStartScheduling : undefined}
                     title={emptyClickable ? `Add moment at ${time}` : undefined}
                 >
                     {time}
                 </span>
             )}
-            <div className="calendar-article__content weekly-slot__content" style={{ position: 'relative' }}>
+            <div className="calendar-article__content">
                 {isDraft ? (
-                    <CalendarMomentCard
+                    <MomentAction
                         moment={makeDraftMoment(scheduling)}
                         variant="draft"
                         onDraftNameChange={onDraftNameChange}
@@ -164,26 +158,22 @@ export default function CalendarSectionArticle({
                     />
                 ) : moment ? (
                     <>
-                        {mode === 'configure' ? (
-                            <CalendarMomentCard
-                                moment={moment}
-                                variant="edit"
-                            />
-                        ) : (
-                            <MomentAction moment={moment} />
-                        )}
+                        <MomentAction
+                            moment={moment}
+                            variant={mode === 'configure' ? 'edit' : 'read'}
+                        />
                         {isConflict && (
-                            <span className="calendar-article__conflict-badge weekly-slot__conflict-badge" title="Scheduling conflict">
+                            <span className="calendar-article__conflict-badge" title="Scheduling conflict">
                                 ⚠️
                             </span>
                         )}
                     </>
                 ) : ooo ? (
-                    <span className="calendar-article__ooo-dot weekly-slot__ooo-dot" aria-hidden />
+                    <span className="calendar-article__ooo-dot" aria-hidden />
                 ) : emptyClickable ? (
                     <button
                         type="button"
-                        className="calendar-article__add-btn weekly-slot__add-btn weekly-slot__add-btn--always-visible"
+                        className="calendar-article__add-btn calendar-article__add-btn--always-visible"
                         title={time ? `Add moment at ${time}` : 'Add moment'}
                         onClick={onStartScheduling}
                     >

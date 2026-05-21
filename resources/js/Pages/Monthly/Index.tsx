@@ -36,8 +36,8 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
     return (
         <AuthenticatedLayout
             header={
-                <div className="monthly-header">
-                    <div className="monthly-header__row">
+                <div className="calendar-page-header">
+                    <div className="calendar-page-header__row">
                         <CalendarNav
                             prevLabel={format(prev, 'MMMM yyyy')}
                             currentLabel={format(current, 'MMMM yyyy')}
@@ -49,7 +49,7 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
                         {scheduling.mode === 'overview' ? (
                             <button
                                 type="button"
-                                className="monthly-header__mode-btn"
+                                className="calendar-page-header__mode-btn"
                                 title="Configure schedule"
                                 onClick={() => scheduling.setMode('configure')}
                             >
@@ -58,7 +58,7 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
                         ) : (
                             <button
                                 type="button"
-                                className="monthly-header__mode-btn monthly-header__mode-btn--done"
+                                className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"
                                 onClick={scheduling.exit}
                             >
                                 ✕ Done

@@ -3,7 +3,7 @@
 .content-page {
     position: relative;
     min-height: 100vh;
-    background: #fff;
+    background: var(--mm-surface);
     overflow: hidden;
     font-family: var(--mm-font, inherit);
 

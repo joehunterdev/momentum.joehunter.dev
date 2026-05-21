@@ -4,13 +4,33 @@
 
 @import 'variables';
 @import 'drop-border';
-@import 'base';
-@import 'components';
 @import 'animations';
-@import 'pages';
-@import 'weekly';
-@import 'daily';
-@import 'monthly';
-@import 'moment-action';
+@import 'base';
+
+// Calendar — anatomy order, outer → inner
+@import 'calendar/calendar';
+@import 'calendar/calendar-page-header';
+@import 'calendar/calendar-nav';
+@import 'calendar/calendar-view-toggle';
+@import 'calendar/calendar-progress';
+@import 'calendar/calendar-frequency-config';
+@import 'calendar/calendar-section';
+@import 'calendar/calendar-article';
+@import 'calendar/moment-action';
+@import 'calendar/slot-icon';
+@import 'calendar/slot-popover';
+@import 'calendar/draft';
+
+// Form/modal primitives
+@import 'forms/icon-picker';
+@import 'forms/moment-modal';
+@import 'forms/config-form';
+@import 'forms/sleep-helper';
+@import 'forms/flash';
+
+// Generic component utilities
+@import 'components';
+
+// Page-specific
 @import 'welcome';
 @import 'content';

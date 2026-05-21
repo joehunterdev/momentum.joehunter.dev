@@ -1,0 +1,135 @@
+// _calendar-section.scss — day/week/day-of-week section shell.
+//
+// Used by all three calendar views. Children:
+//   .calendar-section__header   (rendered via CalendarSectionHeader)
+//   .calendar-section__articles (the list of .calendar-article cells)
+
+$border: var(--mm-border);
+$border-light: var(--mm-border-light);
+
+.calendar-section {
+    border-top: 1px solid $border;
+    overflow: hidden;
+    background: var(--mm-surface, #fff);
+
+    @media (min-width: 640px) {
+        border: 1px solid $border;
+        border-radius: 0;
+    }
+
+    &--today {
+        .calendar-section__header {
+            background: rgba(96, 76, 129, 0.05);
+            border-left: 3px solid #8B6BAE; // lighter offshoot of #604C81
+        }
+    }
+
+    &--weekend {
+
+        .calendar-section__header,
+        .calendar-section__articles {
+            background: rgba(100, 116, 139, 0.03);
+        }
+    }
+}
+
+// ─── Day header ───────────────────────────────────────────────────────────────
+
+.calendar-section__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    background: var(--mm-surface-alt);
+    border-bottom: 1px solid $border-light;
+}
+
+.calendar-section__label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--mm-text-body);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.calendar-section__sublabel {
+    font-size: 0.75rem;
+    color: var(--mm-text-faint);
+}
+
+.calendar-section__badge {
+    margin-left: auto;
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: var(--mm-primary, #6366f1);
+    background: rgba(var(--mm-primary-rgb), 0.1);
+    padding: 0.25rem 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
+
+// ─── Articles container ──────────────────────────────────────────────────────
+// Mobile: vertical list of rows. Desktop: 6 equal columns.
+
+.calendar-section__articles {
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    // Monthly configure mode: moments flow horizontally at all breakpoints
+    &--horizontal {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: stretch;
+
+        @media (min-width: 768px) {
+            display: flex;
+            grid-template-columns: unset;
+            overflow-x: visible;
+        }
+
+        // Each moment slot: reset the desktop column flip, stay as a compact row
+        .calendar-article {
+            flex: 0 0 auto;
+            width: auto;
+            min-width: 9rem;
+            max-width: 13rem;
+            border-bottom: none;
+            border-right: 1px solid $border-light;
+
+            // override desktop column direction — keep icon+name in a row
+            flex-direction: row;
+            align-items: center;
+
+            &:last-child {
+                border-right: none;
+            }
+
+            // reset desktop slot height — be as tall as content needs
+            &__content {
+                min-height: auto;
+                padding: 0.5rem 0.75rem;
+                justify-content: flex-start;
+
+                &:has(.moment-action--edit, .moment-action--draft) {
+                    padding: 0;
+                    align-items: center; // don't stretch to full slot height
+                }
+            }
+        }
+
+        // Ensure the body (name text) shows in horizontal mode even on desktop
+        // — overrides .moment-action--edit's mobile-only body hide.
+        .moment-action__body {
+            display: flex;
+        }
+    }
+}

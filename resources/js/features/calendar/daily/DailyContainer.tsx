@@ -2,11 +2,11 @@ import { format, parseISO } from 'date-fns';
 import {
     CalendarSection,
     CalendarSectionHeader,
+    CalendarSectionArticle,
 } from '@/shared/components/calendar';
 import type { CalendarConfig } from '@/shared/components/calendar';
-import { getVisibleTimeSlots, jsToIsoDay } from '../utils';
-import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
-import TimeSlotCell from '../components/TimeSlotCell';
+import { getVisibleTimeSlots } from '../utils';
+import type { SchedulingState } from '@/features/scheduling';
 
 interface Props {
     day: App.Data.WeekDayData;
@@ -33,7 +33,6 @@ export default function DailyContainer({
 }: Props) {
     const currentDate = parseISO(day.date);
     const visibleSlots = getVisibleTimeSlots(day.slots, config);
-    const dayIso = jsToIsoDay(currentDate.getDay()) as IsoDayNumber;
 
     return (
         <CalendarSection
@@ -47,35 +46,28 @@ export default function DailyContainer({
                 />
             }
         >
-            {visibleSlots.map((slot) => {
-                const schedulingThisSlot =
-                    scheduling !== null
-                    && slot.time === scheduling.time
-                    && (scheduling.kind === 'one-off'
-                        ? day.date === scheduling.date
-                        : scheduling.daysOfWeek.includes(dayIso));
-
-                const isGhost = schedulingThisSlot && !slot.moment;
-                const isConflict = schedulingThisSlot && slot.moment !== null;
-
-                return (
-                    <TimeSlotCell
-                        key={`${day.date}-${slot.time}`}
-                        slot={slot}
-                        date={day.date}
-                        config={config}
-                        mode={mode}
-                        isGhost={isGhost}
-                        isConflict={isConflict}
-                        ghostName={scheduling?.name ?? ''}
-                        ghostIcon={scheduling?.icon ?? null}
-                        onStartScheduling={onStartScheduling}
-                        onGhostNameChange={onGhostNameChange}
-                        onGhostIconChange={onGhostIconChange}
-                        isToday={day.isToday}
-                    />
-                );
-            })}
+            {visibleSlots.map((slot) => (
+                <CalendarSectionArticle
+                    key={`${day.date}-${slot.time}`}
+                    slotKey={`${day.date}-${slot.time}`}
+                    date={day.date}
+                    time={slot.time}
+                    moment={slot.moment}
+                    config={config}
+                    capabilities={{
+                        addOnEmpty: true,
+                        draftEdit: true,
+                        conflictBadge: true,
+                        outOfOffice: true,
+                    }}
+                    mode={mode}
+                    scheduling={scheduling}
+                    onStartScheduling={() => onStartScheduling(day.date, slot.time)}
+                    onDraftNameChange={onGhostNameChange}
+                    onDraftIconChange={onGhostIconChange}
+                    isToday={day.isToday}
+                />
+            ))}
         </CalendarSection>
     );
 }
