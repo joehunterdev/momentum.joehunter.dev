@@ -12,7 +12,9 @@
       "Bash(php -l app/Services/CalendarService.php)",
       "Bash(php -l app/Http/Controllers/DailyController.php)",
       "Bash(php -l app/Http/Controllers/WeeklyController.php)",
-      "Bash(php -l app/Http/Controllers/MonthlyController.php)"
+      "Bash(php -l app/Http/Controllers/MonthlyController.php)",
+      "Bash(php artisan *)",
+      "Bash(findstr /i \"boost mcp\")"
     ]
   }
 }
