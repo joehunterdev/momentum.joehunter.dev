@@ -8,6 +8,7 @@ import { MomentStatus } from '@/shared/types/enums';
 import {
     consistencyBand,
     useMomentComplete,
+    useMomentCompletionFriction,
     useMomentDescriptionMarquee,
 } from '@/features/quick-action';
 
@@ -96,6 +97,25 @@ export default function MomentAction({
 
     const cls = `moment-action moment-action--${variant}`;
     const name = moment.name ?? 'Untitled Moment';
+
+    // ── Read-variant hooks (must be unconditional — no early returns above) ─
+    const rowRef = useRef<HTMLDivElement>(null);
+    const descRef = useRef<HTMLSpanElement>(null);
+    const descTrackRef = useRef<HTMLSpanElement>(null);
+
+    const isCompleted = moment.status === MomentStatus.Completed;
+    const friction = useMomentCompletionFriction(moment.consistency);
+    const { dragProgress, holdProgress, isCommitting, onActivate, bindHandlers } = useMomentComplete({
+        momentId: moment.id,
+        date: date ?? '',
+        time,
+        isCompleted: isCompleted || !date,
+        rowRef,
+        requiredHoldMs: friction.requiredHoldMs,
+    });
+
+    const { isOverflowing: descOverflowing, overflowPx: descOverflowPx } =
+        useMomentDescriptionMarquee(descRef, descTrackRef, !!moment.description, moment.description);
 
     // ── Draft variant ───────────────────────────────────────────────────────
     if (variant === 'draft') {
@@ -258,27 +278,14 @@ export default function MomentAction({
     }
 
     // ── Read variant (default) ──────────────────────────────────────────────
-    const rowRef = useRef<HTMLDivElement>(null);
-    const descRef = useRef<HTMLSpanElement>(null);
-    const descTrackRef = useRef<HTMLSpanElement>(null);
-
-    const isCompleted = moment.status === MomentStatus.Completed;
-    const { dragProgress, isCommitting, bindHandlers } = useMomentComplete({
-        momentId: moment.id,
-        date: date ?? '',
-        time,
-        isCompleted: isCompleted || !date,
-        rowRef,
-    });
-
-    const { isOverflowing: descOverflowing, overflowPx: descOverflowPx } =
-        useMomentDescriptionMarquee(descRef, descTrackRef, !!moment.description, moment.description);
-
     const band = consistencyBand(moment.consistency);
     const readCls = [
         cls,
         band && `moment-action--consistency-${band}`,
+        friction.frictionLevel !== 'none' && `moment-action--friction-${friction.frictionLevel}`,
         isCompleted && 'moment-action--completed',
+        isCompleted && 'moment-action--swipe-left',
+        !isCompleted && 'moment-action--swipe-right',
         isCommitting && 'moment-action--committing',
     ].filter(Boolean).join(' ');
 
@@ -292,20 +299,91 @@ export default function MomentAction({
         } as React.CSSProperties)
         : undefined;
 
+    // Icon travels the full row width minus its own size (~2rem = 32px) + gap.
+    // rowRef.current is valid by the time dragProgress > 0 (component is mounted).
+    const maxTravel = Math.max(0, (rowRef.current?.clientWidth ?? 320) - 40);
+    const iconTranslateX = isCompleted
+        ? `translateX(${dragProgress * -maxTravel}px)`
+        : `translateX(${dragProgress * maxTravel}px)`;
+    const iconTransition = dragProgress === 0 ? 'transform 0.3s ease' : 'none';
+
+    // Body fades out as the icon starts sliding, giving it clear runway.
+    const bodyOpacity = Math.max(0, 1 - dragProgress * 3);
+
+    // Consistency donut — SVG arc around the icon.
+    // Completed moments show a full teal ring; others show consistency %.
+    const donutR = 18;  // radius — icon is 32px so donut sits just outside
+    const donutCirc = 2 * Math.PI * donutR;
+    const donutPct = isCompleted ? 1 : Math.max(0, Math.min(1, (moment.consistency ?? 0) / 100));
+    const donutDash = donutPct * donutCirc;
+    const donutColor = isCompleted
+        ? 'rgba(0,200,150,0.85)'
+        : donutPct >= 0.85 ? 'rgba(0,200,150,0.7)'
+            : donutPct >= 0.60 ? 'rgba(132,204,22,0.65)'
+                : donutPct >= 0.30 ? 'rgba(245,158,11,0.65)'
+                    : 'rgba(239,68,68,0.55)';
+
     return (
         <div
             ref={rowRef}
             className={readCls}
-            style={{ '--drag-progress': dragProgress } as React.CSSProperties}
+            style={{ '--hold-progress': holdProgress } as React.CSSProperties}
         >
             <span
                 className="moment-action__icon"
-                style={{ touchAction: 'pan-y', cursor: isCompleted ? 'default' : 'grab' }}
+                style={{
+                    touchAction: 'pan-y',
+                    cursor: isCommitting ? 'wait' : 'pointer',
+                    transform: iconTranslateX,
+                    transition: iconTransition,
+                    willChange: dragProgress > 0 ? 'transform' : 'auto',
+                    zIndex: dragProgress > 0 ? 10 : undefined,
+                    overflow: 'visible',
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={friction.label || (isCompleted ? 'Mark as incomplete' : 'Mark as complete')}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onActivate();
+                    }
+                }}
                 {...bindHandlers}
             >
                 {moment.icon ?? '📌'}
+                {/* Consistency donut — always visible, full ring on completion */}
+                <svg
+                    className="moment-action__donut"
+                    viewBox="0 0 44 44"
+                    aria-hidden
+                >
+                    {/* Track */}
+                    <circle
+                        cx="22" cy="22" r={donutR}
+                        fill="none"
+                        stroke="rgba(0,0,0,0.08)"
+                        strokeWidth="2.5"
+                    />
+                    {/* Fill */}
+                    {donutPct > 0 && (
+                        <circle
+                            cx="22" cy="22" r={donutR}
+                            fill="none"
+                            stroke={donutColor}
+                            strokeWidth="2.5"
+                            strokeDasharray={`${donutDash} ${donutCirc}`}
+                            strokeLinecap="round"
+                            transform="rotate(-90 22 22)"
+                            style={{ transition: 'stroke-dasharray 0.4s ease, stroke 0.3s ease' }}
+                        />
+                    )}
+                </svg>
             </span>
-            <div className="moment-action__body">
+            <div
+                className="moment-action__body"
+                style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
+            >
                 <span className="moment-action__name">{name}</span>
                 {moment.description && (
                     <span ref={descRef} className={descClassName} style={descStyle}>

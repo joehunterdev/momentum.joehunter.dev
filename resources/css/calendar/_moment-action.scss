@@ -49,6 +49,16 @@
         font-size: var(--mm-text-2xl);
         line-height: 1;
         padding: 0.25rem;
+        // overflow: visible set inline when donut needs space
+    }
+
+    &__donut {
+        position: absolute;
+        inset: -6px;
+        width: calc(100% + 12px);
+        height: calc(100% + 12px);
+        pointer-events: none;
+        overflow: visible;
     }
 
     &__body {
@@ -140,76 +150,32 @@
     }
 }
 
-// ─── Adaptive drag wash (read variant only) ───────────────────────────────
-// Green fill grows left→right with --drag-progress (0–1).
-
-.moment-action--read::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(to right,
-            rgba(0, 229, 170, calc(var(--drag-progress, 0) * 0.18)),
-            transparent calc(var(--drag-progress, 0) * 100% + 20%));
-    border-radius: inherit;
-    transition: background 0.05s linear;
-    z-index: 0;
-}
+// ─── Adaptive drag wash (read variant only) ─────────────────────────────
+// Removed: icon translateX is now the drag visual. No row pseudo-element needed.
 
 .moment-action--read>* {
     position: relative;
     z-index: 1;
 }
 
-// ─── Consistency bands (Quick Action Phase 2) ─────────────────────────────
-// Background tint per 28-day consistency bucket. Declared BEFORE the
-// completed state so that a completed row's green always wins.
-//
-//   low  : 0–29   — red    (struggling)
-//   mid  : 30–59  — amber  (inconsistent)
-//   high : 60–84  — green  (reliable)
-//   top  : 85–100 — strong (locked in)
+// ─── Left accent stripe (Option A) ───────────────────────────────────────
+// 3px bar on the left edge. Teal = completed. Barely-there = incomplete.
+// Consistency depth is shown on the donut (Option D) instead of row tints.
 
-.moment-action--consistency-low {
-    background: rgba(239, 68, 68, 0.10);
+.moment-action--read {
+    border-left: 3px solid rgba(0, 0, 0, 0.07);
+    transition: border-color 0.25s ease;
 }
 
-.moment-action--consistency-mid {
-    background: rgba(245, 158, 11, 0.10);
+.moment-action--read.moment-action--completed {
+    border-left-color: rgba(0, 200, 150, 0.85);
 }
 
-.moment-action--consistency-high {
-    background: rgba(132, 204, 22, 0.10);
-}
-
-.moment-action--consistency-top {
-    background: rgba(0, 229, 170, 0.12);
-}
-
-// ─── Completed state (Quick Action Phase 1) ───────────────────────────────
-// Light green wash that stays after the swipe commits. Layers over the
-// active drag wash above without conflict — both use the same colour family.
-
-.moment-action--completed {
-    background: rgba(0, 229, 170, 0.16);
-}
+// ─── Completed state ─────────────────────────────────────────────────────
+// Donut SVG handles the completion ring. Row and icon stay visually clean.
 
 .moment-action--completed .moment-action__icon {
-    cursor: default;
-}
-
-.moment-action--completed .moment-action__icon::after {
-    content: '✓';
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.85rem;
-    color: rgba(0, 150, 110, 0.9);
-    background: rgba(255, 255, 255, 0.65);
-    border-radius: inherit;
-    pointer-events: none;
+    cursor: pointer;
 }
 
 .moment-action--committing {
@@ -236,16 +202,70 @@
 }
 
 @keyframes moment-desc-marquee {
-    0%, 10%   { transform: translateX(0); }
-    90%, 100% { transform: translateX(calc(-1 * var(--marquee-distance, 0px))); }
+
+    0%,
+    10% {
+        transform: translateX(0);
+    }
+
+    90%,
+    100% {
+        transform: translateX(calc(-1 * var(--marquee-distance, 0px)));
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
     .moment-action__desc--marquee {
         text-overflow: ellipsis;
     }
+
     .moment-action__desc--marquee .moment-action__desc-track {
         animation: none;
         transform: translateX(0);
+    }
+}
+
+// ─── Completion friction ring (Quick Action Phase 4) ──────────────────────
+// Low/mid-consistency moments require a sustained hold before the swipe can
+// commit. The icon grows a conic-gradient ring that fills clockwise with
+// --hold-progress (0–1). Empty colour is visible at rest as a "this needs
+// effort" hint; the bright fill arrives as the user holds.
+
+.moment-action--friction-mid {
+    --friction-ring-empty: rgba(245, 158, 11, 0.35);
+    --friction-ring-filled: rgba(245, 158, 11, 1);
+}
+
+.moment-action--friction-low {
+    --friction-ring-empty: rgba(239, 68, 68, 0.35);
+    --friction-ring-filled: rgba(239, 68, 68, 1);
+}
+
+.moment-action--friction-mid .moment-action__icon,
+.moment-action--friction-low .moment-action__icon {
+    overflow: visible;
+}
+
+.moment-action--friction-mid .moment-action__icon::before,
+.moment-action--friction-low .moment-action__icon::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(from -90deg,
+            var(--friction-ring-filled) calc(var(--hold-progress, 0) * 360deg),
+            var(--friction-ring-empty) 0);
+    mask: radial-gradient(transparent 56%, black 58%);
+    -webkit-mask: radial-gradient(transparent 56%, black 58%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    // No conic fill animation, but keep the static ring at rest as a marker.
+    .moment-action--friction-mid .moment-action__icon::before,
+    .moment-action--friction-low .moment-action__icon::before {
+        background: var(--friction-ring-empty);
     }
 }
