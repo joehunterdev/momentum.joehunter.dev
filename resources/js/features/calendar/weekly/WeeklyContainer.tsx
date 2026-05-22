@@ -13,9 +13,23 @@ interface Props {
     onStartScheduling: (date: string, time: string) => void;
     onGhostNameChange: (name: string) => void;
     onGhostIconChange: (icon: string | null) => void;
+    onDraftApply: () => void;
+    onDraftApplyAll: () => void;
+    onDraftCancel: () => void;
 }
 
-export default function WeeklyContainer({ days, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange }: Props) {
+export default function WeeklyContainer({
+    days,
+    config,
+    mode,
+    scheduling,
+    onStartScheduling,
+    onGhostNameChange,
+    onGhostIconChange,
+    onDraftApply,
+    onDraftApplyAll,
+    onDraftCancel,
+}: Props) {
     const allTimes = Array.from(
         new Set(days.flatMap((d) => d.slots.map((s) => s.time)))
     ).sort();
@@ -33,6 +47,9 @@ export default function WeeklyContainer({ days, config, mode, scheduling, onStar
                     onStartScheduling={onStartScheduling}
                     onGhostNameChange={onGhostNameChange}
                     onGhostIconChange={onGhostIconChange}
+                    onDraftApply={onDraftApply}
+                    onDraftApplyAll={onDraftApplyAll}
+                    onDraftCancel={onDraftCancel}
                     windowStart={windowStart}
                 />
             ))}

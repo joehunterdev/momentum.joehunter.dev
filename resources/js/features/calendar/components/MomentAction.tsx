@@ -15,6 +15,16 @@ interface Props {
     /** Draft variant only. */
     onDraftNameChange?: (name: string) => void;
     onDraftIconChange?: (icon: string | null) => void;
+    /** Draft variant: this is the source slot — owns the action buttons. */
+    isSource?: boolean;
+    /** Draft+source: show ☑ Apply All button (recurring schedules). */
+    canApplyAll?: boolean;
+    /** Draft+source: ✓ Apply commits source slot as one-off. */
+    onDraftApply?: () => void;
+    /** Draft+source: ☑ Apply All commits source + all matching ghosts. */
+    onDraftApplyAll?: () => void;
+    /** Draft+source: ✕ discards the in-progress scheduling. */
+    onDraftCancel?: () => void;
 }
 
 /**
@@ -32,6 +42,11 @@ export default function MomentAction({
     progress,
     onDraftNameChange,
     onDraftIconChange,
+    isSource = false,
+    canApplyAll = false,
+    onDraftApply,
+    onDraftApplyAll,
+    onDraftCancel,
 }: Props) {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
@@ -66,8 +81,24 @@ export default function MomentAction({
 
     // ── Draft variant ───────────────────────────────────────────────────────
     if (variant === 'draft') {
+        const draftValue = name === 'New Moment' ? '' : (moment.name ?? '');
+        const canCommit = draftValue.trim().length > 0;
+
+        // Non-source matching slot — read-only mirror of the source row.
+        // Phase 2 will give this its own ghost variant + dismiss button.
+        if (!isSource) {
+            return (
+                <div className={`${cls} moment-action--draft-ghost`}>
+                    <span className="moment-action__icon">{moment.icon ?? '📈'}</span>
+                    <div className="moment-action__body">
+                        <span className="moment-action__name">{draftValue || 'New moment'}</span>
+                    </div>
+                </div>
+            );
+        }
+
         return (
-            <div className={cls}>
+            <div className={`${cls} moment-action--draft-source`}>
                 <div className="draft-icon-wrap">
                     <button
                         ref={iconBtnRef}
@@ -110,10 +141,54 @@ export default function MomentAction({
                         type="text"
                         className="draft-name-input"
                         placeholder="Name this moment…"
-                        value={name === 'New Moment' ? '' : (moment.name ?? '')}
+                        value={draftValue}
                         maxLength={60}
+                        autoFocus
                         onChange={(e) => onDraftNameChange?.(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && canCommit) {
+                                e.preventDefault();
+                                (canApplyAll ? onDraftApplyAll : onDraftApply)?.();
+                            } else if (e.key === 'Escape') {
+                                e.preventDefault();
+                                onDraftCancel?.();
+                            }
+                        }}
                     />
+                </div>
+
+                <div className="moment-action__draft-actions">
+                    <button
+                        type="button"
+                        className="moment-action__draft-btn moment-action__draft-btn--cancel"
+                        title="Cancel"
+                        aria-label="Cancel"
+                        onClick={onDraftCancel}
+                    >
+                        ✕
+                    </button>
+                    <button
+                        type="button"
+                        className="moment-action__draft-btn moment-action__draft-btn--apply"
+                        title={canApplyAll ? 'Apply to this slot only' : 'Apply'}
+                        aria-label="Apply"
+                        disabled={!canCommit}
+                        onClick={onDraftApply}
+                    >
+                        ✓
+                    </button>
+                    {canApplyAll && (
+                        <button
+                            type="button"
+                            className="moment-action__draft-btn moment-action__draft-btn--apply-all"
+                            title="Apply to all matching days"
+                            aria-label="Apply to all"
+                            disabled={!canCommit}
+                            onClick={onDraftApplyAll}
+                        >
+                            ☑
+                        </button>
+                    )}
                 </div>
             </div>
         );

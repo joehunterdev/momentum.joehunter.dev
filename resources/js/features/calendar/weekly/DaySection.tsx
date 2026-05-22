@@ -12,6 +12,9 @@ interface Props {
     onStartScheduling: (date: string, time: string) => void;
     onGhostNameChange: (name: string) => void;
     onGhostIconChange: (icon: string | null) => void;
+    onDraftApply: () => void;
+    onDraftApplyAll: () => void;
+    onDraftCancel: () => void;
     windowStart: number;
 }
 
@@ -21,7 +24,19 @@ function getWindowedSlots(slots: TimeSlot[], windowStart: number): TimeSlot[] {
     return slots.slice(windowStart, windowStart + VISIBLE_SLOTS);
 }
 
-export default function DaySection({ day, config, mode, scheduling, onStartScheduling, onGhostNameChange, onGhostIconChange, windowStart }: Props) {
+export default function DaySection({
+    day,
+    config,
+    mode,
+    scheduling,
+    onStartScheduling,
+    onGhostNameChange,
+    onGhostIconChange,
+    onDraftApply,
+    onDraftApplyAll,
+    onDraftCancel,
+    windowStart,
+}: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getWindowedSlots(day.slots, windowStart);
     const dayIso = jsToIsoDay(dateObj.getDay()) as IsoDayNumber;
@@ -58,6 +73,9 @@ export default function DaySection({ day, config, mode, scheduling, onStartSched
                     onStartScheduling={() => onStartScheduling(day.date, slot.time)}
                     onDraftNameChange={onGhostNameChange}
                     onDraftIconChange={onGhostIconChange}
+                    onDraftApply={onDraftApply}
+                    onDraftApplyAll={onDraftApplyAll}
+                    onDraftCancel={onDraftCancel}
                     isWeekend={day.isWeekend}
                     isToday={day.isToday}
                 />

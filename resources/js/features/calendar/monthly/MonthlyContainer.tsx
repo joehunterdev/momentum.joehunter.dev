@@ -16,6 +16,9 @@ interface Props {
     onStartSchedulingFromIsoDay: (isoDay: number) => void;
     onDraftNameChange: (name: string) => void;
     onDraftIconChange: (icon: string | null) => void;
+    onDraftApply: () => void;
+    onDraftApplyAll: () => void;
+    onDraftCancel: () => void;
 }
 
 interface WeekGroup {
@@ -49,6 +52,9 @@ export default function MonthlyContainer({
     onStartSchedulingFromIsoDay,
     onDraftNameChange,
     onDraftIconChange,
+    onDraftApply,
+    onDraftApplyAll,
+    onDraftCancel,
 }: Props) {
     if (mode === 'configure') {
         return (
@@ -62,6 +68,9 @@ export default function MonthlyContainer({
                         onStartScheduling={onStartSchedulingFromIsoDay}
                         onDraftNameChange={onDraftNameChange}
                         onDraftIconChange={onDraftIconChange}
+                        onDraftApply={onDraftApply}
+                        onDraftApplyAll={onDraftApplyAll}
+                        onDraftCancel={onDraftCancel}
                     />
                 ))}
             </div>

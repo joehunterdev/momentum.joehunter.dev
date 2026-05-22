@@ -4,7 +4,6 @@ import { Head } from '@inertiajs/react';
 import {
     CalendarNav,
     CalendarProgressBar,
-    MomentFrequencyConfig,
 } from '@/shared/components/calendar';
 import { addDays, format, parseISO, subDays } from 'date-fns';
 import type { PageProps } from '@/types';
@@ -52,16 +51,6 @@ export default function Index({ date, day, config, completedCount, totalCount }:
             }
         >
             <Head title="Daily" />
-            {scheduling.mode === 'configure' && scheduling.state && (
-                <MomentFrequencyConfig
-                    state={scheduling.state}
-                    time={scheduling.state.time}
-                    onKindChange={(next) => scheduling.setKind(next, date)}
-                    onDaysChange={scheduling.setDaysOfWeek}
-                    onCancel={scheduling.exit}
-                    onConfirm={scheduling.confirm}
-                />
-            )}
 
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-2xl sm:px-6 lg:px-8">
@@ -73,6 +62,9 @@ export default function Index({ date, day, config, completedCount, totalCount }:
                         onStartScheduling={handleStartScheduling}
                         onGhostNameChange={scheduling.setName}
                         onGhostIconChange={scheduling.setIcon}
+                        onDraftApply={scheduling.applySourceOnly}
+                        onDraftApplyAll={scheduling.confirm}
+                        onDraftCancel={scheduling.cancel}
                     />
                 </div>
             </div>

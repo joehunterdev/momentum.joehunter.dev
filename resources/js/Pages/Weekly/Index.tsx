@@ -2,7 +2,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { WeeklyContainer } from '@/features/calendar';
-import { FrequencyBadge } from '@/shared/components/calendar';
 import type { WeeklyPageProps } from '@/features/calendar';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
@@ -19,7 +18,6 @@ import {
     startOfISOWeek,
     subWeeks,
 } from 'date-fns';
-import { WEEK_DAYS, type SchedulePreset } from '@/shared/constants/moments';
 import type { PageProps } from '@/types';
 
 interface Props extends PageProps, WeeklyPageProps { }
@@ -67,51 +65,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
         });
     }
 
-    function handlePresetChange(preset: SchedulePreset, daysOfWeek: number[]) {
-        if (preset === 'once') {
-            scheduling.setKind(SchedulingKind.OneOff, weekStart);
-            return;
-        }
-        scheduling.setKind(SchedulingKind.Recurring, weekStart);
-        scheduling.setDaysOfWeek(daysOfWeek as IsoDayNumber[]);
-    }
-
     const schedulingState = scheduling.state;
-
-    // FrequencyBadge operates in UX preset vocabulary; derive the active preset
-    // from the scheduling state (kind + daysOfWeek).
-    const presetForBar: SchedulePreset = !schedulingState
-        ? 'once'
-        : schedulingState.kind === SchedulingKind.OneOff
-            ? 'once'
-            : schedulingState.daysOfWeek.length === 7
-                ? 'daily'
-                : schedulingState.daysOfWeek.length === WEEKDAYS.length
-                    && WEEKDAYS.every((d) => schedulingState.daysOfWeek.includes(d))
-                    ? 'weekdays'
-                    : 'custom';
-    const daysOfWeekForBar: number[] = !schedulingState || schedulingState.kind === SchedulingKind.OneOff
-        ? []
-        : schedulingState.daysOfWeek;
-
-    // ── Conflict count ────────────────────────────────────────────────────────
-    const conflictCount = schedulingState
-        ? days.reduce((count, day) => {
-            if (schedulingState.kind === SchedulingKind.OneOff) {
-                if (day.date !== schedulingState.date) { return count; }
-            } else {
-                const iso = jsToIsoDay(new Date(day.date).getDay()) as IsoDayNumber;
-                if (!schedulingState.daysOfWeek.includes(iso)) { return count; }
-            }
-            const hasConflict = day.slots.some(
-                (s) => s.time === schedulingState.time && s.moment !== null,
-            );
-            return count + (hasConflict ? 1 : 0);
-        }, 0)
-        : 0;
-
-    // ── Consistent day-pill labels for FrequencyBadge ──────────────────────────
-    const dayLabels = WEEK_DAYS.map((d) => d.label);
 
     const currentWeekStart = startOfISOWeek(parseISO(weekStart));
     const prevWeekStart = subWeeks(currentWeekStart, 1);
@@ -164,19 +118,6 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
         >
             <Head title="Weekly" />
 
-            {scheduling.mode === 'configure' && schedulingState && (
-                <FrequencyBadge
-                    time={schedulingState.time}
-                    preset={presetForBar}
-                    daysOfWeek={daysOfWeekForBar}
-                    dayLabels={dayLabels}
-                    conflictCount={conflictCount}
-                    onChange={handlePresetChange}
-                    onConfirm={scheduling.confirm}
-                    onCancel={scheduling.cancel}
-                />
-            )}
-
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <WeeklyContainer
@@ -187,6 +128,9 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                         onStartScheduling={handleStartScheduling}
                         onGhostNameChange={scheduling.setName}
                         onGhostIconChange={scheduling.setIcon}
+                        onDraftApply={scheduling.applySourceOnly}
+                        onDraftApplyAll={scheduling.confirm}
+                        onDraftCancel={scheduling.cancel}
                     />
                 </div>
             </div>

@@ -54,33 +54,7 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
         setState((prev) => (prev ? { ...prev, icon } : prev));
     }
 
-    function confirm() {
-        if (!state) {
-            return;
-        }
-
-        let payload;
-        if (state.kind === SchedulingKind.OneOff) {
-            payload = {
-                name: state.name.trim() || null,
-                frequency: 'once' as const,
-                days_of_week: null,
-                preferred_time: state.time,
-                icon: state.icon,
-                scheduled_date: state.date,
-            };
-        } else {
-            const derivedFreq = deriveFrequency(state.daysOfWeek);
-            payload = {
-                name: state.name.trim() || null,
-                frequency: derivedFreq,
-                days_of_week: derivedFreq === 'daily' ? null : state.daysOfWeek,
-                preferred_time: state.time,
-                icon: state.icon,
-                scheduled_date: null,
-            };
-        }
-
+    function post(payload: Record<string, unknown>) {
         router.post(
             route('moments.store'),
             { ...payload, _redirect: redirectTo },
@@ -93,6 +67,53 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
                 },
             },
         );
+    }
+
+    function confirm() {
+        if (!state) {
+            return;
+        }
+
+        if (state.kind === SchedulingKind.OneOff) {
+            post({
+                name: state.name.trim() || null,
+                frequency: 'once' as const,
+                days_of_week: null,
+                preferred_time: state.time,
+                icon: state.icon,
+                scheduled_date: state.date,
+            });
+        } else {
+            const derivedFreq = deriveFrequency(state.daysOfWeek);
+            post({
+                name: state.name.trim() || null,
+                frequency: derivedFreq,
+                days_of_week: derivedFreq === 'daily' ? null : state.daysOfWeek,
+                preferred_time: state.time,
+                icon: state.icon,
+                scheduled_date: null,
+            });
+        }
+    }
+
+    /**
+     * Commit only the source slot as a one-off, regardless of the current
+     * scheduling kind. For Recurring states, anchorDate becomes the scheduled
+     * date — ghosts on other days are discarded.
+     */
+    function applySourceOnly() {
+        if (!state) {
+            return;
+        }
+        const scheduledDate = state.kind === SchedulingKind.OneOff ? state.date : state.anchorDate;
+        post({
+            name: state.name.trim() || null,
+            frequency: 'once' as const,
+            days_of_week: null,
+            preferred_time: state.time,
+            icon: state.icon,
+            scheduled_date: scheduledDate,
+        });
     }
 
     function cancel() {
@@ -115,6 +136,7 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
         setName,
         setIcon,
         confirm,
+        applySourceOnly,
         cancel,
         exit,
     };

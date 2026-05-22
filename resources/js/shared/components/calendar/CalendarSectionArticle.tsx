@@ -1,6 +1,6 @@
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice, jsToIsoDay } from '@/features/calendar/utils';
-import { MomentStatus } from '@/shared/types/enums';
+import { MomentStatus, SchedulingKind } from '@/shared/types/enums';
 import type { CalendarConfig, CalendarMoment } from './types';
 import MomentAction from '@/features/calendar/components/MomentAction';
 
@@ -47,6 +47,12 @@ interface Props {
     onStartScheduling?: () => void;
     onDraftNameChange?: (name: string) => void;
     onDraftIconChange?: (icon: string | null) => void;
+    /** Draft source row — commit just the source slot as a one-off. */
+    onDraftApply?: () => void;
+    /** Draft source row — commit source + all matching ghosts (recurring). */
+    onDraftApplyAll?: () => void;
+    /** Draft source row — discard the in-progress scheduling. */
+    onDraftCancel?: () => void;
 
     isToday?: boolean;
     isWeekend?: boolean;
@@ -84,6 +90,35 @@ function articleTargetsScheduling(
     return false;
 }
 
+/**
+ * True when this article is the SOURCE slot for the current scheduling — the
+ * one the user clicked. For one-off, that's the only matching slot. For
+ * recurring, it's the slot whose date/isoDay matches the anchorDate.
+ */
+function isSourceSlot(
+    scheduling: SchedulingState | null,
+    date?: string,
+    time?: string,
+    isoDayNumber?: number,
+): boolean {
+    if (!scheduling) { return false; }
+    if (scheduling.kind === SchedulingKind.OneOff) {
+        if (date !== undefined && date !== scheduling.date) { return false; }
+        if (time !== undefined && scheduling.time !== null && time !== scheduling.time) { return false; }
+        return date !== undefined;
+    }
+    // recurring
+    if (time !== undefined && scheduling.time !== null && time !== scheduling.time) { return false; }
+    if (date !== undefined) {
+        return date === scheduling.anchorDate;
+    }
+    if (isoDayNumber !== undefined) {
+        const anchorIso = jsToIsoDay(new Date(scheduling.anchorDate).getDay()) as IsoDayNumber;
+        return isoDayNumber === anchorIso;
+    }
+    return false;
+}
+
 function makeDraftMoment(scheduling: SchedulingState | null): CalendarMoment {
     return {
         id: 0,
@@ -114,11 +149,16 @@ export default function CalendarSectionArticle({
     onStartScheduling,
     onDraftNameChange,
     onDraftIconChange,
+    onDraftApply,
+    onDraftApplyAll,
+    onDraftCancel,
     isToday,
     isWeekend,
 }: Props) {
     const targets = articleTargetsScheduling(scheduling, date, time, isoDayNumber);
     const isDraft = !!capabilities.draftEdit && targets && !moment;
+    const isSource = isDraft && isSourceSlot(scheduling, date, time, isoDayNumber);
+    const canApplyAll = scheduling?.kind === SchedulingKind.Recurring;
     const isConflict = !!capabilities.conflictBadge && targets && !!moment;
     const ooo = capabilities.outOfOffice && time && config && !moment
         ? isOutOfOffice(time, config)
@@ -153,8 +193,13 @@ export default function CalendarSectionArticle({
                     <MomentAction
                         moment={makeDraftMoment(scheduling)}
                         variant="draft"
+                        isSource={isSource}
+                        canApplyAll={canApplyAll}
                         onDraftNameChange={onDraftNameChange}
                         onDraftIconChange={onDraftIconChange}
+                        onDraftApply={onDraftApply}
+                        onDraftApplyAll={onDraftApplyAll}
+                        onDraftCancel={onDraftCancel}
                     />
                 ) : moment ? (
                     <>

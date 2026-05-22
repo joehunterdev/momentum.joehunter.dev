@@ -16,6 +16,9 @@ interface Props {
     onStartScheduling: (date: string, time: string) => void;
     onGhostNameChange: (name: string) => void;
     onGhostIconChange: (icon: string | null) => void;
+    onDraftApply: () => void;
+    onDraftApplyAll: () => void;
+    onDraftCancel: () => void;
 }
 
 /**
@@ -30,6 +33,9 @@ export default function DailyContainer({
     onStartScheduling,
     onGhostNameChange,
     onGhostIconChange,
+    onDraftApply,
+    onDraftApplyAll,
+    onDraftCancel,
 }: Props) {
     const currentDate = parseISO(day.date);
     const visibleSlots = getVisibleTimeSlots(day.slots, config);
@@ -65,6 +71,9 @@ export default function DailyContainer({
                     onStartScheduling={() => onStartScheduling(day.date, slot.time)}
                     onDraftNameChange={onGhostNameChange}
                     onDraftIconChange={onGhostIconChange}
+                    onDraftApply={onDraftApply}
+                    onDraftApplyAll={onDraftApplyAll}
+                    onDraftCancel={onDraftCancel}
                     isToday={day.isToday}
                 />
             ))}

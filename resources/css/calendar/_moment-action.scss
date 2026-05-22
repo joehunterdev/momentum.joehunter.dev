@@ -133,6 +133,60 @@
         background: rgba(var(--mm-primary-rgb), 0.04);
         border-radius: 0;
     }
+
+    // Phase 1 ghost — non-source matching slot. Read-only mirror of the source.
+    // Phase 2 will give this its own colour treatment.
+    &--draft-ghost {
+        border-style: dashed;
+        opacity: 0.7;
+    }
+
+    &__draft-actions {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        flex-shrink: 0;
+    }
+
+    &__draft-btn {
+        flex-shrink: 0;
+        width: 1.75rem;
+        height: 1.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        font-size: 0.9rem;
+        line-height: 1;
+        background: none;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+
+        &:hover:not(:disabled),
+        &:focus-visible:not(:disabled) {
+            background: rgba(var(--mm-primary-rgb), 0.08);
+            border-color: rgba(var(--mm-primary-rgb), 0.3);
+            outline: none;
+        }
+
+        &:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        &--apply,
+        &--apply-all {
+            color: var(--mm-primary, #6366f1);
+        }
+
+        &--cancel {
+            color: var(--mm-text-mute);
+        }
+    }
 }
 
 // ─── Adaptive drag wash (read variant only) ───────────────────────────────
