@@ -9,7 +9,8 @@
       "Bash(php -r ' *)",
       "Bash(npx vite *)",
       "PowerShell(Get-Content *)",
-      "Bash(php *)"
+      "Bash(php *)",
+      "PowerShell(New-Item *)"
     ]
   }
 }

@@ -4,6 +4,12 @@ import { router } from '@inertiajs/react';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
 import MomentIcon from '@/shared/components/calendar/MomentIcon';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
+import { MomentStatus } from '@/shared/types/enums';
+import {
+    consistencyBand,
+    useMomentComplete,
+    useMomentDescriptionMarquee,
+} from '@/features/quick-action';
 
 export type MomentActionVariant = 'read' | 'edit' | 'draft';
 
@@ -29,6 +35,10 @@ interface Props {
     onGhostExclude?: () => void;
     /** Draft+source: human-readable summary of what Apply All will commit. */
     recurrenceLabel?: string | null;
+    /** Read variant: ISO date the row targets (enables swipe-to-complete). */
+    date?: string;
+    /** Read variant: time slot (forwarded to the toggle endpoint). */
+    time?: string;
 }
 
 /**
@@ -53,6 +63,8 @@ export default function MomentAction({
     onDraftCancel,
     onGhostExclude,
     recurrenceLabel,
+    date,
+    time,
 }: Props) {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
@@ -246,19 +258,61 @@ export default function MomentAction({
     }
 
     // ── Read variant (default) ──────────────────────────────────────────────
-    // const pct = Math.max(0, Math.min(100, progress ?? moment.progress ?? 0));
+    const rowRef = useRef<HTMLDivElement>(null);
+    const descRef = useRef<HTMLSpanElement>(null);
+    const descTrackRef = useRef<HTMLSpanElement>(null);
+
+    const isCompleted = moment.status === MomentStatus.Completed;
+    const { dragProgress, isCommitting, bindHandlers } = useMomentComplete({
+        momentId: moment.id,
+        date: date ?? '',
+        time,
+        isCompleted: isCompleted || !date,
+        rowRef,
+    });
+
+    const { isOverflowing: descOverflowing, overflowPx: descOverflowPx } =
+        useMomentDescriptionMarquee(descRef, descTrackRef, !!moment.description, moment.description);
+
+    const band = consistencyBand(moment.consistency);
+    const readCls = [
+        cls,
+        band && `moment-action--consistency-${band}`,
+        isCompleted && 'moment-action--completed',
+        isCommitting && 'moment-action--committing',
+    ].filter(Boolean).join(' ');
+
+    const descClassName = `moment-action__desc${descOverflowing ? ' moment-action__desc--marquee' : ''}`;
+    // Effective travel speed ~40 px/s with a small pause baked in at each end.
+    const marqueeDurationSec = descOverflowPx > 0 ? (descOverflowPx / 40) + 2 : 0;
+    const descStyle: React.CSSProperties | undefined = descOverflowing
+        ? ({
+            '--marquee-distance': `${descOverflowPx}px`,
+            '--marquee-duration': `${marqueeDurationSec}s`,
+        } as React.CSSProperties)
+        : undefined;
 
     return (
         <div
-            className={cls}
-        // style={{ '--moment-progress': `${pct}%` } as React.CSSProperties}
+            ref={rowRef}
+            className={readCls}
+            style={{ '--drag-progress': dragProgress } as React.CSSProperties}
         >
-            {/* <span className="moment-action__progress-bg" aria-hidden /> */}
-            <span className="moment-action__icon">{moment.icon ?? '📌'}</span>
+            <span
+                className="moment-action__icon"
+                style={{ touchAction: 'pan-y', cursor: isCompleted ? 'default' : 'grab' }}
+                {...bindHandlers}
+            >
+                {moment.icon ?? '📌'}
+            </span>
             <div className="moment-action__body">
                 <span className="moment-action__name">{name}</span>
                 {moment.description && (
-                    <span className="moment-action__desc">{moment.description}</span>
+                    <span ref={descRef} className={descClassName} style={descStyle}>
+                        <span ref={descTrackRef} className="moment-action__desc-track">
+                            {moment.description}
+                        </span>
+                    </span>
                 )}
             </div>
         </div>

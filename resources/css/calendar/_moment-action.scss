@@ -80,6 +80,11 @@
         text-overflow: ellipsis;
     }
 
+    &__desc-track {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
     &__edit-btn {
         position: relative;
         z-index: 1;
@@ -133,75 +138,6 @@
         background: rgba(var(--mm-primary-rgb), 0.04);
         border-radius: 0;
     }
-
-    // Phase 1 ghost — non-source matching slot. Read-only mirror of the source.
-    // Phase 2 will give this its own colour treatment.
-    &--draft-ghost {
-        border-style: dashed;
-        opacity: 0.7;
-    }
-
-    &__recurrence-pill {
-        display: inline-flex;
-        align-self: flex-start;
-        padding: 0.125rem 0.5rem;
-        margin-top: 0.125rem;
-        font-size: var(--mm-text-xs, 0.7rem);
-        font-weight: 500;
-        color: var(--mm-text-mute);
-        background: rgba(var(--mm-primary-rgb), 0.08);
-        border-radius: 999px;
-        line-height: 1.3;
-        white-space: nowrap;
-    }
-
-    &__draft-actions {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        flex-shrink: 0;
-    }
-
-    &__draft-btn {
-        flex-shrink: 0;
-        width: 1.75rem;
-        height: 1.75rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        font-size: 0.9rem;
-        line-height: 1;
-        background: none;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
-
-        &:hover:not(:disabled),
-        &:focus-visible:not(:disabled) {
-            background: rgba(var(--mm-primary-rgb), 0.08);
-            border-color: rgba(var(--mm-primary-rgb), 0.3);
-            outline: none;
-        }
-
-        &:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
-
-        &--apply,
-        &--apply-all {
-            color: var(--mm-primary, #6366f1);
-        }
-
-        &--cancel,
-        &--exclude {
-            color: var(--mm-text-mute);
-        }
-    }
 }
 
 // ─── Adaptive drag wash (read variant only) ───────────────────────────────
@@ -223,4 +159,93 @@
 .moment-action--read>* {
     position: relative;
     z-index: 1;
+}
+
+// ─── Consistency bands (Quick Action Phase 2) ─────────────────────────────
+// Background tint per 28-day consistency bucket. Declared BEFORE the
+// completed state so that a completed row's green always wins.
+//
+//   low  : 0–29   — red    (struggling)
+//   mid  : 30–59  — amber  (inconsistent)
+//   high : 60–84  — green  (reliable)
+//   top  : 85–100 — strong (locked in)
+
+.moment-action--consistency-low {
+    background: rgba(239, 68, 68, 0.10);
+}
+
+.moment-action--consistency-mid {
+    background: rgba(245, 158, 11, 0.10);
+}
+
+.moment-action--consistency-high {
+    background: rgba(132, 204, 22, 0.10);
+}
+
+.moment-action--consistency-top {
+    background: rgba(0, 229, 170, 0.12);
+}
+
+// ─── Completed state (Quick Action Phase 1) ───────────────────────────────
+// Light green wash that stays after the swipe commits. Layers over the
+// active drag wash above without conflict — both use the same colour family.
+
+.moment-action--completed {
+    background: rgba(0, 229, 170, 0.16);
+}
+
+.moment-action--completed .moment-action__icon {
+    cursor: default;
+}
+
+.moment-action--completed .moment-action__icon::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: rgba(0, 150, 110, 0.9);
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.moment-action--committing {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+// ─── Description marquee (Quick Action Phase 3) ───────────────────────────
+// When the description overflows, the inner track translates left and back to
+// reveal the full text. Hovering the row pauses it. Reduced-motion users get
+// the original ellipsis behaviour instead of motion.
+
+.moment-action__desc--marquee {
+    text-overflow: clip;
+}
+
+.moment-action__desc--marquee .moment-action__desc-track {
+    animation: moment-desc-marquee var(--marquee-duration, 8s) linear infinite;
+    will-change: transform;
+}
+
+.moment-action__desc--marquee:hover .moment-action__desc-track {
+    animation-play-state: paused;
+}
+
+@keyframes moment-desc-marquee {
+    0%, 10%   { transform: translateX(0); }
+    90%, 100% { transform: translateX(calc(-1 * var(--marquee-distance, 0px))); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .moment-action__desc--marquee {
+        text-overflow: ellipsis;
+    }
+    .moment-action__desc--marquee .moment-action__desc-track {
+        animation: none;
+        transform: translateX(0);
+    }
 }

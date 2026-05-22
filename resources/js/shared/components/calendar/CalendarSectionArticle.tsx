@@ -280,6 +280,8 @@ export default function CalendarSectionArticle({
                         <MomentAction
                             moment={moment}
                             variant={mode === 'configure' ? 'edit' : 'read'}
+                            date={date}
+                            time={time}
                         />
                         {isConflict && (
                             <span className="calendar-article__conflict-badge" title="Scheduling conflict">
