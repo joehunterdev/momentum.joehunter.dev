@@ -13,7 +13,9 @@ interface Props {
  */
 export default function MomentProgressBar({ consistency, isCompleted = false, color }: Props) {
     const pct = isCompleted ? 100 : Math.max(0, Math.min(100, consistency ?? 0));
-    const fillColor = color ?? 'rgba(var(--mm-progress-base-rgb), 0.5)';
+    const fillColor = color
+        ? `linear-gradient(to right, ${color}44 0%, ${color} 100%)`
+        : 'linear-gradient(to right, rgba(var(--mm-progress-base-rgb), 0.2) 0%, rgba(var(--mm-progress-base-rgb), 0.6) 100%)';
 
     return (
         <div className="moment-progress">
