@@ -65,6 +65,7 @@ export default function Index({ date, day, config, completedCount, totalCount }:
                         onDraftApply={scheduling.applySourceOnly}
                         onDraftApplyAll={scheduling.confirm}
                         onDraftCancel={scheduling.cancel}
+                        onGhostExclude={scheduling.excludeDay}
                     />
                 </div>
             </div>

@@ -3,7 +3,7 @@ import {
     CalendarSection,
     CalendarSectionHeader,
 } from '@/shared/components/calendar';
-import type { CalendarMode, SchedulingState } from '@/features/scheduling';
+import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import MomentAction from '../components/MomentAction';
 import MonthlyScheduleRow from './MonthlyScheduleRow';
 
@@ -19,6 +19,7 @@ interface Props {
     onDraftApply: () => void;
     onDraftApplyAll: () => void;
     onDraftCancel: () => void;
+    onGhostExclude: (isoDay: IsoDayNumber) => void;
 }
 
 interface WeekGroup {
@@ -55,6 +56,7 @@ export default function MonthlyContainer({
     onDraftApply,
     onDraftApplyAll,
     onDraftCancel,
+    onGhostExclude,
 }: Props) {
     if (mode === 'configure') {
         return (
@@ -71,6 +73,7 @@ export default function MonthlyContainer({
                         onDraftApply={onDraftApply}
                         onDraftApplyAll={onDraftApplyAll}
                         onDraftCancel={onDraftCancel}
+                        onGhostExclude={onGhostExclude}
                     />
                 ))}
             </div>

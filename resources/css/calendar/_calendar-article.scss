@@ -184,6 +184,16 @@ $border-light: var(--mm-border-light);
     }
 }
 
+// ─── Past slot ─────────────────────────────────────────────────────────────────
+// Empty past slots: no + button, key column dimmed so the user can tell the
+// slot exists but isn't actionable.
+.calendar-article--past {
+    .calendar-article__key {
+        opacity: 0.35;
+        cursor: default;
+    }
+}
+
 // ─── Conflict indicator ────────────────────────────────────────────────────────
 
 .calendar-article--conflict {

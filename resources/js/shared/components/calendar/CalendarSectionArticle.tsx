@@ -1,6 +1,8 @@
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice, jsToIsoDay } from '@/features/calendar/utils';
 import { MomentStatus, SchedulingKind } from '@/shared/types/enums';
+import { format, parseISO, startOfDay } from 'date-fns';
+import { WEEK_DAYS } from '@/shared/constants/moments';
 import type { CalendarConfig, CalendarMoment } from './types';
 import MomentAction from '@/features/calendar/components/MomentAction';
 
@@ -53,6 +55,8 @@ interface Props {
     onDraftApplyAll?: () => void;
     /** Draft source row — discard the in-progress scheduling. */
     onDraftCancel?: () => void;
+    /** Draft ghost row — exclude this isoDay from the recurrence. */
+    onGhostExclude?: (isoDay: IsoDayNumber) => void;
 
     isToday?: boolean;
     isWeekend?: boolean;
@@ -91,6 +95,26 @@ function articleTargetsScheduling(
 }
 
 /**
+ * True for date-bearing slots whose moment in time has already passed. Used to
+ * both hide the + button (no anchoring on past slots) and suppress non-source
+ * ghost rendering (no past-looking ghosts during a recurring setup). Articles
+ * without a date (Monthly configure rows = templates) are never past.
+ */
+function isSlotInPast(date?: string, time?: string): boolean {
+    if (!date) { return false; }
+    const now = new Date();
+    const slotDay = startOfDay(parseISO(date));
+    const today = startOfDay(now);
+    if (slotDay.getTime() < today.getTime()) { return true; }
+    if (slotDay.getTime() > today.getTime()) { return false; }
+    if (!time) { return false; }
+    const [h, m] = time.split(':').map(Number);
+    const slotMoment = new Date(slotDay);
+    slotMoment.setHours(h, m, 0, 0);
+    return slotMoment.getTime() <= now.getTime();
+}
+
+/**
  * True when this article is the SOURCE slot for the current scheduling — the
  * one the user clicked. For one-off, that's the only matching slot. For
  * recurring, it's the slot whose date/isoDay matches the anchorDate.
@@ -117,6 +141,42 @@ function isSourceSlot(
         return isoDayNumber === anchorIso;
     }
     return false;
+}
+
+const WEEKDAY_SET: IsoDayNumber[] = [1, 2, 3, 4, 5];
+const WEEKEND_SET: IsoDayNumber[] = [6, 7];
+
+function sameSet(a: IsoDayNumber[], b: IsoDayNumber[]): boolean {
+    if (a.length !== b.length) { return false; }
+    return b.every((d) => a.includes(d));
+}
+
+/**
+ * Human-readable summary of what Apply All will commit, e.g.
+ * "every weekday at 09:30", "every Monday", "once on Wed 22 May".
+ * Returned null when there's nothing meaningful to say.
+ */
+function formatRecurrenceLabel(scheduling: SchedulingState | null): string | null {
+    if (!scheduling) { return null; }
+    const timePart = scheduling.time ? ` at ${scheduling.time}` : '';
+
+    if (scheduling.kind === SchedulingKind.OneOff) {
+        const datePart = scheduling.date
+            ? format(parseISO(scheduling.date), 'EEE d MMM')
+            : '';
+        return `once on ${datePart}${timePart}`.trim();
+    }
+
+    const days = [...scheduling.daysOfWeek].sort((a, b) => a - b) as IsoDayNumber[];
+    if (days.length === 0) { return null; }
+    if (days.length === 7) { return `every day${timePart}`; }
+    if (sameSet(days, WEEKDAY_SET)) { return `every weekday${timePart}`; }
+    if (sameSet(days, WEEKEND_SET)) { return `every weekend${timePart}`; }
+    if (days.length === 1) {
+        return `every ${WEEK_DAYS[days[0] - 1].full}${timePart}`;
+    }
+    const names = days.map((d) => WEEK_DAYS[d - 1].full.slice(0, 3)).join(', ');
+    return `${names}${timePart}`;
 }
 
 function makeDraftMoment(scheduling: SchedulingState | null): CalendarMoment {
@@ -152,12 +212,18 @@ export default function CalendarSectionArticle({
     onDraftApply,
     onDraftApplyAll,
     onDraftCancel,
+    onGhostExclude,
     isToday,
     isWeekend,
 }: Props) {
     const targets = articleTargetsScheduling(scheduling, date, time, isoDayNumber);
-    const isDraft = !!capabilities.draftEdit && targets && !moment;
-    const isSource = isDraft && isSourceSlot(scheduling, date, time, isoDayNumber);
+    const isSourceCandidate = isSourceSlot(scheduling, date, time, isoDayNumber);
+    const isPast = isSlotInPast(date, time);
+    // Ghosts on past slots are misleading — they imply backfill that can't
+    // happen. Source on a past slot is already prevented by the + button block.
+    const suppressPastGhost = targets && !isSourceCandidate && isPast;
+    const isDraft = !!capabilities.draftEdit && targets && !moment && !suppressPastGhost;
+    const isSource = isDraft && isSourceCandidate;
     const canApplyAll = scheduling?.kind === SchedulingKind.Recurring;
     const isConflict = !!capabilities.conflictBadge && targets && !!moment;
     const ooo = capabilities.outOfOffice && time && config && !moment
@@ -169,13 +235,16 @@ export default function CalendarSectionArticle({
         // isToday && 'calendar-article--today',
         isWeekend && 'calendar-article--weekend',
         ooo && 'calendar-article--ooo',
+        isPast && !moment && 'calendar-article--past',
         !moment && !ooo && mode === 'configure' && 'calendar-article--empty',
         // moment?.status === MomentStatus.Completed && 'calendar-article--completed',
         isConflict && 'calendar-article--conflict',
         time === undefined && 'calendar-article--no-time',
     ].filter(Boolean).join(' ');
 
-    const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !ooo;
+    // Past slots can't be anchored — hides the + button entirely so the user
+    // never creates a moment (one-off or source) dated in the past.
+    const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !ooo && !isPast;
 
     return (
         <div className={cls}>
@@ -195,11 +264,17 @@ export default function CalendarSectionArticle({
                         variant="draft"
                         isSource={isSource}
                         canApplyAll={canApplyAll}
+                        recurrenceLabel={isSource ? formatRecurrenceLabel(scheduling) : null}
                         onDraftNameChange={onDraftNameChange}
                         onDraftIconChange={onDraftIconChange}
                         onDraftApply={onDraftApply}
                         onDraftApplyAll={onDraftApplyAll}
                         onDraftCancel={onDraftCancel}
+                        onGhostExclude={onGhostExclude && !isSource ? () => {
+                            const iso = (isoDayNumber
+                                ?? (date ? jsToIsoDay(new Date(date).getDay()) : undefined)) as IsoDayNumber | undefined;
+                            if (iso !== undefined) { onGhostExclude(iso); }
+                        } : undefined}
                     />
                 ) : moment ? (
                     <>

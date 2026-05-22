@@ -25,6 +25,10 @@ interface Props {
     onDraftApplyAll?: () => void;
     /** Draft+source: ✕ discards the in-progress scheduling. */
     onDraftCancel?: () => void;
+    /** Draft+ghost: ✕ excludes this day from the recurrence. */
+    onGhostExclude?: () => void;
+    /** Draft+source: human-readable summary of what Apply All will commit. */
+    recurrenceLabel?: string | null;
 }
 
 /**
@@ -47,6 +51,8 @@ export default function MomentAction({
     onDraftApply,
     onDraftApplyAll,
     onDraftCancel,
+    onGhostExclude,
+    recurrenceLabel,
 }: Props) {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
@@ -84,8 +90,8 @@ export default function MomentAction({
         const draftValue = name === 'New Moment' ? '' : (moment.name ?? '');
         const canCommit = draftValue.trim().length > 0;
 
-        // Non-source matching slot — read-only mirror of the source row.
-        // Phase 2 will give this its own ghost variant + dismiss button.
+        // Non-source matching slot — read-only mirror of the source row,
+        // with an X button to drop this day from the recurrence.
         if (!isSource) {
             return (
                 <div className={`${cls} moment-action--draft-ghost`}>
@@ -93,6 +99,17 @@ export default function MomentAction({
                     <div className="moment-action__body">
                         <span className="moment-action__name">{draftValue || 'New moment'}</span>
                     </div>
+                    {onGhostExclude && (
+                        <button
+                            type="button"
+                            className="moment-action__draft-btn moment-action__draft-btn--exclude"
+                            title="Don't recur on this day"
+                            aria-label="Exclude this day"
+                            onClick={onGhostExclude}
+                        >
+                            ✕
+                        </button>
+                    )}
                 </div>
             );
         }
@@ -155,6 +172,11 @@ export default function MomentAction({
                             }
                         }}
                     />
+                    {recurrenceLabel && (
+                        <span className="moment-action__recurrence-pill" title="What Apply All will commit">
+                            {recurrenceLabel}
+                        </span>
+                    )}
                 </div>
 
                 <div className="moment-action__draft-actions">

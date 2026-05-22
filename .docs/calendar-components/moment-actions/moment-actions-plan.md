@@ -35,6 +35,45 @@ We do *not* need a new `GhostMomentOverlay` component — we extend what already
 
 ---
 
+## Scope conventions — what does each view *mean*?
+
+The three views (Daily, Weekly, Monthly) aren't just different zoom levels. Each one shows a different **axis of repetition**, and the ghost-default for that view should use the view's visible real estate as the recurrence canvas. The principle: **the view biases ghosts toward the axis the view shows**, so the visual preview maps 1:1 to the data the user can refine via X.
+
+| View | What's visible | Ghost spread default | Stored as |
+|---|---|---|---|
+| Daily | One day, all time slots | None — single slot in scope | `frequency: once` (today only). Optional toggle: `frequency: daily`. |
+| Weekly | 7 columns × time slots | All 7 days at the clicked time (past suppressed) | `frequency: recurring`, `days_of_week: [1..7]` subset |
+| Monthly (configure) | 7 isoDay template rows | The other 6 rows at the same time | `frequency: recurring`, `days_of_week: [1..7]` subset |
+| Monthly (overview) | Day rows for the visible month | All 7 days at the clicked time (past suppressed) | `frequency: recurring`, `days_of_week: [1..7]` subset |
+
+### Why "all 7 days" is the default in Weekly
+
+When the user clicks any day in Weekly, three defaults are plausible:
+
+- **(a)** Every {that weekday} — day-of-week anchored to the click.
+- **(b)** Every weekday (Mon–Fri).
+- **(c)** Every day (all 7).
+
+(a) leaves the ghost preview almost empty (only one Monday in the visible week). (b) breaks late-week clicks: clicking Friday produces zero ghosts because Mon–Thu are past and Sat/Sun aren't in the default. (c) is the only default that produces forward-looking ghosts from *any* anchor day. Past-ghost suppression still removes the misleading backwards visuals — net effect: ghosts always appear on remaining future days in the visible week.
+
+**Decision: (c) — always seed `daysOfWeek = [1..7]`.** User drops days via the ✕ on each ghost.
+
+### View hierarchy in plain language
+
+- **Daily** = "what's happening today" — granular, mostly one-off edits. The only place a `frequency: once` truly fits the user's mental model.
+- **Weekly** = "what's my week shape" — recurrence across the days *of this week*. Ghosts in the view's columns.
+- **Monthly** = "what's my month shape" — recurrence across isoDay templates. Ghosts in the configure rows.
+
+### Past-ghost guard (implemented)
+
+Ghosts never render on slots whose date+time has already passed. `CalendarSectionArticle.isSlotInPast()` suppresses non-source ghosts for past slots — the source is still allowed (user explicitly clicked it). This applies to Weekly columns of earlier days in the visible week, and to Monthly overview-mode day rows. Monthly configure-mode rows (which are templates without a specific date) are never "past".
+
+### Phase-5 refinement worth noting
+
+If the user X's everything in Weekly down to a single day, the stored pattern is `days_of_week: [that one]` — semantically identical to "every {that day}". Worth surfacing a small "every Monday" affirmation pill on the source so the user knows what they're committing to. Not core; do it in polish.
+
+---
+
 ## State extensions
 
 Extend `SchedulingState` so excluded slots can be carried until commit:
@@ -209,3 +248,9 @@ Items deferred by the brief (do not block Phase 1):
 ## Sequencing
 
 Start at Phase 1 — it removes the scroll-to-top problem and lands the inline source row without touching state shape. Phases 2–4 are then incremental and independently mergeable. Phase 5 is a polish pass. Phase 6 deletes the floating bar files.
+OK so additional comments. 
+
+It's all working pretty well and what I don't want to want to do is. Create moments in the past. 
+
+No, it's not specifically the moments in the past. It's the ghost scheduler. I don't want to do any ghost. Moments in the past. 
+

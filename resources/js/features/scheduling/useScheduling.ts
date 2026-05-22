@@ -42,6 +42,16 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
         });
     }
 
+    /** Remove an isoDay from the recurring set — used by ghost-row X buttons. */
+    function excludeDay(day: IsoDayNumber) {
+        setState((prev) => {
+            if (!prev || prev.kind !== SchedulingKind.Recurring) {
+                return prev;
+            }
+            return { ...prev, daysOfWeek: prev.daysOfWeek.filter((d) => d !== day) };
+        });
+    }
+
     function setTime(time: string | null) {
         setState((prev) => (prev ? { ...prev, time } : prev));
     }
@@ -64,6 +74,11 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
                     setState(null);
                     setMode('overview');
                     onConfirm?.();
+                },
+                onError: () => {
+                    // Failed POST: clear state so the next + click starts fresh
+                    // rather than inheriting half-edited days/excludes.
+                    setState(null);
                 },
             },
         );
@@ -132,6 +147,7 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
         start,
         setKind,
         setDaysOfWeek,
+        excludeDay,
         setTime,
         setName,
         setIcon,

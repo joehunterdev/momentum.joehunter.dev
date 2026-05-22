@@ -6,7 +6,6 @@ import type { WeeklyPageProps } from '@/features/calendar';
 import { MomentModal, useMomentForm } from '@/features/moments';
 import type { MomentFormData } from '@/features/moments';
 import { CalendarNav, CalendarProgressBar } from '@/shared/components/calendar';
-import { jsToIsoDay } from '@/features/calendar/utils';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import { SchedulingKind } from '@/shared/types/enums';
@@ -22,7 +21,7 @@ import type { PageProps } from '@/types';
 
 interface Props extends PageProps, WeeklyPageProps { }
 
-const WEEKDAYS: IsoDayNumber[] = [1, 2, 3, 4, 5];
+const ALL_DAYS: IsoDayNumber[] = [1, 2, 3, 4, 5, 6, 7];
 
 export default function Index({ weekStart, config, days, completedCount, totalCount }: Props) {
     const scheduling = useScheduling({ redirectTo: route('weekly') });
@@ -52,12 +51,9 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
 
     // ── Schedule-first creation flow ──────────────────────────────────────────
     function handleStartScheduling(date: string, time: string) {
-        const clickedIso = jsToIsoDay(new Date(date).getDay()) as IsoDayNumber;
-        const isWeekday = clickedIso >= 1 && clickedIso <= 5;
-
         scheduling.start({
             kind: SchedulingKind.Recurring,
-            daysOfWeek: isWeekday ? [...WEEKDAYS] : [clickedIso],
+            daysOfWeek: [...ALL_DAYS],
             time,
             anchorDate: date,
             name: '',
@@ -131,6 +127,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                         onDraftApply={scheduling.applySourceOnly}
                         onDraftApplyAll={scheduling.confirm}
                         onDraftCancel={scheduling.cancel}
+                        onGhostExclude={scheduling.excludeDay}
                     />
                 </div>
             </div>

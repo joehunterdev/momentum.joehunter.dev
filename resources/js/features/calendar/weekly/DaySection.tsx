@@ -15,6 +15,7 @@ interface Props {
     onDraftApply: () => void;
     onDraftApplyAll: () => void;
     onDraftCancel: () => void;
+    onGhostExclude: (isoDay: IsoDayNumber) => void;
     windowStart: number;
 }
 
@@ -35,6 +36,7 @@ export default function DaySection({
     onDraftApply,
     onDraftApplyAll,
     onDraftCancel,
+    onGhostExclude,
     windowStart,
 }: Props) {
     const dateObj = parseISO(day.date);
@@ -76,6 +78,7 @@ export default function DaySection({
                     onDraftApply={onDraftApply}
                     onDraftApplyAll={onDraftApplyAll}
                     onDraftCancel={onDraftCancel}
+                    onGhostExclude={onGhostExclude}
                     isWeekend={day.isWeekend}
                     isToday={day.isToday}
                 />

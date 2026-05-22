@@ -6,7 +6,7 @@ import {
 } from '@/shared/components/calendar';
 import type { CalendarConfig } from '@/shared/components/calendar';
 import { getVisibleTimeSlots } from '../utils';
-import type { SchedulingState } from '@/features/scheduling';
+import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 
 interface Props {
     day: App.Data.WeekDayData;
@@ -19,6 +19,7 @@ interface Props {
     onDraftApply: () => void;
     onDraftApplyAll: () => void;
     onDraftCancel: () => void;
+    onGhostExclude: (isoDay: IsoDayNumber) => void;
 }
 
 /**
@@ -36,6 +37,7 @@ export default function DailyContainer({
     onDraftApply,
     onDraftApplyAll,
     onDraftCancel,
+    onGhostExclude,
 }: Props) {
     const currentDate = parseISO(day.date);
     const visibleSlots = getVisibleTimeSlots(day.slots, config);
@@ -74,6 +76,7 @@ export default function DailyContainer({
                     onDraftApply={onDraftApply}
                     onDraftApplyAll={onDraftApplyAll}
                     onDraftCancel={onDraftCancel}
+                    onGhostExclude={onGhostExclude}
                     isToday={day.isToday}
                 />
             ))}

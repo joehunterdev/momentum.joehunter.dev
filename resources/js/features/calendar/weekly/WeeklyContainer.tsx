@@ -1,5 +1,5 @@
 import type { WeekDay, WeeklyConfig } from '../types';
-import type { SchedulingState } from '@/features/scheduling';
+import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { computeWindowStart } from '../utils';
 import DaySection from './DaySection';
 
@@ -16,6 +16,7 @@ interface Props {
     onDraftApply: () => void;
     onDraftApplyAll: () => void;
     onDraftCancel: () => void;
+    onGhostExclude: (isoDay: IsoDayNumber) => void;
 }
 
 export default function WeeklyContainer({
@@ -29,6 +30,7 @@ export default function WeeklyContainer({
     onDraftApply,
     onDraftApplyAll,
     onDraftCancel,
+    onGhostExclude,
 }: Props) {
     const allTimes = Array.from(
         new Set(days.flatMap((d) => d.slots.map((s) => s.time)))
@@ -50,6 +52,7 @@ export default function WeeklyContainer({
                     onDraftApply={onDraftApply}
                     onDraftApplyAll={onDraftApplyAll}
                     onDraftCancel={onDraftCancel}
+                    onGhostExclude={onGhostExclude}
                     windowStart={windowStart}
                 />
             ))}

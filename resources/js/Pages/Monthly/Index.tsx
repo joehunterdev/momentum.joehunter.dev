@@ -113,6 +113,7 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
                         onDraftApply={scheduling.applySourceOnly}
                         onDraftApplyAll={scheduling.confirm}
                         onDraftCancel={scheduling.cancel}
+                        onGhostExclude={scheduling.excludeDay}
                     />
                 </div>
             </div>
