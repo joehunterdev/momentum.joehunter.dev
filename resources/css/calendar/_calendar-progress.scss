@@ -9,10 +9,7 @@
     &__bar {
         flex: 1;
         height: 6px;
-        background: linear-gradient(90deg,
-                rgba(var(--mm-progress-base-rgb), 0.25) 0%,
-                rgba(var(--mm-progress-base-rgb), 0.12) 50%,
-                rgba(var(--mm-progress-base-rgb), 0.08) 100%);
+        background: rgba(var(--mm-progress-base-rgb), 0.15);
         border-radius: 9999px;
         overflow: hidden;
         position: relative;
@@ -20,10 +17,9 @@
 
     &__fill {
         height: 100%;
-        background: linear-gradient(90deg,
-                rgba(var(--mm-progress-complete-rgb), 0.95) 0%,
-                rgba(var(--mm-progress-complete-rgb), 0.75) 50%,
-                rgba(var(--mm-progress-complete-rgb), 0.6) 100%);
+        background: linear-gradient(to right,
+                var(--mm-progress-base, #8B5CF6) 0%,
+                var(--mm-progress-complete, #00E5AA) 100%);
         border-radius: 9999px;
         transition: width 0.4s ease;
     }

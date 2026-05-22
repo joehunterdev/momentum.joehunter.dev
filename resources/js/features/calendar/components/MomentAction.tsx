@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
 import MomentIcon from '@/shared/components/calendar/MomentIcon';
+import MomentProgressBar from '@/shared/components/calendar/MomentProgressBar';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
 import { MomentStatus } from '@/shared/types/enums';
 import {
@@ -284,8 +285,6 @@ export default function MomentAction({
         band && `moment-action--consistency-${band}`,
         friction.frictionLevel !== 'none' && `moment-action--friction-${friction.frictionLevel}`,
         isCompleted && 'moment-action--completed',
-        isCompleted && 'moment-action--swipe-left',
-        !isCompleted && 'moment-action--swipe-right',
         isCommitting && 'moment-action--committing',
     ].filter(Boolean).join(' ');
 
@@ -310,18 +309,12 @@ export default function MomentAction({
     // Body fades out as the icon starts sliding, giving it clear runway.
     const bodyOpacity = Math.max(0, 1 - dragProgress * 3);
 
-    // Consistency donut — SVG arc around the icon.
-    // Completed moments show a full teal ring; others show consistency %.
-    const donutR = 18;  // radius — icon is 32px so donut sits just outside
-    const donutCirc = 2 * Math.PI * donutR;
-    const donutPct = isCompleted ? 1 : Math.max(0, Math.min(1, (moment.consistency ?? 0) / 100));
-    const donutDash = donutPct * donutCirc;
-    const donutColor = isCompleted
-        ? 'rgba(0,200,150,0.85)'
-        : donutPct >= 0.85 ? 'rgba(0,200,150,0.7)'
-            : donutPct >= 0.60 ? 'rgba(132,204,22,0.65)'
-                : donutPct >= 0.30 ? 'rgba(245,158,11,0.65)'
-                    : 'rgba(239,68,68,0.55)';
+    // Arc animates around the icon ONLY while dragging.
+    // Square border fills clockwise via strokeDashoffset on a rect path.
+    // Two colours: teal = swiping to complete, gray = swiping to undo.
+    const arcPerimeter = 4 * 38; // rect is 38×38 inside the 44×44 viewBox (3px inset each side)
+    const arcOffset = arcPerimeter * (1 - dragProgress);
+    const arcColor = isCompleted ? 'rgba(160,160,160,0.8)' : 'var(--mm-progress-complete, #00E5AA)';
 
     return (
         <div
@@ -329,69 +322,66 @@ export default function MomentAction({
             className={readCls}
             style={{ '--hold-progress': holdProgress } as React.CSSProperties}
         >
-            <span
-                className="moment-action__icon"
-                style={{
-                    touchAction: 'pan-y',
-                    cursor: isCommitting ? 'wait' : 'pointer',
-                    transform: iconTranslateX,
-                    transition: iconTransition,
-                    willChange: dragProgress > 0 ? 'transform' : 'auto',
-                    zIndex: dragProgress > 0 ? 10 : undefined,
-                    overflow: 'visible',
-                }}
-                role="button"
-                tabIndex={0}
-                aria-label={friction.label || (isCompleted ? 'Mark as incomplete' : 'Mark as complete')}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        onActivate();
-                    }
-                }}
-                {...bindHandlers}
-            >
-                {moment.icon ?? '📌'}
-                {/* Consistency donut — always visible, full ring on completion */}
-                <svg
-                    className="moment-action__donut"
-                    viewBox="0 0 44 44"
-                    aria-hidden
+            <div className="moment-action__row">
+                <span
+                    className="moment-action__icon"
+                    style={{
+                        touchAction: 'pan-y',
+                        cursor: isCommitting ? 'wait' : 'pointer',
+                        transform: iconTranslateX,
+                        transition: iconTransition,
+                        willChange: dragProgress > 0 ? 'transform' : 'auto',
+                        zIndex: dragProgress > 0 ? 10 : undefined,
+                        overflow: 'visible',
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={friction.label || (isCompleted ? 'Mark as incomplete' : 'Mark as complete')}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onActivate();
+                        }
+                    }}
+                    {...bindHandlers}
                 >
-                    {/* Track */}
-                    <circle
-                        cx="22" cy="22" r={donutR}
-                        fill="none"
-                        stroke="rgba(0,0,0,0.08)"
-                        strokeWidth="2.5"
-                    />
-                    {/* Fill */}
-                    {donutPct > 0 && (
-                        <circle
-                            cx="22" cy="22" r={donutR}
-                            fill="none"
-                            stroke={donutColor}
-                            strokeWidth="2.5"
-                            strokeDasharray={`${donutDash} ${donutCirc}`}
-                            strokeLinecap="round"
-                            transform="rotate(-90 22 22)"
-                            style={{ transition: 'stroke-dasharray 0.4s ease, stroke 0.3s ease' }}
-                        />
+                    {moment.icon ?? '📌'}
+                    {dragProgress > 0 && (
+                        <svg className="moment-action__arc" viewBox="0 0 44 44" aria-hidden>
+                            {/* Track — faint square outline */}
+                            <rect x="3" y="3" width="38" height="38"
+                                fill="none"
+                                stroke="rgba(0,0,0,0.08)"
+                                strokeWidth="3"
+                            />
+                            {/* Fill — clockwise from top-left */}
+                            <rect x="3" y="3" width="38" height="38"
+                                fill="none"
+                                stroke={arcColor}
+                                strokeWidth="3"
+                                strokeDasharray={arcPerimeter}
+                                strokeDashoffset={arcOffset}
+                                strokeLinecap="butt"
+                            />
+                        </svg>
                     )}
-                </svg>
-            </span>
-            <div
-                className="moment-action__body"
-                style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
-            >
-                <span className="moment-action__name">{name}</span>
-                {moment.description && (
-                    <span ref={descRef} className={descClassName} style={descStyle}>
-                        <span ref={descTrackRef} className="moment-action__desc-track">
-                            {moment.description}
+                </span>
+                <div
+                    className="moment-action__body"
+                    style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
+                >
+                    <span className="moment-action__name">{name}</span>
+                    {moment.description && (
+                        <span ref={descRef} className={descClassName} style={descStyle}>
+                            <span ref={descTrackRef} className="moment-action__desc-track">
+                                {moment.description}
+                            </span>
                         </span>
-                    </span>
-                )}
+                    )}
+                </div>
+            </div>
+            <div className="moment-action__progress">
+                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} />
             </div>
         </div>
     );

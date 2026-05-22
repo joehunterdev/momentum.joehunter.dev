@@ -11,15 +11,20 @@
 .moment-action {
     position: relative;
     display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    // padding: 0.25rem 0.675rem;
+    flex-direction: column;
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
     background: var(--mm-surface, #fff);
     overflow: hidden;
     isolation: isolate;
+
+    // Inner row: icon + body side by side
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+    }
 
     // &__progress-bg {
     //     position: absolute;
@@ -45,14 +50,13 @@
         align-items: center;
         justify-content: center;
         background: var(--mm-surface-alt);
-        border-radius: 4px;
+        border-radius: 0;
         font-size: var(--mm-text-2xl);
         line-height: 1;
         padding: 0.25rem;
-        // overflow: visible set inline when donut needs space
     }
 
-    &__donut {
+    &__arc {
         position: absolute;
         inset: -6px;
         width: calc(100% + 12px);
@@ -115,6 +119,10 @@
         }
     }
 
+    &__progress {
+        width: 100%;
+    }
+
     // ── Variants ─────────────────────────────────────────────────────────
 
     // --read is the baseline; nothing additional. Adaptive drag wash below.
@@ -158,23 +166,44 @@
     z-index: 1;
 }
 
-// ─── Left accent stripe (Option A) ───────────────────────────────────────
-// 3px bar on the left edge. Teal = completed. Barely-there = incomplete.
-// Consistency depth is shown on the donut (Option D) instead of row tints.
+// ─── Moment progress bar ──────────────────────────────────────────────
+// Full-width slim bar beneath each read row. Square ends, colour-coded by
+// consistency band. Reusable via <MomentProgressBar>.
 
-.moment-action--read {
-    border-left: 3px solid rgba(0, 0, 0, 0.07);
+.moment-progress {
+    width: 100%;
+
+    &__track {
+        width: 100%;
+        height: 3px;
+        background: rgba(var(--mm-progress-base-rgb), 0.15);
+        border-radius: 0;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        border-radius: 0;
+        background: linear-gradient(to right,
+                var(--mm-progress-base, #8B5CF6) 0%,
+                var(--mm-progress-complete, #00E5AA) 100%);
+        transition: width 0.4s ease;
+    }
+}
+
+// ─── Icon border ────────────────────────────────────────────────────
+// Two states only: gray (incomplete) or green (completed).
+
+.moment-action--read .moment-action__icon {
+    border: 2px solid rgba(0, 0, 0, 0.10);
     transition: border-color 0.25s ease;
 }
 
-.moment-action--read.moment-action--completed {
-    border-left-color: rgba(0, 200, 150, 0.85);
-}
-
-// ─── Completed state ─────────────────────────────────────────────────────
-// Donut SVG handles the completion ring. Row and icon stay visually clean.
+// ─── Completed state ────────────────────────────────────────
+// Progress bar fills to teal. Icon border flips to green.
 
 .moment-action--completed .moment-action__icon {
+    border-color: var(--mm-progress-complete, #00E5AA);
     cursor: pointer;
 }
 
