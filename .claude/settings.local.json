@@ -8,7 +8,9 @@
       "Bash(xargs grep \"from '@/features/\")",
       "Bash(php -r ' *)",
       "Bash(npx vite *)",
-      "PowerShell(Get-Content *)"
+      "PowerShell(Get-Content *)",
+      "Bash(php *)",
+      "PowerShell(New-Item *)"
     ]
   }
 }

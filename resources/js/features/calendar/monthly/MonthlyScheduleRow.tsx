@@ -13,6 +13,10 @@ interface Props {
     onStartScheduling: (isoDay: number) => void;
     onDraftNameChange: (name: string) => void;
     onDraftIconChange: (icon: string | null) => void;
+    onDraftApply: () => void;
+    onDraftApplyAll: () => void;
+    onDraftCancel: () => void;
+    onGhostExclude: (isoDay: IsoDayNumber) => void;
 }
 
 const WEEKEND_ISO_DAYS = [6, 7];
@@ -46,6 +50,10 @@ export default function MonthlyScheduleRow({
     onStartScheduling,
     onDraftNameChange,
     onDraftIconChange,
+    onDraftApply,
+    onDraftApplyAll,
+    onDraftCancel,
+    onGhostExclude,
 }: Props) {
     const isWeekend = WEEKEND_ISO_DAYS.includes(row.isoDayNumber);
     const isoDayNumber = row.isoDayNumber as IsoDayNumber;
@@ -87,6 +95,10 @@ export default function MonthlyScheduleRow({
                     capabilities={{ draftEdit: true }}
                     onDraftNameChange={onDraftNameChange}
                     onDraftIconChange={onDraftIconChange}
+                    onDraftApply={onDraftApply}
+                    onDraftApplyAll={onDraftApplyAll}
+                    onDraftCancel={onDraftCancel}
+                    onGhostExclude={onGhostExclude}
                 />
             )}
 

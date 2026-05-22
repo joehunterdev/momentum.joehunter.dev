@@ -11,15 +11,21 @@
 .moment-action {
     position: relative;
     display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    // padding: 0.25rem 0.675rem;
+    flex-direction: column;
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
     background: var(--mm-surface, #fff);
     overflow: hidden;
     isolation: isolate;
+
+    // Inner row: icon + body side by side
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.5rem 0.5rem 0.5rem;
+    }
 
     // &__progress-bg {
     //     position: absolute;
@@ -45,10 +51,19 @@
         align-items: center;
         justify-content: center;
         background: var(--mm-surface-alt);
-        border-radius: 4px;
+        border-radius: 0;
         font-size: var(--mm-text-2xl);
         line-height: 1;
         padding: 0.25rem;
+    }
+
+    &__arc {
+        position: absolute;
+        inset: -6px;
+        width: calc(100% + 12px);
+        height: calc(100% + 12px);
+        pointer-events: none;
+        overflow: visible;
     }
 
     &__body {
@@ -80,6 +95,11 @@
         text-overflow: ellipsis;
     }
 
+    &__desc-track {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
     &__edit-btn {
         position: relative;
         z-index: 1;
@@ -100,11 +120,21 @@
         }
     }
 
+    &__progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+    }
+
     // ── Variants ─────────────────────────────────────────────────────────
 
     // --read is the baseline; nothing additional. Adaptive drag wash below.
 
     &--edit {
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
         padding: 0.375rem 0.75rem 0.375rem;
         min-height: 2.5rem;
@@ -126,32 +156,222 @@
     }
 
     &--draft {
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
         padding: 0.375rem 0.75rem 0.375rem;
         min-height: 2.5rem;
         border: 1.5px dashed var(--mm-primary, #6366f1);
         background: rgba(var(--mm-primary-rgb), 0.04);
         border-radius: 0;
+
+        .moment-action__body--draft {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .moment-action__draft-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .moment-action__draft-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--mm-text-mute);
+            transition: background 0.15s ease, color 0.15s ease;
+
+            &:hover:not(:disabled) {
+                background: rgba(0, 0, 0, 0.12);
+                color: var(--mm-text-body);
+            }
+
+            &:disabled {
+                opacity: 0.35;
+                cursor: default;
+            }
+
+            &--apply {
+                background: var(--mm-primary, #6366f1);
+                color: #fff;
+
+                &:hover:not(:disabled) {
+                    background: var(--mm-primary-dark, #4f46e5);
+                    color: #fff;
+                }
+            }
+        }
     }
 }
 
-// ─── Adaptive drag wash (read variant only) ───────────────────────────────
-// Green fill grows left→right with --drag-progress (0–1).
-
-.moment-action--read::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(to right,
-            rgba(0, 229, 170, calc(var(--drag-progress, 0) * 0.18)),
-            transparent calc(var(--drag-progress, 0) * 100% + 20%));
-    border-radius: inherit;
-    transition: background 0.05s linear;
-    z-index: 0;
-}
+// ─── Adaptive drag wash (read variant only) ─────────────────────────────
+// Removed: icon translateX is now the drag visual. No row pseudo-element needed.
 
 .moment-action--read>* {
     position: relative;
     z-index: 1;
+}
+
+// ─── Moment progress bar ──────────────────────────────────────────────
+// Full-width slim bar beneath each read row. Square ends, colour-coded by
+// consistency band. Reusable via <MomentProgressBar>.
+
+.moment-progress {
+    width: 100%;
+
+    &__track {
+        width: 100%;
+        height: 3px;
+        background: rgba(var(--mm-progress-base-rgb), 0.15);
+        border-radius: 0;
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        border-radius: 0;
+        transition: width 0.4s ease;
+    }
+}
+
+// ─── Icon border ────────────────────────────────────────────────────
+// Two states only: gray (incomplete) or green (completed).
+
+.moment-action--read .moment-action__icon {
+    border: 2px solid rgba(0, 0, 0, 0.10);
+    transition: border-color 0.25s ease;
+}
+
+// ─── Completed state ────────────────────────────────────────
+// Progress bar fills; tick overlay appears far right.
+
+.moment-action--completed .moment-action__icon {
+    cursor: pointer;
+}
+
+.moment-action__tick {
+    flex-shrink: 0;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--mm-progress-complete, #00CFA0);
+    animation: tick-pop 0.2s ease both;
+}
+
+@keyframes tick-pop {
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.moment-action__tick {
+    flex-shrink: 0;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--mm-progress-complete, #00CFA0);
+    animation: tick-pop 0.2s ease both;
+}
+
+@keyframes tick-pop {
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
+}
+.moment-action--committing {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+// ─── Description marquee (Quick Action Phase 3) ───────────────────────────
+// When the description overflows, the inner track translates left and back to
+// reveal the full text. Hovering the row pauses it. Reduced-motion users get
+// the original ellipsis behaviour instead of motion.
+
+.moment-action__desc--marquee {
+    text-overflow: clip;
+}
+
+.moment-action__desc--marquee .moment-action__desc-track {
+    animation: moment-desc-marquee var(--marquee-duration, 8s) linear infinite;
+    will-change: transform;
+}
+
+.moment-action__desc--marquee:hover .moment-action__desc-track {
+    animation-play-state: paused;
+}
+
+@keyframes moment-desc-marquee {
+
+    0%,
+    10% {
+        transform: translateX(0);
+    }
+
+    90%,
+    100% {
+        transform: translateX(calc(-1 * var(--marquee-distance, 0px)));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .moment-action__desc--marquee {
+        text-overflow: ellipsis;
+    }
+
+    .moment-action__desc--marquee .moment-action__desc-track {
+        animation: none;
+        transform: translateX(0);
+    }
+}
+
+// ─── Completion friction ring (Quick Action Phase 4) ──────────────────────
+// Low/mid-consistency moments require a sustained hold before the swipe can
+// commit. The icon grows a conic-gradient ring that fills clockwise with
+// --hold-progress (0–1). Empty colour is visible at rest as a "this needs
+// effort" hint; the bright fill arrives as the user holds.
+
+.moment-action--friction-mid {
+    --friction-ring-empty: rgba(245, 158, 11, 0.35);
+    --friction-ring-filled: rgba(245, 158, 11, 1);
+}
+
+.moment-action--friction-low {
+    --friction-ring-empty: rgba(239, 68, 68, 0.35);
+    --friction-ring-filled: rgba(239, 68, 68, 1);
+}
+
+.moment-action--friction-mid .moment-action__icon,
+.moment-action--friction-low .moment-action__icon {
+    overflow: visible;
+}
+
+.moment-action--friction-mid .moment-action__icon::before,
+.moment-action--friction-low .moment-action__icon::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(from -90deg,
+            var(--friction-ring-filled) calc(var(--hold-progress, 0) * 360deg),
+            var(--friction-ring-empty) 0);
+    mask: radial-gradient(transparent 56%, black 58%);
+    -webkit-mask: radial-gradient(transparent 56%, black 58%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    // No conic fill animation, but keep the static ring at rest as a marker.
+    .moment-action--friction-mid .moment-action__icon::before,
+    .moment-action--friction-low .moment-action__icon::before {
+        background: var(--friction-ring-empty);
+    }
 }

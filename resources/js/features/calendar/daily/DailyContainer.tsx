@@ -6,7 +6,7 @@ import {
 } from '@/shared/components/calendar';
 import type { CalendarConfig } from '@/shared/components/calendar';
 import { getVisibleTimeSlots } from '../utils';
-import type { SchedulingState } from '@/features/scheduling';
+import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 
 interface Props {
     day: App.Data.WeekDayData;
@@ -16,6 +16,10 @@ interface Props {
     onStartScheduling: (date: string, time: string) => void;
     onGhostNameChange: (name: string) => void;
     onGhostIconChange: (icon: string | null) => void;
+    onDraftApply: () => void;
+    onDraftApplyAll: () => void;
+    onDraftCancel: () => void;
+    onGhostExclude: (isoDay: IsoDayNumber) => void;
 }
 
 /**
@@ -30,6 +34,10 @@ export default function DailyContainer({
     onStartScheduling,
     onGhostNameChange,
     onGhostIconChange,
+    onDraftApply,
+    onDraftApplyAll,
+    onDraftCancel,
+    onGhostExclude,
 }: Props) {
     const currentDate = parseISO(day.date);
     const visibleSlots = getVisibleTimeSlots(day.slots, config);
@@ -65,6 +73,10 @@ export default function DailyContainer({
                     onStartScheduling={() => onStartScheduling(day.date, slot.time)}
                     onDraftNameChange={onGhostNameChange}
                     onDraftIconChange={onGhostIconChange}
+                    onDraftApply={onDraftApply}
+                    onDraftApplyAll={onDraftApplyAll}
+                    onDraftCancel={onDraftCancel}
+                    onGhostExclude={onGhostExclude}
                     isToday={day.isToday}
                 />
             ))}

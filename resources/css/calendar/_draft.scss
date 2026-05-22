@@ -55,10 +55,11 @@
 
 .draft-name-input {
     width: 100%;
+    min-width: 0;
     border: none;
     outline: none;
     background: transparent;
-    font-size: 0.8125rem;
+    font-size: 0.7rem;
     font-weight: 500;
     color: var(--mm-text-body);
     padding: 0;

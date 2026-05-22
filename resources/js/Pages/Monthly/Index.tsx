@@ -1,11 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import { CalendarNav, CalendarProgressBar, MomentFrequencyConfig } from '@/shared/components/calendar';
+import { CalendarNav, CalendarProgressBar } from '@/shared/components/calendar';
 import { MonthlyContainer } from '@/features/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import { addMonths, format, parseISO, subMonths } from 'date-fns';
-import { WEEK_DAYS } from '@/shared/constants/moments';
 import type { PageProps } from '@/types';
 import { SchedulingKind } from '@/shared/types/enums';
 
@@ -20,18 +19,33 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
 
     const scheduling = useScheduling({ redirectTo: route('monthly', { month }) });
 
-    function handleStartScheduling(_isoDay: number) {
+    /**
+     * For an isoDay click on a configure-mode row, anchor on the first matching
+     * date in the month so source/ghost detection picks the right row.
+     */
+    function firstDateForIsoDay(isoDay: number): string {
+        const monthStartDate = parseISO(monthStart);
+        for (let i = 0; i < 7; i++) {
+            const candidate = new Date(monthStartDate);
+            candidate.setDate(monthStartDate.getDate() + i);
+            const candidateIso = ((candidate.getDay() + 6) % 7) + 1; // ISO 1..7
+            if (candidateIso === isoDay) {
+                return format(candidate, 'yyyy-MM-dd');
+            }
+        }
+        return monthStart;
+    }
+
+    function handleStartScheduling(isoDay: number) {
         scheduling.start({
             kind: SchedulingKind.Recurring,
             daysOfWeek: [...ALL_DAYS],
             time: null,
-            anchorDate: monthStart,
+            anchorDate: firstDateForIsoDay(isoDay),
             name: '',
             icon: null,
         });
     }
-
-    const dayLabels = WEEK_DAYS.map((d) => d.label);
 
     return (
         <AuthenticatedLayout
@@ -76,17 +90,6 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
         >
             <Head title="Monthly" />
 
-            {scheduling.mode === 'configure' && scheduling.state && (
-                <MomentFrequencyConfig
-                    state={scheduling.state}
-                    dayLabels={dayLabels}
-                    onKindChange={(next) => scheduling.setKind(next, monthStart)}
-                    onDaysChange={scheduling.setDaysOfWeek}
-                    onConfirm={scheduling.confirm}
-                    onCancel={scheduling.cancel}
-                />
-            )}
-
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-5xl sm:px-6 lg:px-8">
                     <MonthlyContainer
@@ -107,6 +110,10 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
                         onStartSchedulingFromIsoDay={handleStartScheduling}
                         onDraftNameChange={scheduling.setName}
                         onDraftIconChange={scheduling.setIcon}
+                        onDraftApply={scheduling.applySourceOnly}
+                        onDraftApplyAll={scheduling.confirm}
+                        onDraftCancel={scheduling.cancel}
+                        onGhostExclude={scheduling.excludeDay}
                     />
                 </div>
             </div>

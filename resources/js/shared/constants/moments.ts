@@ -3,16 +3,16 @@
  * Used by ScheduleFields, ColorPicker, MomentForm, ConfigForm, FrequencyBadge.
  */
 export const MOMENT_COLOR_PALETTE: string[] = [
-    '#3B82F6', // blue
-    '#8B5CF6', // purple
-    '#10B981', // emerald
-    '#EF4444', // red
-    '#F59E0B', // amber
-    '#EC4899', // pink
-    '#06B6D4', // cyan
-    '#84CC16', // lime
-    '#6366F1', // indigo
-    '#F97316', // orange
+    '#8B5CF6', // brand violet
+    '#00CFA0', // brand teal
+    '#60A5FA', // sky blue
+    '#22D3EE', // cyan
+    '#34D399', // mint
+    '#A78BFA', // soft lavender
+    '#F472B6', // rose
+    '#FB923C', // warm orange
+    '#FBBF24', // amber gold
+    '#F87171', // coral
 ];
 
 export const WEEK_DAYS = [

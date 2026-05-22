@@ -49,9 +49,9 @@ $border-light: var(--mm-border-light);
         min-height: 2.5rem;
         position: relative;
 
-        // Edit/draft variants go edge-to-edge; read keeps wrapper padding
-        // so the progress wash doesn't bleed into the time gutter.
-        &:has(.moment-action--edit, .moment-action--draft) {
+        // All moment-action variants go edge-to-edge so the progress bar
+        // can sit flush at the slot bottom. Padding lives on __row instead.
+        &:has(.moment-action) {
             padding: 0;
             align-items: stretch;
         }
@@ -181,6 +181,16 @@ $border-light: var(--mm-border-light);
                 }
             }
         }
+    }
+}
+
+// ─── Past slot ─────────────────────────────────────────────────────────────────
+// Empty past slots: no + button, key column dimmed so the user can tell the
+// slot exists but isn't actionable.
+.calendar-article--past {
+    .calendar-article__key {
+        opacity: 0.35;
+        cursor: default;
     }
 }
 

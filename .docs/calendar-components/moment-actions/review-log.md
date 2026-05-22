@@ -1,0 +1,7 @@
+OK. So this is just a general question. Can we have a look at this? Logic please from AUI perspective from a user perspective. We have weekly, daily, monthly views. I'm thinking the daily basically controls most of the things throughout the day, but then weekly controls the weekly data set and monthly etcetera. So now we have this ghost option. I'm not sure what best to do so if we create a new item. A new moment on the weekly page and it's 9:30 on a Monday. Where best to create the rest of the ghosts? Should this weekly view for example, apply to every Monday or apply to every single day at 9:30? And what do you think is is the most logical way to approach this? From a programmatic architectural user point of view. 
+
+OK, so let's continue to review so that works. However, I have. A Monday at 9:30 a new moment. But on the Tuesday 19th of May, Wednesday 20th of May at 9:30 Thursday at 9:30 of May, I don't see the ghost action over the top. I've no idea where that is. Maybe there's something stale in the state? 
+
+I think what's happened is during the flow at some point on a previous moment creation. I have X removed some items from the Ghost scheduler and they've persisted in state and then when I've created a new moment. They have persisted. And I am not able to create in that slot. `
+
+OK. Let's just start at the beginning, because we're getting confused. I've created a new moment on the at 9:30 on Friday 22nd of May and I can see the ghost moments appearing at the same time in the past, which cannot happen rather than appearing in the future. 
