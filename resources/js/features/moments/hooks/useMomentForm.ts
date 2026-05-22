@@ -5,7 +5,7 @@ import type { Moment, MomentFormData } from '../types';
 const defaults: MomentFormData = {
     name: '',
     description: '',
-    color: '#3B82F6',
+    color: '#8B5CF6',
     icon: '',
     sort_order: 0,
     is_active: true,

@@ -186,7 +186,7 @@ export default function MomentAction({
                     )}
                 </div>
 
-                <div className="moment-action__body">
+                <div className="moment-action__body moment-action__body--draft">
                     <input
                         type="text"
                         className="draft-name-input"
@@ -205,11 +205,12 @@ export default function MomentAction({
                             }
                         }}
                     />
+                    {/* recurrenceLabel — hidden for now
                     {recurrenceLabel && (
                         <span className="moment-action__recurrence-pill" title="What Apply All will commit">
                             {recurrenceLabel}
                         </span>
-                    )}
+                    )} */}
                 </div>
 
                 <div className="moment-action__draft-actions">
@@ -225,25 +226,26 @@ export default function MomentAction({
                     <button
                         type="button"
                         className="moment-action__draft-btn moment-action__draft-btn--apply"
-                        title={canApplyAll ? 'Apply to this slot only' : 'Apply'}
-                        aria-label="Apply"
+                        title={canApplyAll ? 'Tap to apply once · Hold to apply to all matching days' : 'Apply'}
+                        aria-label={canApplyAll ? 'Apply (hold for all)' : 'Apply'}
                         disabled={!canCommit}
-                        onClick={onDraftApply}
+                        onPointerDown={(e) => {
+                            if (!canCommit) return;
+                            const timer = window.setTimeout(() => {
+                                onDraftApplyAll?.();
+                            }, 600);
+                            const up = () => {
+                                clearTimeout(timer);
+                                e.currentTarget.removeEventListener('pointerup', up);
+                                e.currentTarget.removeEventListener('pointerleave', up);
+                            };
+                            e.currentTarget.addEventListener('pointerup', up);
+                            e.currentTarget.addEventListener('pointerleave', up);
+                        }}
+                        onClick={() => { if (canCommit) onDraftApply?.(); }}
                     >
                         ✓
                     </button>
-                    {canApplyAll && (
-                        <button
-                            type="button"
-                            className="moment-action__draft-btn moment-action__draft-btn--apply-all"
-                            title="Apply to all matching days"
-                            aria-label="Apply to all"
-                            disabled={!canCommit}
-                            onClick={onDraftApplyAll}
-                        >
-                            ☑
-                        </button>
-                    )}
                 </div>
             </div>
         );
@@ -379,9 +381,14 @@ export default function MomentAction({
                         </span>
                     )}
                 </div>
+                {isCompleted && (
+                    <span className="moment-action__tick" aria-hidden>
+                        ✓
+                    </span>
+                )}
             </div>
             <div className="moment-action__progress">
-                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} />
+                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} />
             </div>
         </div>
     );

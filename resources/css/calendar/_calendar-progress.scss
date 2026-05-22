@@ -20,6 +20,8 @@
         background: linear-gradient(to right,
                 var(--mm-progress-base, #8B5CF6) 0%,
                 var(--mm-progress-complete, #00E5AA) 100%);
+        background-size: calc(100% * 100 / var(--pct, 100)) 100%;
+        background-repeat: no-repeat;
         border-radius: 9999px;
         transition: width 0.4s ease;
     }

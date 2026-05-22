@@ -24,6 +24,7 @@
         display: flex;
         align-items: center;
         gap: 0.625rem;
+        padding-bottom: 3px;
     }
 
     // &__progress-bg {
@@ -120,7 +121,11 @@
     }
 
     &__progress {
-        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
     }
 
     // ── Variants ─────────────────────────────────────────────────────────
@@ -128,6 +133,8 @@
     // --read is the baseline; nothing additional. Adaptive drag wash below.
 
     &--edit {
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
         padding: 0.375rem 0.75rem 0.375rem;
         min-height: 2.5rem;
@@ -149,12 +156,61 @@
     }
 
     &--draft {
+        flex-direction: row;
+        align-items: center;
         gap: 0.5rem;
         padding: 0.375rem 0.75rem 0.375rem;
         min-height: 2.5rem;
         border: 1.5px dashed var(--mm-primary, #6366f1);
         background: rgba(var(--mm-primary-rgb), 0.04);
         border-radius: 0;
+
+        .moment-action__body--draft {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .moment-action__draft-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .moment-action__draft-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--mm-text-mute);
+            transition: background 0.15s ease, color 0.15s ease;
+
+            &:hover:not(:disabled) {
+                background: rgba(0, 0, 0, 0.12);
+                color: var(--mm-text-body);
+            }
+
+            &:disabled {
+                opacity: 0.35;
+                cursor: default;
+            }
+
+            &--apply {
+                background: var(--mm-primary, #6366f1);
+                color: #fff;
+
+                &:hover:not(:disabled) {
+                    background: var(--mm-primary-dark, #4f46e5);
+                    color: #fff;
+                }
+            }
+        }
     }
 }
 
@@ -184,9 +240,6 @@
     &__fill {
         height: 100%;
         border-radius: 0;
-        background: linear-gradient(to right,
-                var(--mm-progress-base, #8B5CF6) 0%,
-                var(--mm-progress-complete, #00E5AA) 100%);
         transition: width 0.4s ease;
     }
 }
@@ -200,13 +253,37 @@
 }
 
 // ─── Completed state ────────────────────────────────────────
-// Progress bar fills to teal. Icon border flips to green.
+// Progress bar fills; tick overlay appears far right.
 
 .moment-action--completed .moment-action__icon {
-    border-color: var(--mm-progress-complete, #00E5AA);
     cursor: pointer;
 }
 
+.moment-action__tick {
+    flex-shrink: 0;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--mm-progress-complete, #00CFA0);
+    animation: tick-pop 0.2s ease both;
+}
+
+@keyframes tick-pop {
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.moment-action__tick {
+    flex-shrink: 0;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--mm-progress-complete, #00CFA0);
+    animation: tick-pop 0.2s ease both;
+}
+
+@keyframes tick-pop {
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
+}
 .moment-action--committing {
     opacity: 0.7;
     pointer-events: none;

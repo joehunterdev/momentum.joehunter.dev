@@ -13,7 +13,7 @@ export default function CalendarProgressBar({ completedCount, totalCount }: Prop
     return (
         <div className="calendar-progress" title={`${completedCount} of ${totalCount} done`}>
             <div className="calendar-progress__bar">
-                <div className="calendar-progress__fill" style={{ width: `${pct}%` }} />
+                <div className="calendar-progress__fill" style={{ width: `${pct}%`, '--pct': pct } as React.CSSProperties} />
             </div>
             <span className="calendar-progress__label">
                 {completedCount} / {totalCount}
