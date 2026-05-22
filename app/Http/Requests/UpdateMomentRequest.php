@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateMomentRequest extends FormRequest
 {
@@ -31,7 +32,15 @@ class UpdateMomentRequest extends FormRequest
             //   recurring → days_of_week required (non-empty)
             //   once      → scheduled_date required
             'frequency' => ['nullable', 'in:daily,recurring,once'],
-            'days_of_week' => ['required_if:frequency,recurring', 'nullable', 'array', 'min:1'],
+            'days_of_week' => [
+                'nullable',
+                'array',
+                // min:1 only when frequency is recurring; daily/once may send [].
+                Rule::when(
+                    $this->input('frequency') === 'recurring',
+                    ['required', 'min:1'],
+                ),
+            ],
             'days_of_week.*' => ['integer', 'between:1,7'],
             'scheduled_date' => ['required_if:frequency,once', 'nullable', 'date'],
             'preferred_time' => ['nullable', 'date_format:H:i'],

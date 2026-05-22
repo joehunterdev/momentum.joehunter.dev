@@ -95,10 +95,10 @@ function articleTargetsScheduling(
 }
 
 /**
- * True for date-bearing slots whose moment in time has already passed. Used to
- * both hide the + button (no anchoring on past slots) and suppress non-source
- * ghost rendering (no past-looking ghosts during a recurring setup). Articles
- * without a date (Monthly configure rows = templates) are never past.
+ * True for date-bearing slots whose moment in time has already passed. Used
+ * to both hide the + button (no backdating) and suppress non-source ghost
+ * rendering (the pattern fires forward from the anchor, never backwards).
+ * Articles without a date (Monthly configure rows = templates) are never past.
  */
 function isSlotInPast(date?: string, time?: string): boolean {
     if (!date) { return false; }
@@ -219,8 +219,8 @@ export default function CalendarSectionArticle({
     const targets = articleTargetsScheduling(scheduling, date, time, isoDayNumber);
     const isSourceCandidate = isSourceSlot(scheduling, date, time, isoDayNumber);
     const isPast = isSlotInPast(date, time);
-    // Ghosts on past slots are misleading — they imply backfill that can't
-    // happen. Source on a past slot is already prevented by the + button block.
+    // No backdating: ghosts don't render on past slots, source can't anchor
+    // there either (past + is blocked below). Pattern fires forward only.
     const suppressPastGhost = targets && !isSourceCandidate && isPast;
     const isDraft = !!capabilities.draftEdit && targets && !moment && !suppressPastGhost;
     const isSource = isDraft && isSourceCandidate;
@@ -242,8 +242,7 @@ export default function CalendarSectionArticle({
         time === undefined && 'calendar-article--no-time',
     ].filter(Boolean).join(' ');
 
-    // Past slots can't be anchored — hides the + button entirely so the user
-    // never creates a moment (one-off or source) dated in the past.
+    // Past slots can't be anchored — habits start now, no backdating.
     const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !ooo && !isPast;
 
     return (

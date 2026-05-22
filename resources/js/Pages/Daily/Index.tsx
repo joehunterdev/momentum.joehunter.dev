@@ -33,14 +33,34 @@ export default function Index({ date, day, config, completedCount, totalCount }:
         <AuthenticatedLayout
             header={
                 <div className="calendar-page-header">
-                    <CalendarNav
-                        prevLabel={format(prevDate, 'EEE d MMM')}
-                        currentLabel={format(currentDate, 'EEE d MMM')}
-                        nextLabel={format(nextDate, 'EEE d MMM')}
-                        prevParam={{ date: format(prevDate, 'yyyy-MM-dd') }}
-                        nextParam={{ date: format(nextDate, 'yyyy-MM-dd') }}
-                        routeName="daily"
-                    />
+                    <div className="calendar-page-header__row">
+                        <CalendarNav
+                            prevLabel={format(prevDate, 'EEE d MMM')}
+                            currentLabel={format(currentDate, 'EEE d MMM')}
+                            nextLabel={format(nextDate, 'EEE d MMM')}
+                            prevParam={{ date: format(prevDate, 'yyyy-MM-dd') }}
+                            nextParam={{ date: format(nextDate, 'yyyy-MM-dd') }}
+                            routeName="daily"
+                        />
+                        {scheduling.mode === 'overview' ? (
+                            <button
+                                type="button"
+                                className="calendar-page-header__mode-btn"
+                                title="Configure schedule"
+                                onClick={() => scheduling.setMode('configure')}
+                            >
+                                ⚙️
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"
+                                onClick={scheduling.exit}
+                            >
+                                ✕ Done
+                            </button>
+                        )}
+                    </div>
                     {scheduling.mode === 'overview' && totalCount > 0 && (
                         <CalendarProgressBar
                             completedCount={completedCount}

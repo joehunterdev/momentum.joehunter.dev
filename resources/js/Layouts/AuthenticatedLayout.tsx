@@ -4,7 +4,10 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { CalendarViewToggle } from '@/shared/components/calendar';
 import { Link, usePage } from '@inertiajs/react';
-import { PropsWithChildren, ReactNode, useState } from 'react';
+import { PropsWithChildren, ReactNode, useEffect, useState } from 'react';
+
+const HEADER_REVEAL_AT_TOP_PX = 80;
+const SCROLL_DELTA_THRESHOLD = 6;
 
 export default function Authenticated({
     header,
@@ -14,6 +17,28 @@ export default function Authenticated({
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    // Scroll-aware header: always visible near the top of the page; hides on
+    // scroll-down past the reveal threshold; re-appears immediately on
+    // scroll-up so the user can hit the cog/nav without going to the top.
+    const [headerHidden, setHeaderHidden] = useState(false);
+    useEffect(() => {
+        let lastY = window.scrollY;
+        const onScroll = () => {
+            const y = window.scrollY;
+            const dy = y - lastY;
+            if (y < HEADER_REVEAL_AT_TOP_PX) {
+                setHeaderHidden(false);
+            } else if (dy > SCROLL_DELTA_THRESHOLD) {
+                setHeaderHidden(true);
+            } else if (dy < -SCROLL_DELTA_THRESHOLD) {
+                setHeaderHidden(false);
+            }
+            lastY = y;
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -204,7 +229,9 @@ export default function Authenticated({
             </nav>
 
             {header && (
-                <header className="bg-white shadow">
+                <header
+                    className={`sticky top-0 z-30 bg-white shadow transition-transform duration-200 ease-out ${headerHidden ? '-translate-y-full' : 'translate-y-0'}`}
+                >
                     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                         {header}
                     </div>

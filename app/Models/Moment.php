@@ -66,6 +66,16 @@ class Moment extends Model
             return true; // no schedule = daily by default
         }
 
+        // No backdating: a recurring/daily moment never applies to a date that
+        // predates its creation. One-off moments are exempt (they may target
+        // any explicit scheduled_date the user chose).
+        if ($schedule->frequency !== Frequency::Once) {
+            $createdDate = $this->created_at?->copy()->startOfDay();
+            if ($createdDate !== null && $date->copy()->startOfDay()->lt($createdDate)) {
+                return false;
+            }
+        }
+
         return match ($schedule->frequency) {
             Frequency::Daily => true,
             Frequency::Recurring => in_array($date->dayOfWeekIso, $schedule->days_of_week ?? [], strict: true),
