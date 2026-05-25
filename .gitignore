@@ -32,7 +32,7 @@ Thumbs.db
 .playwright-mcp/
 
 # Build artifacts and caches
-/public/build/
+# /public/build/ — committed locally, deployed via FTP
 /bootstrap/ssr/
 /.phpunit.cache/
 .phpunit.result.cache
