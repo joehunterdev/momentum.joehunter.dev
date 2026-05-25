@@ -65,6 +65,7 @@ jobs:
             storage/framework/testing/**
             storage/framework/views/**
             storage/debugbar/**
+            bootstrap/ssr/**
             .env*
             *.log
             npm-debug.log

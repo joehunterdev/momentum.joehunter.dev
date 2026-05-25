@@ -4,7 +4,7 @@
     "type": "module",
     "version": "1.2.0",
     "scripts": {
-        "build": "tsc && vite build && vite build --ssr",
+        "build": "tsc && vite build",
         "dev": "vite",
         "serve:dev": "php artisan serve --host=momentum.joehunter.localhost --port=80",
         "open": "start chrome http://momentum.joehunter.localhost",
