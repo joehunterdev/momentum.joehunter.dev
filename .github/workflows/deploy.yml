@@ -1,56 +1,22 @@
-<<<<<<< HEAD
-name: 🚀 Deploy
-=======
 name: Manual Deploy
->>>>>>> feature/friction
 
 on:
   workflow_dispatch:
     inputs:
-<<<<<<< HEAD
-      target:
-        description: 'Target environment'
-        required: true
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
-      version:
-        description: 'Version tag (e.g. 2.1.0) — leave blank to skip'
-=======
       source_branch:
         description: 'Branch to deploy (merged → develop → main)'
->>>>>>> feature/friction
         required: false
         default: ''
 
 jobs:
-<<<<<<< HEAD
-  deploy:
-    runs-on: ubuntu-latest
-    environment: production.momentum.joehunter.dev
-
-=======
   merge-and-deploy:
     runs-on: ubuntu-latest
     environment: production.momentum.joehunter.dev
->>>>>>> feature/friction
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-<<<<<<< HEAD
-
-      - name: Tag version
-        if: ${{ github.event.inputs.version != '' }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
-          git push origin "v${{ github.event.inputs.version }}"
-=======
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure git
@@ -58,14 +24,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Merge feature branch → dev → main
+      - name: Merge feature branch → develop → main
         run: |
           SOURCE="${{ github.event.inputs.source_branch }}"
 
           # Ensure all remote branches are available locally
           git fetch --all
 
-          # If a feature branch was specified, merge it into dev first
+          # If a feature branch was specified, merge it into develop first
           if [ -n "$SOURCE" ] && [ "$SOURCE" != "develop" ] && [ "$SOURCE" != "main" ]; then
             echo "Merging $SOURCE → develop"
             git checkout -B develop origin/develop
@@ -80,7 +46,6 @@ jobs:
           git checkout -B main origin/main
           git merge --no-ff develop -m "chore: merge develop into main [deploy]"
           git push origin main
->>>>>>> feature/friction
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -102,11 +67,7 @@ jobs:
           npm ci
           npm run build
 
-<<<<<<< HEAD
-      - name: Deploy via FTP
-=======
       - name: Deploy only changed files via FTP
->>>>>>> feature/friction
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -116,11 +77,7 @@ jobs:
           protocol: ftp
           local-dir: ./
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
-<<<<<<< HEAD
-          state-name: .ftp-deploy-sync-state.${{ github.event.inputs.target }}.json
-=======
           state-name: .ftp-deploy-sync-state.json
->>>>>>> feature/friction
           exclude: |
             .git/**
             .github/**
@@ -150,11 +107,7 @@ jobs:
             TODO.md
             *.code-workspace
 
-<<<<<<< HEAD
-      - name: Laravel optimize (SSH)
-=======
       - name: Composer install and Laravel optimize
->>>>>>> feature/friction
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}

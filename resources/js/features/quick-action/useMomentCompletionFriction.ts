@@ -50,8 +50,8 @@ export function useMomentCompletionFriction(
     }
 
     // Read the user's global friction level preference from Inertia shared props.
-    const page = usePage<{ friction_level?: string }>();
-    const configLevel = page.props.friction_level ?? 'auto';
+    const page = usePage();
+    const configLevel = (page.props as Record<string, unknown>).friction_level as string ?? 'auto';
 
     if (configLevel === 'none') return NONE;
     if (configLevel === 'mid') return MID;
