@@ -1,20 +1,39 @@
-name: Deploy to Production
+name: 🚀 Deploy
 
 on:
-  push:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: 'Version tag (e.g. 2.1.0) — leave blank to skip'
+        required: false
+        default: ''
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.target == 'production' && 'production.momentum.joehunter.dev' || 'production.momentum.joehunter.dev' }}
+    environment: production.momentum.joehunter.dev
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Tag version
+        if: ${{ github.event.inputs.version != '' }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag -a "v${{ github.event.inputs.version }}" -m "Release v${{ github.event.inputs.version }}"
+          git push origin "v${{ github.event.inputs.version }}"
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -36,7 +55,7 @@ jobs:
           npm ci
           npm run build
 
-      - name: Deploy only changed files via FTP
+      - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -46,7 +65,7 @@ jobs:
           protocol: ftp
           local-dir: ./
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
-          state-name: .ftp-deploy-sync-state.json
+          state-name: .ftp-deploy-sync-state.${{ github.event.inputs.target }}.json
           exclude: |
             .git/**
             .github/**
@@ -76,7 +95,7 @@ jobs:
             TODO.md
             *.code-workspace
 
-      - name: Composer install and Laravel optimize
+      - name: Laravel optimize (SSH)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}

@@ -52,6 +52,8 @@
   --mm-surface: #FFFFFF;
   --mm-surface-hover: #F1F5F9;
   --mm-surface-border: rgba(99, 102, 241, 0.1);
+  --mm-surface-actionable: #FFFFFF; // incomplete moment row — pure white
+  --mm-surface-actioned: #F4F6F8; // completed moment row — slightly grey
   --mm-glass: rgba(255, 255, 255, 0.8);
 
   // ─── Text ───
@@ -106,6 +108,8 @@
   --mm-surface: #1E293B;
   --mm-surface-hover: #334155;
   --mm-surface-border: rgba(99, 102, 241, 0.15);
+  --mm-surface-actionable: #1E293B;
+  --mm-surface-actioned: #162032;
   --mm-glass: rgba(30, 41, 59, 0.7);
   --mm-text: #F1F5F9;
   --mm-text-muted: #94A3B8;

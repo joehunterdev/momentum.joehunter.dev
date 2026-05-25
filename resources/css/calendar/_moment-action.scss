@@ -15,7 +15,7 @@
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
-    background: var(--mm-surface, #fff);
+    background: var(--mm-surface-actionable, #fff);
     overflow: hidden;
     isolation: isolate;
 
@@ -274,6 +274,10 @@
 
 .moment-action--completed .moment-action__icon {
     cursor: pointer;
+}
+
+.moment-action--completed {
+    background: var(--mm-surface-actioned, #F4F6F8);
 }
 
 .moment-action__tick {
