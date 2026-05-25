@@ -17,6 +17,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Build frontend assets
+        run: |
+          npm ci
+          npm run build
+
       - name: Deploy only changed files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.6
         with:
@@ -52,7 +63,6 @@ jobs:
             .phpunit.cache
             .phpunit.result.cache
             phpunit.xml
-            package*.json
             README.md
             TODO.md
             *.code-workspace
