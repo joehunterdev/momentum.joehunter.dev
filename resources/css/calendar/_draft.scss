@@ -62,10 +62,9 @@
     border-radius: 0;
     outline: none;
     background: transparent;
-    // NOTE: iOS Safari auto-zooms on focus when font-size < 16px. The visual
-    // ask here is p-sized text, so we accept the brief focus zoom. Bump back
-    // to 16px if testing shows the zoom is disruptive on iPhone.
-    font-size: var(--mm-text-base);
+    // 16px floor avoids iOS Safari's auto-zoom-on-focus. Going below ramps
+    // the viewport in and out every time the draft input opens.
+    font-size: 1rem;
     font-weight: 500;
     color: var(--mm-text-mute);
     padding: 0.25rem 0.5rem;
@@ -75,8 +74,12 @@
         opacity: 1;
     }
 
-    &:focus {
+    &:focus,
+    &:focus-visible {
+        // Suppress the global teal focus ring (_base.scss *:focus-visible).
+        // The subtle grey border below is enough of a focused-state cue.
+        outline: none;
         color: var(--mm-text-body);
-        border-color: var(--mm-text-mute);
+        border-color: var(--mm-text-faint);
     }
 }
