@@ -105,6 +105,27 @@
         text-overflow: ellipsis;
     }
 
+    &__friction-badge {
+        display: inline-block;
+        font-size: 0.62rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        padding: 0.1rem 0.35rem;
+        border-radius: 3px;
+        line-height: 1.4;
+        align-self: flex-start;
+
+        &--low {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.12);
+        }
+
+        &--mid {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.12);
+        }
+    }
+
     &__desc {
         font-size: var(--mm-text-sm);
         color: var(--mm-text-mute);

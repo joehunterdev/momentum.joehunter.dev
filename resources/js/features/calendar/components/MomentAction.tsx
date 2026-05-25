@@ -4,7 +4,7 @@ import { router } from '@inertiajs/react';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
 import MomentIcon from '@/shared/components/calendar/MomentIcon';
 import MomentProgressBar from '@/shared/components/calendar/MomentProgressBar';
-import MomentActionBorder from './MomentActionBorder';
+// import MomentActionBorder from './MomentActionBorder';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
 import { MomentStatus } from '@/shared/types/enums';
 import {
@@ -320,15 +320,11 @@ export default function MomentAction({
     // Body fades out as the icon starts sliding, giving it clear runway.
     const bodyOpacity = Math.max(0, 1 - dragProgress * 3);
 
-    // ElectricBorder on the icon replaces the old arc indicator.
-    // hasFriction drives the two-mode logic in MomentActionBorder (and was used by the arc).
     const hasFriction = friction.requiredHoldMs > 0;
-
-    // (Arc variables kept as comments for reference — arc SVG is commented out above)
-    // const arcPerimeter = 4 * 38;
-    // const arcProgress = hasFriction ? holdProgress : Math.min(1, dragProgress / 0.85);
-    // const arcOffset = arcPerimeter * (1 - arcProgress);
-    // const arcColor = isCompleted ? 'rgba(160,160,160,0.8)' : 'var(--mm-progress-complete, #00E5AA)';
+    const arcPerimeter = 4 * 38;
+    const arcProgress = hasFriction ? holdProgress : Math.min(1, dragProgress / 0.85);
+    const arcOffset = arcPerimeter * (1 - arcProgress);
+    const arcColor = moment.color ?? 'var(--mm-progress-complete, #00E5AA)';
 
     return (
         <div
@@ -337,19 +333,15 @@ export default function MomentAction({
             style={{ '--hold-progress': holdProgress } as React.CSSProperties}
         >
             <div className="moment-action__row">
-                <MomentActionBorder
-                    color={moment.color}
-                    consistency={moment.consistency}
-                    dragProgress={dragProgress}
-                    holdProgress={holdProgress}
-                    hasFriction={hasFriction}
-                    isCompleted={isCompleted}
+                <span
                     style={{
                         transform: iconTranslateX,
                         transition: iconTransition,
                         willChange: dragProgress > 0 ? 'transform' : 'auto',
                         zIndex: dragProgress > 0 ? 10 : undefined,
                         flexShrink: 0,
+                        display: 'inline-block',
+                        position: 'relative',
                     }}
                 >
                     <span
@@ -374,39 +366,40 @@ export default function MomentAction({
                             ? moment.icon
                             : <img src="/logo.png" alt="" className="moment-action__icon-img" />
                         }
-                        {/* Arc SVG replaced by ElectricBorder on the icon — see MomentActionBorder.
-                        {dragProgress > 0 && (
-                            <svg
-                                className="moment-action__arc"
-                                viewBox="0 0 44 44"
-                                aria-hidden
-                                style={hasFriction && holdProgress > 0 && holdProgress < 1 ? {
-                                    animation: 'moment-arc-spin 0.9s linear infinite',
-                                    transformOrigin: '22px 22px',
-                                } : undefined}
-                            >
-                                <rect x="3" y="3" width="38" height="38"
-                                    fill="none"
-                                    stroke="rgba(0,0,0,0.08)"
-                                    strokeWidth="3"
-                                />
-                                <rect x="3" y="3" width="38" height="38"
-                                    fill="none"
-                                    stroke={arcColor}
-                                    strokeWidth="3"
-                                    strokeDasharray={arcPerimeter}
-                                    strokeDashoffset={arcOffset}
-                                    strokeLinecap="butt"
-                                />
-                            </svg>
-                        )} */}
                     </span>
-                </MomentActionBorder>
+                    {dragProgress > 0 && (
+                        <svg
+                            className="moment-action__arc"
+                            viewBox="0 0 44 44"
+                            aria-hidden
+                        >
+                            <rect x="3" y="3" width="38" height="38"
+                                fill="none"
+                                stroke="rgba(0,0,0,0.08)"
+                                strokeWidth="3"
+                            />
+                            <rect x="3" y="3" width="38" height="38"
+                                fill="none"
+                                stroke={arcColor}
+                                strokeWidth="3"
+                                strokeDasharray={arcPerimeter}
+                                strokeDashoffset={arcOffset}
+                                strokeLinecap="butt"
+                                style={{ transition: hasFriction ? 'stroke-dashoffset 0.05s linear' : 'none' }}
+                            />
+                        </svg>
+                    )}
+                </span>
                 <div
                     className="moment-action__body"
                     style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
                 >
                     <span className="moment-action__name">{name}</span>
+                    {friction.frictionLevel !== 'none' && (
+                        <span className={`moment-action__friction-badge moment-action__friction-badge--${friction.frictionLevel}`}>
+                            {friction.frictionLevel === 'low' ? '🔴' : '🟡'} {friction.label}
+                        </span>
+                    )}
                     {moment.description && (
                         <span ref={descRef} className={descClassName} style={descStyle}>
                             <span ref={descTrackRef} className="moment-action__desc-track">
