@@ -83,3 +83,10 @@
         border-color: var(--mm-text-faint);
     }
 }
+
+// The draft row itself must not show a focus ring — focus is indicated by the
+// input's border. Suppress the global *:focus-visible rule on any ancestor.
+.moment-action--draft-source,
+.moment-action--draft-source *:not(.draft-name-input):focus-visible {
+    outline: none;
+}

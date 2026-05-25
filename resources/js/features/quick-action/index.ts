@@ -4,3 +4,4 @@ export { useMomentCompletionFriction } from './useMomentCompletionFriction';
 export type { FrictionConfig, FrictionLevel } from './useMomentCompletionFriction';
 export { consistencyBand } from './utils';
 export type { ConsistencyBand } from './utils';
+export { useMomentDragPreview } from './useMomentDragPreview';

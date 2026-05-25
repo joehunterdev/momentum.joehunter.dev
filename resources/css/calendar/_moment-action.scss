@@ -259,6 +259,19 @@
         border-radius: 0;
         transition: width 0.4s ease;
     }
+
+    &__preview {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        border-radius: 0;
+        transition: width 0.1s ease, opacity 0.1s ease;
+        pointer-events: none;
+    }
+
+    &__track {
+        position: relative;
+    }
 }
 
 // ─── Icon border ────────────────────────────────────────────────────
@@ -360,50 +373,5 @@
     .moment-action__desc--marquee .moment-action__desc-track {
         animation: none;
         transform: translateX(0);
-    }
-}
-
-// ─── Completion friction ring (Quick Action Phase 4) ──────────────────────
-// Low/mid-consistency moments require a sustained hold before the swipe can
-// commit. The icon grows a conic-gradient ring that fills clockwise with
-// --hold-progress (0–1). Empty colour is visible at rest as a "this needs
-// effort" hint; the bright fill arrives as the user holds.
-
-.moment-action--friction-mid {
-    --friction-ring-empty: rgba(245, 158, 11, 0.35);
-    --friction-ring-filled: rgba(245, 158, 11, 1);
-}
-
-.moment-action--friction-low {
-    --friction-ring-empty: rgba(239, 68, 68, 0.35);
-    --friction-ring-filled: rgba(239, 68, 68, 1);
-}
-
-.moment-action--friction-mid .moment-action__icon,
-.moment-action--friction-low .moment-action__icon {
-    overflow: visible;
-}
-
-.moment-action--friction-mid .moment-action__icon::before,
-.moment-action--friction-low .moment-action__icon::before {
-    content: '';
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    background: conic-gradient(from -90deg,
-            var(--friction-ring-filled) calc(var(--hold-progress, 0) * 360deg),
-            var(--friction-ring-empty) 0);
-    mask: radial-gradient(transparent 56%, black 58%);
-    -webkit-mask: radial-gradient(transparent 56%, black 58%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    // No conic fill animation, but keep the static ring at rest as a marker.
-    .moment-action--friction-mid .moment-action__icon::before,
-    .moment-action--friction-low .moment-action__icon::before {
-        background: var(--friction-ring-empty);
     }
 }

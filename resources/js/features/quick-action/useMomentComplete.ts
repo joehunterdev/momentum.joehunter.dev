@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCalendarActions } from '@/features/calendar/hooks/useCalendarActions';
+import { broadcastDragProgress } from './momentDragStore';
 
 /** Drag past this fraction of the row width to commit on release. */
 const COMMIT_THRESHOLD = 0.85;
@@ -95,8 +96,9 @@ export function useMomentComplete({
         holdRef.current = 0;
         abortedRef.current = false;
         setDragProgress(0);
+        broadcastDragProgress(momentId, 0);
         setHoldProgress(0);
-    }, [stopHoldTimer]);
+    }, [stopHoldTimer, momentId]);
 
     const commit = useCallback(() => {
         setIsCommitting(true);
@@ -123,6 +125,7 @@ export function useMomentComplete({
         if (Math.abs(dy) - Math.abs(dx) > VERTICAL_DOMINANCE_PX && progressRef.current < 0.1) {
             abortedRef.current = true;
             setDragProgress(0);
+            broadcastDragProgress(momentId, 0);
             progressRef.current = 0;
             return;
         }
@@ -131,7 +134,8 @@ export function useMomentComplete({
         const next = Math.max(0, Math.min(1, signedDx / width));
         progressRef.current = next;
         setDragProgress(next);
-    }, []);
+        broadcastDragProgress(momentId, next);
+    }, [momentId]);
 
     const onPointerUp = useCallback(() => {
         const dragReady = progressRef.current >= COMMIT_THRESHOLD;

@@ -11,6 +11,7 @@ import {
     useMomentComplete,
     useMomentCompletionFriction,
     useMomentDescriptionMarquee,
+    useMomentDragPreview,
 } from '@/features/quick-action';
 
 export type MomentActionVariant = 'read' | 'edit' | 'draft';
@@ -110,6 +111,7 @@ export default function MomentAction({
 
     const isCompleted = moment.status === MomentStatus.Completed;
     const friction = useMomentCompletionFriction(moment.consistency);
+    const siblingDragPreview = useMomentDragPreview(moment.id);
     const { dragProgress, holdProgress, isCommitting, onActivate, bindHandlers } = useMomentComplete({
         momentId: moment.id,
         date: date ?? '',
@@ -237,16 +239,17 @@ export default function MomentAction({
                         disabled={!canCommit}
                         onPointerDown={(e) => {
                             if (!canCommit) return;
+                            const target = e.currentTarget as HTMLButtonElement;
                             const timer = window.setTimeout(() => {
                                 onDraftApplyAll?.();
                             }, 600);
                             const up = () => {
                                 clearTimeout(timer);
-                                e.currentTarget.removeEventListener('pointerup', up);
-                                e.currentTarget.removeEventListener('pointerleave', up);
+                                target.removeEventListener('pointerup', up);
+                                target.removeEventListener('pointerleave', up);
                             };
-                            e.currentTarget.addEventListener('pointerup', up);
-                            e.currentTarget.addEventListener('pointerleave', up);
+                            target.addEventListener('pointerup', up);
+                            target.addEventListener('pointerleave', up);
                         }}
                         onClick={() => { if (canCommit) onDraftApply?.(); }}
                     >
@@ -291,7 +294,6 @@ export default function MomentAction({
     const readCls = [
         cls,
         band && `moment-action--consistency-${band}`,
-        friction.frictionLevel !== 'none' && `moment-action--friction-${friction.frictionLevel}`,
         isCompleted && 'moment-action--completed',
         isCommitting && 'moment-action--committing',
     ].filter(Boolean).join(' ');
@@ -397,7 +399,7 @@ export default function MomentAction({
                 )}
             </div>
             <div className="moment-action__progress">
-                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} />
+                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} previewProgress={Math.max(dragProgress, siblingDragPreview)} />
             </div>
         </div>
     );
