@@ -107,6 +107,7 @@ export function useScheduling({ redirectTo, onConfirm }: UseSchedulingOptions) {
                 preferred_time: state.time,
                 icon: state.icon,
                 scheduled_date: null,
+                end_date: state.endDate,
             });
         }
     }

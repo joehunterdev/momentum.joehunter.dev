@@ -16,10 +16,13 @@ export default function Index({ date, day, config, completedCount, totalCount }:
     const scheduling = useScheduling({ redirectTo: route('daily', { date }) });
 
     function handleStartScheduling(targetDate: string, time: string) {
+        const endDate = format(addDays(parseISO(targetDate), 7), 'yyyy-MM-dd');
         scheduling.start({
-            kind: SchedulingKind.OneOff,
-            date: targetDate,
+            kind: SchedulingKind.Recurring,
+            daysOfWeek: [1, 2, 3, 4, 5, 6, 7],
             time,
+            anchorDate: targetDate,
+            endDate,
             name: '',
             icon: null,
         });

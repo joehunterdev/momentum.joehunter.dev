@@ -1,0 +1,1 @@
+import{t as e}from"./app-Ct-1JCba.js";var t=e();function n({className:e=``,disabled:n,children:r,...i}){return(0,t.jsx)(`button`,{...i,className:`mm-btn-primary inline-flex items-center px-4 py-2 text-xs font-semibold uppercase tracking-widest transition duration-150 ease-in-out ${n&&`opacity-25`} `+e,disabled:n,children:r})}export{n as t};

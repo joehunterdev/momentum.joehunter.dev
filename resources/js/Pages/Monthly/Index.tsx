@@ -4,7 +4,7 @@ import { CalendarNav, CalendarProgressBar } from '@/shared/components/calendar';
 import { MonthlyContainer } from '@/features/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
-import { addMonths, format, parseISO, subMonths } from 'date-fns';
+import { addDays, addMonths, format, parseISO, subMonths } from 'date-fns';
 import type { PageProps } from '@/types';
 import { SchedulingKind } from '@/shared/types/enums';
 
@@ -37,11 +37,14 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
     }
 
     function handleStartScheduling(isoDay: number) {
+        const anchor = firstDateForIsoDay(isoDay);
+        const endDate = format(addDays(parseISO(anchor), 360), 'yyyy-MM-dd');
         scheduling.start({
             kind: SchedulingKind.Recurring,
             daysOfWeek: [...ALL_DAYS],
             time: null,
-            anchorDate: firstDateForIsoDay(isoDay),
+            anchorDate: anchor,
+            endDate,
             name: '',
             icon: null,
         });
@@ -98,11 +101,13 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
                         mode={scheduling.mode}
                         scheduling={scheduling.state}
                         onStartSchedulingFromDate={(date) => {
+                            const endDate = format(addDays(parseISO(date), 360), 'yyyy-MM-dd');
                             scheduling.start({
                                 kind: SchedulingKind.Recurring,
                                 daysOfWeek: [...ALL_DAYS],
                                 time: null,
                                 anchorDate: date,
+                                endDate,
                                 name: '',
                                 icon: null,
                             });

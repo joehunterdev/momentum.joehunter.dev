@@ -57,7 +57,7 @@ $border-light: var(--mm-border-light);
         }
     }
 
-    // ── Desktop: vertical column — time label top, content below ──────────
+    // ── Desktop: vertical column — time label tops, content below ──────────
     @media (min-width: 768px) {
         flex-direction: column;
         align-items: center;

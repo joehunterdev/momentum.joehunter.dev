@@ -14,6 +14,7 @@ class MomentSchedule extends Model
         'days_of_week',
         'preferred_time',
         'scheduled_date',
+        'end_date',
     ];
 
     protected $casts = [
@@ -21,6 +22,7 @@ class MomentSchedule extends Model
         'days_of_week' => 'array',
         'preferred_time' => 'string',
         'scheduled_date' => 'string',
+        'end_date' => 'string',
     ];
 
     public function moment(): BelongsTo

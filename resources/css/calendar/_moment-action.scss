@@ -285,6 +285,12 @@
 // ─── Completed state ────────────────────────────────────────
 // Progress bar fills; tick overlay appears far right.
 
+.moment-action--completed {
+    background: linear-gradient(to right,
+            var(--mm-surface) 0%,
+            var(--mm-surface-hover) 100%);
+}
+
 .moment-action--completed .moment-action__icon {
     cursor: pointer;
 }
