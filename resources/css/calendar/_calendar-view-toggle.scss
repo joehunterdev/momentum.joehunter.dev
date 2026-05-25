@@ -18,16 +18,16 @@
     transition: color 0.12s, background 0.12s;
 
     &:hover {
-      color: var(--mm-secondary);
-      background: rgba(var(--mm-secondary-rgb), 0.08);
+      color: var(--mm-text-body);
+      background: rgba(0, 0, 0, 0.04);
     }
 
     &--active {
-      color: var(--mm-secondary);
-      background: rgba(var(--mm-secondary-rgb), 0.12);
+      color: var(--mm-text-strong);
+      background: rgba(0, 0, 0, 0.08);
 
       &:hover {
-        background: rgba(var(--mm-secondary-rgb), 0.16);
+        background: rgba(0, 0, 0, 0.12);
       }
     }
   }

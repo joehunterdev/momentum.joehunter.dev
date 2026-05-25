@@ -1,40 +1,49 @@
 // _calendar-nav.scss — generic prev/current/next nav used by daily, weekly
-// and monthly views.
+// and monthly views. Layout is a 3-cell flex row that always fills the
+// container: buttons take ~1 share each, the centre label takes ~1.5 shares
+// so it has room to breathe with longer date ranges.
 
 .calendar-nav {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
   min-width: 0;
   gap: 0;
 
   &__btn {
-    flex-shrink: 0;
+    flex: 1 1 0;
+    min-width: 0;
     display: flex;
     align-items: center;
-    padding: 0.375rem 0.625rem;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.5rem;
     background: none;
     border: 1px solid var(--mm-border);
-    color: var(--mm-secondary);
-    font-size: 0.75rem;
+    color: var(--mm-text-mute);
+    font-size: var(--mm-text-sm);
     cursor: pointer;
     white-space: nowrap;
-    transition: border-color 0.12s, color 0.12s, background 0.12s;
-    max-width: 8rem;
     overflow: hidden;
+    transition: border-color 0.12s, color 0.12s, background 0.12s;
 
     &:hover {
-      border-color: var(--mm-secondary);
-      color: var(--mm-secondary-dark);
-      background: rgba(var(--mm-secondary-rgb), 0.08);
+      border-color: var(--mm-text-mute);
+      color: var(--mm-text-body);
+      background: rgba(0, 0, 0, 0.04);
     }
 
+    // Chevron lives on the button (not the label) so it's always visible
+    // even when the label truncates aggressively.
     &--prev {
       border-radius: 0;
       border-right: none;
 
-      .calendar-nav__label::before {
-        content: '‹ ';
+      &::before {
+        content: '‹';
+        font-size: 1rem;
+        line-height: 1;
+        flex-shrink: 0;
       }
     }
 
@@ -42,20 +51,24 @@
       border-radius: 0;
       border-left: none;
 
-      .calendar-nav__label::after {
-        content: ' ›';
+      &::after {
+        content: '›';
+        font-size: 1rem;
+        line-height: 1;
+        flex-shrink: 0;
       }
     }
   }
 
   &__label {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   &__current {
-    flex: 1 1 0;
+    flex: 1.5 1 0;
     min-width: 0;
     display: flex;
     align-items: center;
@@ -65,7 +78,7 @@
   }
 
   &__current-label {
-    font-size: 0.875rem;
+    font-size: var(--mm-text-base);
     font-weight: 600;
     color: var(--mm-text-strong);
     white-space: nowrap;

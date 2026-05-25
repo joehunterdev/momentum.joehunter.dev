@@ -84,17 +84,18 @@
         animation: slot-icon-shake 0.45s ease forwards;
     }
 
-    // Draft placeholder — used in the draft card when scheduling a new moment
+    // Draft placeholder — used in the draft card when scheduling a new moment.
+    // Matches the surrounding .moment-action--draft purple palette.
     &--draft-placeholder {
-        border: 2px dashed var(--mm-primary);
-        background: rgba(var(--mm-primary-rgb), 0.08);
-        color: var(--mm-primary);
+        border: 2px dashed var(--mm-secondary);
+        background: rgba(var(--mm-secondary-rgb), 0.08);
+        color: var(--mm-secondary);
         font-size: 1rem;
         font-weight: 700;
         cursor: pointer; // clickable — opens icon picker
 
         &:hover {
-            background: rgba(var(--mm-primary-rgb), 0.14);
+            background: rgba(var(--mm-secondary-rgb), 0.14);
             transform: none;
         }
     }

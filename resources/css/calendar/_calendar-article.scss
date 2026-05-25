@@ -263,9 +263,12 @@ $border-light: var(--mm-border-light);
         display: flex;
         flex-direction: column;
         gap: 0;
-        padding: 0;
         justify-content: flex-start !important;
         align-items: stretch;
+        // Base `&:has(.moment-action)` rule already zeroes padding when
+        // moments are present. Leaving padding here on default means empty
+        // slots get the same 0.5rem breathing room as daily/weekly, so the
+        // + button isn't pinched against the row borders.
 
         >.moment-action {
             border-bottom: 1px solid var(--mm-border-light);

@@ -47,8 +47,8 @@
         }
 
         &--active {
-            background: rgba(var(--mm-primary-rgb), 0.12);
-            outline: 2px solid var(--mm-primary, #6366f1);
+            background: rgba(var(--mm-secondary-rgb), 0.12);
+            outline: 2px solid var(--mm-secondary, #8B5CF6);
         }
     }
 }
@@ -56,22 +56,27 @@
 .draft-name-input {
     width: 100%;
     min-width: 0;
-    border: none;
+    // Transparent border at rest so the input sits flush in the draft row;
+    // the same 1px keeps layout stable when the focus border appears.
+    border: 1px solid transparent;
+    border-radius: 0;
     outline: none;
     background: transparent;
-    // 16px minimum prevents iOS Safari from auto-zooming on focus
-    font-size: 16px;
+    // NOTE: iOS Safari auto-zooms on focus when font-size < 16px. The visual
+    // ask here is p-sized text, so we accept the brief focus zoom. Bump back
+    // to 16px if testing shows the zoom is disruptive on iPhone.
+    font-size: var(--mm-text-base);
     font-weight: 500;
-    color: var(--mm-text-body);
-    padding: 0;
+    color: var(--mm-text-mute);
+    padding: 0.25rem 0.5rem;
 
     &::placeholder {
-        color: var(--mm-secondary, #8B5CF6);
-        opacity: 0.6;
-        font-style: italic;
+        color: var(--mm-text-faint);
+        opacity: 1;
     }
 
     &:focus {
         color: var(--mm-text-body);
+        border-color: var(--mm-text-mute);
     }
 }
