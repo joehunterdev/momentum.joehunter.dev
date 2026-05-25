@@ -253,10 +253,33 @@ $border-light: var(--mm-border-light);
 .calendar-article--monthly-day {
     align-items: stretch;
 
+    // Base .calendar-article flips to column layout at ≥768px (calendar grid
+    // cells). Monthly-day rows are list rows, not grid cells — keep the key
+    // on the left and the content column on the right at all breakpoints.
+    @media (min-width: 768px) {
+        flex-direction: row;
+        align-items: stretch;
+        border-right: none;
+        border-bottom: 1px solid $border-light;
+        min-width: 0;
+    }
+
     .calendar-article__key {
         width: 4.5rem;
         padding-top: 0.875rem;
         align-items: flex-start;
+
+        @media (min-width: 768px) {
+            width: 4.5rem;
+            padding: 0.875rem 0.75rem;
+            font-size: 0.6875rem;
+            text-align: right;
+            justify-content: flex-end;
+            align-items: flex-start;
+            border-right: 1px solid $border-light;
+            border-bottom: none;
+            background: var(--mm-surface-alt);
+        }
     }
 
     .calendar-article__content {
@@ -276,6 +299,18 @@ $border-light: var(--mm-border-light);
             &:last-child {
                 border-bottom: none;
             }
+        }
+    }
+}
+
+// Monthly configure rows — full day-name labels ("WEDNESDAY") need a wider
+// key column than the 4.5rem the overview uses for "TUE 26".
+.calendar-article--monthly-schedule {
+    .calendar-article__key {
+        width: 6.25rem;
+
+        @media (min-width: 768px) {
+            width: 6.25rem;
         }
     }
 }

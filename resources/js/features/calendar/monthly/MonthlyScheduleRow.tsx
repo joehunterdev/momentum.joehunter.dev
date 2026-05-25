@@ -1,10 +1,8 @@
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
-import {
-    CalendarSection,
-    CalendarSectionArticle,
-    CalendarSectionHeader,
-} from '@/shared/components/calendar';
+import MomentAction from '@/features/calendar/components/MomentAction';
+import type { CalendarMoment } from '@/shared/components/calendar/types';
 import { WEEK_DAYS } from '@/shared/constants/moments';
+import { SchedulingKind } from '@/shared/types/enums';
 
 interface Props {
     row: App.Data.MonthlyScheduleRowData;
@@ -20,6 +18,8 @@ interface Props {
 }
 
 const WEEKEND_ISO_DAYS = [6, 7];
+const WEEKDAY_SET: IsoDayNumber[] = [1, 2, 3, 4, 5];
+const WEEKEND_SET: IsoDayNumber[] = [6, 7];
 
 /**
  * Converts full MomentData (entity with schedule/cue/reward) to SlotMomentData.
@@ -43,6 +43,48 @@ function toCalendarMoment(m: App.Data.MomentData): App.Data.SlotMomentData {
     };
 }
 
+function makeDraftMoment(scheduling: SchedulingState | null): CalendarMoment {
+    return {
+        id: 0,
+        name: scheduling?.name || 'New Moment',
+        description: null,
+        status: null,
+        color: null,
+        icon: scheduling?.icon ?? null,
+        frequency: null,
+        consistency: null,
+        instance_id: null,
+        implementation_intention: null,
+        habit_stack_after: null,
+        environment_prompt: null,
+        progress: null,
+    };
+}
+
+function sameSet(a: IsoDayNumber[], b: IsoDayNumber[]): boolean {
+    if (a.length !== b.length) { return false; }
+    return b.every((d) => a.includes(d));
+}
+
+function formatRecurrenceLabel(scheduling: SchedulingState | null): string | null {
+    if (!scheduling || scheduling.kind !== SchedulingKind.Recurring) { return null; }
+    const timePart = scheduling.time ? ` at ${scheduling.time}` : '';
+    const days = [...scheduling.daysOfWeek].sort((a, b) => a - b) as IsoDayNumber[];
+    if (days.length === 0) { return null; }
+    if (days.length === 7) { return `every day${timePart}`; }
+    if (sameSet(days, WEEKDAY_SET)) { return `every weekday${timePart}`; }
+    if (sameSet(days, WEEKEND_SET)) { return `every weekend${timePart}`; }
+    if (days.length === 1) {
+        return `every ${WEEK_DAYS[days[0] - 1].full}${timePart}`;
+    }
+    const names = days.map((d) => WEEK_DAYS[d - 1].full.slice(0, 3)).join(', ');
+    return `${names}${timePart}`;
+}
+
+function jsToIso(jsDay: number): IsoDayNumber {
+    return (jsDay === 0 ? 7 : jsDay) as IsoDayNumber;
+}
+
 export default function MonthlyScheduleRow({
     row,
     mode,
@@ -57,62 +99,61 @@ export default function MonthlyScheduleRow({
 }: Props) {
     const isWeekend = WEEKEND_ISO_DAYS.includes(row.isoDayNumber);
     const isoDayNumber = row.isoDayNumber as IsoDayNumber;
-    const dayLabel = WEEK_DAYS[row.isoDayNumber - 1].full;
+    const fullDayName = WEEK_DAYS[row.isoDayNumber - 1].full;
+    const dayLabel = fullDayName.toUpperCase();
 
-    const targetsThisDay =
-        scheduling !== null
-        && scheduling.kind === 'recurring'
-        && scheduling.daysOfWeek.includes(isoDayNumber);
+    const isRecurring = scheduling !== null && scheduling.kind === SchedulingKind.Recurring;
+    const targetsThisDay = isRecurring && scheduling.daysOfWeek.includes(isoDayNumber);
+    const isSource = isRecurring
+        && jsToIso(new Date(scheduling.anchorDate).getDay()) === isoDayNumber
+        && targetsThisDay;
+
+    const cls = [
+        'calendar-article',
+        'calendar-article--monthly-day',
+        'calendar-article--monthly-schedule',
+        isWeekend && 'calendar-article--weekend',
+    ].filter(Boolean).join(' ');
 
     return (
-        <CalendarSection
-            isWeekend={isWeekend}
-            layout="horizontal"
-            header={<CalendarSectionHeader label={dayLabel} />}
-        >
-            {/* One article per existing moment */}
-            {row.moments.map((m) => (
-                <CalendarSectionArticle
-                    key={m.id}
-                    slotKey={`${row.isoDayNumber}:moment-${m.id}`}
-                    isoDayNumber={row.isoDayNumber}
-                    moment={toCalendarMoment(m)}
-                    mode={mode}
-                    scheduling={scheduling}
-                    capabilities={{ editButton: true }}
-                />
-            ))}
+        <div className={cls}>
+            <span className="calendar-article__key">{dayLabel}</span>
+            <div className="calendar-article__content">
+                {row.moments.map((m) => (
+                    <MomentAction
+                        key={m.id}
+                        moment={toCalendarMoment(m)}
+                        variant={mode === 'configure' ? 'edit' : 'read'}
+                    />
+                ))}
 
-            {/* Draft article when scheduling targets this day */}
-            {targetsThisDay && (
-                <CalendarSectionArticle
-                    key="draft"
-                    slotKey={`${row.isoDayNumber}:draft`}
-                    isoDayNumber={row.isoDayNumber}
-                    moment={null}
-                    mode={mode}
-                    scheduling={scheduling}
-                    capabilities={{ draftEdit: true }}
-                    onDraftNameChange={onDraftNameChange}
-                    onDraftIconChange={onDraftIconChange}
-                    onDraftApply={onDraftApply}
-                    onDraftApplyAll={onDraftApplyAll}
-                    onDraftCancel={onDraftCancel}
-                    onGhostExclude={onGhostExclude}
-                />
-            )}
+                {targetsThisDay && (
+                    <MomentAction
+                        moment={makeDraftMoment(scheduling)}
+                        variant="draft"
+                        isSource={isSource}
+                        canApplyAll
+                        recurrenceLabel={isSource ? formatRecurrenceLabel(scheduling) : null}
+                        onDraftNameChange={onDraftNameChange}
+                        onDraftIconChange={onDraftIconChange}
+                        onDraftApply={onDraftApply}
+                        onDraftApplyAll={onDraftApplyAll}
+                        onDraftCancel={onDraftCancel}
+                        onGhostExclude={!isSource ? () => onGhostExclude(isoDayNumber) : undefined}
+                    />
+                )}
 
-            {/* Always-present add article at the end of the row */}
-            <CalendarSectionArticle
-                key="add"
-                slotKey={`${row.isoDayNumber}:add`}
-                isoDayNumber={row.isoDayNumber}
-                moment={null}
-                mode={mode}
-                scheduling={null}
-                capabilities={{ addOnEmpty: true }}
-                onStartScheduling={() => onStartScheduling(row.isoDayNumber)}
-            />
-        </CalendarSection>
+                {!targetsThisDay && (
+                    <button
+                        type="button"
+                        className="calendar-article__add-btn calendar-article__add-btn--always-visible"
+                        title={`Add moment on ${fullDayName}`}
+                        onClick={() => onStartScheduling(row.isoDayNumber)}
+                    >
+                        +
+                    </button>
+                )}
+            </div>
+        </div>
     );
 }
