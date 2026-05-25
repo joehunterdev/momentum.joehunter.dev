@@ -6,4 +6,5 @@ export interface UserConfig {
     office_start: string;        // "HH:mm"
     office_end: string;          // "HH:mm"
     identity_statement: string | null;
+    friction_level: 'auto' | 'none' | 'mid' | 'low';
 }

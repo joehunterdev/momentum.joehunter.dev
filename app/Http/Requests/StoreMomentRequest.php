@@ -41,6 +41,7 @@ class StoreMomentRequest extends FormRequest
             'days_of_week.*' => ['integer', 'between:1,7'],
             'scheduled_date' => ['required_if:frequency,once', 'nullable', 'date'],
             'preferred_time' => ['nullable', 'date_format:H:i'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:today'],
 
             // Cue
             'implementation_intention' => ['nullable', 'string', 'max:255'],

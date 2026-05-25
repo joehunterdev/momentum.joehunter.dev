@@ -76,6 +76,13 @@ class Moment extends Model
             }
         }
 
+        // Respect end_date: daily and recurring moments stop after this date.
+        if ($schedule->end_date !== null && $schedule->frequency !== Frequency::Once) {
+            if ($date->copy()->startOfDay()->gt(Carbon::parse($schedule->end_date)->startOfDay())) {
+                return false;
+            }
+        }
+
         return match ($schedule->frequency) {
             Frequency::Daily => true,
             Frequency::Recurring => in_array($date->dayOfWeekIso, $schedule->days_of_week ?? [], strict: true),

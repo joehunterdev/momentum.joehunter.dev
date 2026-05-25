@@ -57,7 +57,7 @@ $border-light: var(--mm-border-light);
         }
     }
 
-    // ── Desktop: vertical column — time label top, content below ──────────
+    // ── Desktop: vertical column — time label tops, content below ──────────
     @media (min-width: 768px) {
         flex-direction: column;
         align-items: center;
@@ -265,20 +265,21 @@ $border-light: var(--mm-border-light);
     }
 
     .calendar-article__key {
-        width: 4.5rem;
-        padding-top: 0.875rem;
-        align-items: flex-start;
+        width: 3.5rem;
+        padding: 0.75rem 0;
+        align-items: center;
+        justify-content: flex-start;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        font-size: 0.6rem;
+        text-align: left;
+        letter-spacing: 0.06em;
+        border-right: 1px solid $border-light;
+        border-bottom: none;
+        background: var(--mm-surface-alt);
 
         @media (min-width: 768px) {
-            width: 4.5rem;
-            padding: 0.875rem 0.75rem;
-            font-size: 0.6875rem;
-            text-align: right;
-            justify-content: flex-end;
-            align-items: flex-start;
-            border-right: 1px solid $border-light;
-            border-bottom: none;
-            background: var(--mm-surface-alt);
+            width: 3.5rem;
         }
     }
 

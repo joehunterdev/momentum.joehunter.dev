@@ -4,6 +4,7 @@ import { router } from '@inertiajs/react';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
 import MomentIcon from '@/shared/components/calendar/MomentIcon';
 import MomentProgressBar from '@/shared/components/calendar/MomentProgressBar';
+// import MomentActionBorder from './MomentActionBorder';
 import { MOMENT_ICONS } from '@/shared/constants/icons';
 import { MomentStatus } from '@/shared/types/enums';
 import {
@@ -11,6 +12,7 @@ import {
     useMomentComplete,
     useMomentCompletionFriction,
     useMomentDescriptionMarquee,
+    useMomentDragPreview,
 } from '@/features/quick-action';
 
 export type MomentActionVariant = 'read' | 'edit' | 'draft';
@@ -71,6 +73,7 @@ export default function MomentAction({
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
     const iconBtnRef = useRef<HTMLButtonElement>(null);
+    const pickerPanelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!pickerOpen || !iconBtnRef.current) { return; }
@@ -88,7 +91,10 @@ export default function MomentAction({
     useEffect(() => {
         if (!pickerOpen) { return; }
         const close = (e: MouseEvent) => {
-            if (iconBtnRef.current && !iconBtnRef.current.contains(e.target as Node)) {
+            const target = e.target as Node;
+            const insideBtn = iconBtnRef.current?.contains(target);
+            const insidePanel = pickerPanelRef.current?.contains(target);
+            if (!insideBtn && !insidePanel) {
                 setPickerOpen(false);
             }
         };
@@ -106,6 +112,7 @@ export default function MomentAction({
 
     const isCompleted = moment.status === MomentStatus.Completed;
     const friction = useMomentCompletionFriction(moment.consistency);
+    const siblingDragPreview = useMomentDragPreview(moment.id);
     const { dragProgress, holdProgress, isCommitting, onActivate, bindHandlers } = useMomentComplete({
         momentId: moment.id,
         date: date ?? '',
@@ -163,7 +170,7 @@ export default function MomentAction({
                     </button>
 
                     {pickerOpen && createPortal(
-                        <div className="draft-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
+                        <div ref={pickerPanelRef} className="draft-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
                             <div className="draft-icon-picker__grid">
                                 {MOMENT_ICONS.map((opt) => (
                                     <button
@@ -233,16 +240,17 @@ export default function MomentAction({
                         disabled={!canCommit}
                         onPointerDown={(e) => {
                             if (!canCommit) return;
+                            const target = e.currentTarget as HTMLButtonElement;
                             const timer = window.setTimeout(() => {
                                 onDraftApplyAll?.();
                             }, 600);
                             const up = () => {
                                 clearTimeout(timer);
-                                e.currentTarget.removeEventListener('pointerup', up);
-                                e.currentTarget.removeEventListener('pointerleave', up);
+                                target.removeEventListener('pointerup', up);
+                                target.removeEventListener('pointerleave', up);
                             };
-                            e.currentTarget.addEventListener('pointerup', up);
-                            e.currentTarget.addEventListener('pointerleave', up);
+                            target.addEventListener('pointerup', up);
+                            target.addEventListener('pointerleave', up);
                         }}
                         onClick={() => { if (canCommit) onDraftApply?.(); }}
                     >
@@ -287,7 +295,6 @@ export default function MomentAction({
     const readCls = [
         cls,
         band && `moment-action--consistency-${band}`,
-        friction.frictionLevel !== 'none' && `moment-action--friction-${friction.frictionLevel}`,
         isCompleted && 'moment-action--completed',
         isCommitting && 'moment-action--committing',
     ].filter(Boolean).join(' ');
@@ -303,8 +310,9 @@ export default function MomentAction({
         : undefined;
 
     // Icon travels the full row width minus its own size (~2rem = 32px) + gap.
-    // rowRef.current is valid by the time dragProgress > 0 (component is mounted).
-    const maxTravel = Math.max(0, (rowRef.current?.clientWidth ?? 320) - 40);
+    // Cap travel so the icon stops ~48px from the right edge (thumb room).
+    const RIGHT_MARGIN = 48;
+    const maxTravel = Math.max(0, (rowRef.current?.clientWidth ?? 320) - 40 - RIGHT_MARGIN);
     const iconTranslateX = isCompleted
         ? `translateX(${dragProgress * -maxTravel}px)`
         : `translateX(${dragProgress * maxTravel}px)`;
@@ -313,12 +321,22 @@ export default function MomentAction({
     // Body fades out as the icon starts sliding, giving it clear runway.
     const bodyOpacity = Math.max(0, 1 - dragProgress * 3);
 
-    // Arc animates around the icon ONLY while dragging.
-    // Square border fills clockwise via strokeDashoffset on a rect path.
-    // Two colours: teal = swiping to complete, gray = swiping to undo.
-    const arcPerimeter = 4 * 38; // rect is 38×38 inside the 44×44 viewBox (3px inset each side)
-    const arcOffset = arcPerimeter * (1 - dragProgress);
-    const arcColor = isCompleted ? 'rgba(160,160,160,0.8)' : 'var(--mm-progress-complete, #00E5AA)';
+    const hasFriction = friction.requiredHoldMs > 0;
+    const arcPerimeter = 4 * 38;
+    // No friction → fill tracks drag position directly.
+    // Friction     → empty during drag; the moment the wall is hit, target jumps to 1
+    //                and the CSS transition runs uninterrupted for exactly requiredHoldMs.
+    //                Using holdProgress here would reset the transition every rAF tick.
+    const normDrag = Math.min(1, dragProgress / 0.85);
+    const atWall = dragProgress >= 0.85;
+    const arcProgress = hasFriction ? (atWall ? 1 : 0) : normDrag;
+    const arcOffset = arcPerimeter * (1 - arcProgress);
+    // Colour by friction level so the border signals urgency.
+    const arcColor = friction.frictionLevel === 'low'
+        ? '#ef4444'
+        : friction.frictionLevel === 'mid'
+            ? '#f59e0b'
+            : (moment.color ?? 'var(--mm-progress-complete, #00E5AA)');
 
     return (
         <div
@@ -328,53 +346,72 @@ export default function MomentAction({
         >
             <div className="moment-action__row">
                 <span
-                    className="moment-action__icon"
                     style={{
-                        touchAction: 'pan-y',
-                        cursor: isCommitting ? 'wait' : 'pointer',
                         transform: iconTranslateX,
                         transition: iconTransition,
                         willChange: dragProgress > 0 ? 'transform' : 'auto',
                         zIndex: dragProgress > 0 ? 10 : undefined,
-                        overflow: 'visible',
+                        flexShrink: 0,
+                        display: 'inline-block',
+                        position: 'relative',
                     }}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={friction.label || (isCompleted ? 'Mark as incomplete' : 'Mark as complete')}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            onActivate();
-                        }
-                    }}
-                    {...bindHandlers}
                 >
-                    {moment.icon ?? '📌'}
-                    {dragProgress > 0 && (
-                        <svg className="moment-action__arc" viewBox="0 0 44 44" aria-hidden>
-                            {/* Track — faint square outline */}
-                            <rect x="3" y="3" width="38" height="38"
-                                fill="none"
-                                stroke="rgba(0,0,0,0.08)"
-                                strokeWidth="3"
-                            />
-                            {/* Fill — clockwise from top-left */}
-                            <rect x="3" y="3" width="38" height="38"
-                                fill="none"
-                                stroke={arcColor}
-                                strokeWidth="3"
-                                strokeDasharray={arcPerimeter}
-                                strokeDashoffset={arcOffset}
-                                strokeLinecap="butt"
-                            />
-                        </svg>
-                    )}
+                    <span
+                        className="moment-action__icon"
+                        style={{
+                            touchAction: 'pan-y',
+                            cursor: isCommitting ? 'wait' : 'pointer',
+                            overflow: 'visible',
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={friction.label || (isCompleted ? 'Mark as incomplete' : 'Mark as complete')}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                onActivate();
+                            }
+                        }}
+                        {...bindHandlers}
+                    >
+                        {moment.icon
+                            ? moment.icon
+                            : <img src="/logo.png" alt="" className="moment-action__icon-img" />
+                        }
+                    </span>
+                    <svg
+                        className="moment-action__arc"
+                        viewBox="0 0 44 44"
+                        aria-hidden
+                    >
+                        <rect x="3" y="3" width="38" height="38"
+                            fill="none"
+                            stroke="rgba(0,0,0,0.08)"
+                            strokeWidth="3"
+                        />
+                        <rect x="3" y="3" width="38" height="38"
+                            fill="none"
+                            stroke={arcColor}
+                            strokeWidth="3"
+                            strokeDasharray={arcPerimeter}
+                            strokeLinecap="butt"
+                            style={{
+                                strokeDashoffset: arcOffset,
+                                transition: hasFriction ? `stroke-dashoffset ${friction.requiredHoldMs}ms linear` : 'none',
+                            }}
+                        />
+                    </svg>
                 </span>
                 <div
                     className="moment-action__body"
                     style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
                 >
                     <span className="moment-action__name">{name}</span>
+                    {friction.frictionLevel !== 'none' && (
+                        <span className={`moment-action__friction-badge moment-action__friction-badge--${friction.frictionLevel}`}>
+                            {friction.frictionLevel === 'low' ? '🔴' : '🟡'} {friction.label}
+                        </span>
+                    )}
                     {moment.description && (
                         <span ref={descRef} className={descClassName} style={descStyle}>
                             <span ref={descTrackRef} className="moment-action__desc-track">
@@ -390,7 +427,7 @@ export default function MomentAction({
                 )}
             </div>
             <div className="moment-action__progress">
-                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} />
+                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} previewProgress={Math.max(dragProgress, siblingDragPreview)} />
             </div>
         </div>
     );

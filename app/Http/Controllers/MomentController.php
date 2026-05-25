@@ -25,7 +25,7 @@ class MomentController extends Controller
             'name' => $data['name'] ?? 'Untitled Moment',
             'description' => $data['description'] ?? null,
             'color' => $data['color'] ?? null,
-            'icon' => $data['icon'] ?? null,
+            'icon' => $data['icon'] ?: null,
             'sort_order' => $data['sort_order'] ?? 0,
         ]);
 
@@ -34,6 +34,7 @@ class MomentController extends Controller
             'days_of_week' => $data['days_of_week'] ?? null,
             'preferred_time' => $data['preferred_time'] ?? null,
             'scheduled_date' => $data['scheduled_date'] ?? null,
+            'end_date' => $data['end_date'] ?? null,
         ]);
 
         $moment->cue()->create([
@@ -71,7 +72,7 @@ class MomentController extends Controller
             'name' => $data['name'],
             'description' => $data['description'] ?? null,
             'color' => $data['color'] ?? null,
-            'icon' => $data['icon'] ?? null,
+            'icon' => $data['icon'] ?: null,
             'is_active' => $data['is_active'] ?? true,
             'sort_order' => $data['sort_order'] ?? $moment->sort_order,
         ]);
@@ -83,6 +84,7 @@ class MomentController extends Controller
                 'days_of_week' => $data['days_of_week'] ?? null,
                 'preferred_time' => $data['preferred_time'] ?? null,
                 'scheduled_date' => $data['scheduled_date'] ?? null,
+                'end_date' => $data['end_date'] ?? null,
             ]
         );
 

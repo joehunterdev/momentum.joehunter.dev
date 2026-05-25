@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCalendarActions } from '@/features/calendar/hooks/useCalendarActions';
+import { broadcastDragProgress } from './momentDragStore';
 
 /** Drag past this fraction of the row width to commit on release. */
 const COMMIT_THRESHOLD = 0.85;
@@ -74,11 +75,16 @@ export function useMomentComplete({
     const rowWidthRef = useRef<number>(0);
     const progressRef = useRef<number>(0);
     const holdRef = useRef<number>(0);
+    const holdStartedRef = useRef<boolean>(false);
     const rafRef = useRef<number | null>(null);
     const abortedRef = useRef<boolean>(false);
     // Track which direction this gesture expects, captured at pointerdown so
     // it doesn't flip mid-gesture if isCompleted changes.
     const expectedDirRef = useRef<1 | -1>(1);
+    // Stable refs for listener functions — avoids stale-closure mismatches
+    // on removeEventListener (critical for Safari iOS).
+    const onPointerMoveRef = useRef<((e: PointerEvent) => void) | null>(null);
+    const onPointerUpRef = useRef<(() => void) | null>(null);
 
     const stopHoldTimer = useCallback(() => {
         if (rafRef.current !== null) {
@@ -95,8 +101,9 @@ export function useMomentComplete({
         holdRef.current = 0;
         abortedRef.current = false;
         setDragProgress(0);
+        broadcastDragProgress(momentId, 0);
         setHoldProgress(0);
-    }, [stopHoldTimer]);
+    }, [stopHoldTimer, momentId]);
 
     const commit = useCallback(() => {
         setIsCommitting(true);
@@ -123,6 +130,7 @@ export function useMomentComplete({
         if (Math.abs(dy) - Math.abs(dx) > VERTICAL_DOMINANCE_PX && progressRef.current < 0.1) {
             abortedRef.current = true;
             setDragProgress(0);
+            broadcastDragProgress(momentId, 0);
             progressRef.current = 0;
             return;
         }
@@ -131,16 +139,49 @@ export function useMomentComplete({
         const next = Math.max(0, Math.min(1, signedDx / width));
         progressRef.current = next;
         setDragProgress(next);
-    }, []);
+        broadcastDragProgress(momentId, next);
+
+        // For friction items: start the hold timer the moment drag first hits the wall.
+        // If the user drags back below the threshold, stop and reset the timer.
+        if (requiredHoldMs > 0) {
+            if (next >= COMMIT_THRESHOLD && !holdStartedRef.current) {
+                holdStartedRef.current = true;
+                startTimeRef.current = performance.now();
+                const tick = () => {
+                    const elapsed = performance.now() - startTimeRef.current;
+                    const nextHold = Math.max(0, Math.min(1, elapsed / requiredHoldMs));
+                    holdRef.current = nextHold;
+                    setHoldProgress(nextHold);
+                    if (nextHold < 1) {
+                        rafRef.current = requestAnimationFrame(tick);
+                    } else {
+                        rafRef.current = null;
+                    }
+                };
+                rafRef.current = requestAnimationFrame(tick);
+            } else if (next < COMMIT_THRESHOLD && holdStartedRef.current) {
+                // Dragged back — cancel timer and reset hold
+                holdStartedRef.current = false;
+                stopHoldTimer();
+                holdRef.current = 0;
+                setHoldProgress(0);
+            }
+        }
+    }, [momentId, requiredHoldMs, stopHoldTimer]);
+    onPointerMoveRef.current = onPointerMove;
 
     const onPointerUp = useCallback(() => {
         const dragReady = progressRef.current >= COMMIT_THRESHOLD;
         const holdReady = holdRef.current >= 1;
         const shouldCommit = !abortedRef.current && dragReady && holdReady;
 
-        document.removeEventListener('pointermove', onPointerMove);
-        document.removeEventListener('pointerup', onPointerUp);
-        document.removeEventListener('pointercancel', onPointerUp);
+        if (onPointerMoveRef.current) {
+            document.removeEventListener('pointermove', onPointerMoveRef.current);
+        }
+        if (onPointerUpRef.current) {
+            document.removeEventListener('pointerup', onPointerUpRef.current);
+            document.removeEventListener('pointercancel', onPointerUpRef.current);
+        }
         stopHoldTimer();
 
         if (shouldCommit) {
@@ -148,7 +189,8 @@ export function useMomentComplete({
         } else {
             reset();
         }
-    }, [onPointerMove, commit, reset, stopHoldTimer]);
+    }, [commit, reset, stopHoldTimer]);
+    onPointerUpRef.current = onPointerUp;
 
     const onPointerDown = useCallback((e: React.PointerEvent<HTMLElement>) => {
         if (isCommitting) {
@@ -163,32 +205,27 @@ export function useMomentComplete({
         rowWidthRef.current = rowRef.current?.getBoundingClientRect().width ?? 0;
         progressRef.current = 0;
         abortedRef.current = false;
+        holdStartedRef.current = false;
         // Incomplete: gesture goes right (+1). Completed: gesture goes left (-1).
         expectedDirRef.current = isCompleted ? -1 : 1;
         holdRef.current = requiredHoldMs > 0 ? 0 : 1;
 
         if (requiredHoldMs > 0) {
+            // Hold timer starts when drag reaches the wall — see onPointerMove.
             setHoldProgress(0);
-            const tick = () => {
-                const elapsed = performance.now() - startTimeRef.current;
-                const next = Math.max(0, Math.min(1, elapsed / requiredHoldMs));
-                holdRef.current = next;
-                setHoldProgress(next);
-                if (next < 1) {
-                    rafRef.current = requestAnimationFrame(tick);
-                } else {
-                    rafRef.current = null;
-                }
-            };
-            rafRef.current = requestAnimationFrame(tick);
         } else {
             setHoldProgress(1);
         }
 
-        document.addEventListener('pointermove', onPointerMove);
-        document.addEventListener('pointerup', onPointerUp);
-        document.addEventListener('pointercancel', onPointerUp);
-    }, [isCommitting, isCompleted, rowRef, requiredHoldMs, onPointerMove, onPointerUp]);
+        // Register stable refs so removeEventListener always finds the same function.
+        if (onPointerMoveRef.current) {
+            document.addEventListener('pointermove', onPointerMoveRef.current);
+        }
+        if (onPointerUpRef.current) {
+            document.addEventListener('pointerup', onPointerUpRef.current);
+            document.addEventListener('pointercancel', onPointerUpRef.current);
+        }
+    }, [isCommitting, isCompleted, rowRef, requiredHoldMs]);
 
     /** Keyboard activation (Enter/Space). Toggles immediately. */
     const onActivate = useCallback(() => {
@@ -199,11 +236,15 @@ export function useMomentComplete({
     }, [isCommitting, commit]);
 
     useEffect(() => () => {
-        document.removeEventListener('pointermove', onPointerMove);
-        document.removeEventListener('pointerup', onPointerUp);
-        document.removeEventListener('pointercancel', onPointerUp);
+        if (onPointerMoveRef.current) {
+            document.removeEventListener('pointermove', onPointerMoveRef.current);
+        }
+        if (onPointerUpRef.current) {
+            document.removeEventListener('pointerup', onPointerUpRef.current);
+            document.removeEventListener('pointercancel', onPointerUpRef.current);
+        }
         stopHoldTimer();
-    }, [onPointerMove, onPointerUp, stopHoldTimer]);
+    }, [stopHoldTimer]);
 
     return {
         dragProgress,

@@ -5,6 +5,13 @@
 		}
 	],
 	"settings": {
+		"terminal.integrated.profiles.windows": {
+			"PowerShell": {
+				"source": "PowerShell",
+				"args": ["-NoExit", "-Command", "function deploy { & 'e:\\www\\momentum.joehunter.dev\\scripts\\.private\\deploy.ps1' @args }"]
+			}
+		},
+		"terminal.integrated.defaultProfile.windows": "PowerShell",
 		"todo-tree.tree.showBadges": true,
 		"todo-tree.tree.scanMode": "workspace only",
 
@@ -107,7 +114,10 @@
 			"blade": "html"
 		},
 
-		"tailwindCSS.experimental.configFile": "tailwind.config.js"
+		"tailwindCSS.experimental.configFile": "tailwind.config.js",
+		"github-actions.workflows.pinned.workflows": [
+			".github/workflows/deploy.yml"
+		]
 	},
 
 	"extensions": {

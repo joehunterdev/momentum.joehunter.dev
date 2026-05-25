@@ -30,6 +30,7 @@ export function transitionKind(
         daysOfWeek: [],
         time: current.time,
         anchorDate: current.kind === SchedulingKind.OneOff ? current.date : fallbackDate,
+        endDate: current.kind === SchedulingKind.Recurring ? current.endDate : fallbackDate,
         name: current.name,
         icon: current.icon,
     };

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->json('days_of_week')->nullable();
             $table->time('preferred_time')->nullable();
             $table->date('scheduled_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->timestamps();
         });
     }

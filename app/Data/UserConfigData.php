@@ -14,6 +14,7 @@ class UserConfigData extends Data
         public string $sleep_time,
         public string $office_start,
         public string $office_end,
+        public string $friction_level = 'auto',
     ) {}
 
     public static function fromModel(UserConfig $config): self
@@ -23,6 +24,7 @@ class UserConfigData extends Data
             sleep_time: substr($config->sleep_time ?? '22:00', 0, 5),
             office_start: substr($config->office_start ?? '09:00', 0, 5),
             office_end: substr($config->office_end ?? '17:00', 0, 5),
+            friction_level: $config->friction_level ?? 'auto',
         );
     }
 }

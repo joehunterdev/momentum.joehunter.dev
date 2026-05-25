@@ -10,6 +10,7 @@ import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import { SchedulingKind } from '@/shared/types/enums';
 import {
+    addDays,
     addWeeks,
     endOfISOWeek,
     format,
@@ -51,11 +52,13 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
 
     // ── Schedule-first creation flow ──────────────────────────────────────────
     function handleStartScheduling(date: string, time: string) {
+        const endDate = format(addDays(parseISO(date), 30), 'yyyy-MM-dd');
         scheduling.start({
             kind: SchedulingKind.Recurring,
             daysOfWeek: [...ALL_DAYS],
             time,
             anchorDate: date,
+            endDate,
             name: '',
             icon: null,
         });

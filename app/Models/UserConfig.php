@@ -15,6 +15,7 @@ class UserConfig extends Model
         'office_start',
         'office_end',
         'identity_statement',
+        'friction_level',
     ];
 
     protected $casts = [
@@ -24,6 +25,7 @@ class UserConfig extends Model
         'office_start' => 'string',
         'office_end' => 'string',
         'identity_statement' => 'string',
+        'friction_level' => 'string',
     ];
 
     public function user(): BelongsTo
