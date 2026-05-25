@@ -128,7 +128,9 @@ export default function MomentAction({
         if (!isSource) {
             return (
                 <div className={`${cls} moment-action--draft-ghost`}>
-                    <span className="moment-action__icon">{moment.icon ?? '📈'}</span>
+                    <span className="moment-action__icon">
+                        {moment.icon ?? <img src="/logo.png" alt="" className="moment-action__icon-img" />}
+                    </span>
                     <div className="moment-action__body">
                         <span className="moment-action__name">{draftValue || 'New moment'}</span>
                     </div>
@@ -157,7 +159,7 @@ export default function MomentAction({
                         title="Pick an icon"
                         onClick={(e) => { e.stopPropagation(); setPickerOpen((v) => !v); }}
                     >
-                        {moment.icon ?? '📈'}
+                        {moment.icon ?? <img src="/logo.png" alt="" className="moment-action__icon-img" />}
                     </button>
 
                     {pickerOpen && createPortal(
