@@ -322,8 +322,17 @@ export default function MomentAction({
     // Arc animates around the icon ONLY while dragging.
     // Square border fills clockwise via strokeDashoffset on a rect path.
     // Two colours: teal = swiping to complete, gray = swiping to undo.
+    //
+    // Two modes depending on friction:
+    //   No friction  → arc fills as you drag (visual = how far you've pulled)
+    //   Friction     → drag gets you to the wall; arc fills over the hold timer
+    //                  (hold is the gate, not distance)
     const arcPerimeter = 4 * 38; // rect is 38×38 inside the 44×44 viewBox (3px inset each side)
-    const arcOffset = arcPerimeter * (1 - dragProgress);
+    const hasFriction = friction.requiredHoldMs > 0;
+    const arcProgress = hasFriction
+        ? holdProgress                                          // hold timer fills the arc
+        : Math.min(1, dragProgress / 0.85);                    // drag fills the arc, full at threshold
+    const arcOffset = arcPerimeter * (1 - arcProgress);
     const arcColor = isCompleted ? 'rgba(160,160,160,0.8)' : 'var(--mm-progress-complete, #00E5AA)';
 
     return (
