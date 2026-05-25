@@ -28,6 +28,7 @@ class UpdateUserConfigRequest extends FormRequest
             'office_start' => ['required', 'date_format:H:i'],
             'office_end' => ['required', 'date_format:H:i', 'after:office_start'],
             'identity_statement' => ['nullable', 'string', 'max:500'],
+            'friction_level' => ['required', 'string', 'in:auto,none,mid,low'],
         ];
     }
 }

@@ -22,6 +22,7 @@ export default function ConfigForm({ config }: ConfigFormProps) {
         office_start: config.office_start.slice(0, 5),
         office_end: config.office_end.slice(0, 5),
         identity_statement: config.identity_statement ?? '',
+        friction_level: config.friction_level ?? 'auto',
     });
 
     function handleSubmit(e: FormEvent) {
@@ -141,6 +142,30 @@ export default function ConfigForm({ config }: ConfigFormProps) {
                     </span>
                 </div>
                 <InputError message={form.errors.identity_statement} className="mt-1" />
+            </section>
+
+            {/* ── Friction Level ──────────────────────────────────────── */}
+            <section>
+                <h2 className="config-section-title">Completion Friction</h2>
+                <p className="config-section-hint">
+                    Controls how much deliberate effort is required to complete low-consistency moments.
+                    <strong> Auto</strong> applies friction based on each moment's consistency score.
+                </p>
+                <div className="mt-4">
+                    <InputLabel htmlFor="friction_level" value="Friction level" />
+                    <select
+                        id="friction_level"
+                        value={form.data.friction_level}
+                        onChange={(e) => form.setData('friction_level', e.target.value as 'auto' | 'none' | 'mid' | 'low')}
+                        className={timeInputClass}
+                    >
+                        <option value="auto">Auto (based on consistency)</option>
+                        <option value="none">None — always instant</option>
+                        <option value="mid">Mid — always 1.5 s hold</option>
+                        <option value="low">Low — always 3 s hold</option>
+                    </select>
+                    <InputError message={form.errors.friction_level} className="mt-1" />
+                </div>
             </section>
 
             <div className="flex justify-end">

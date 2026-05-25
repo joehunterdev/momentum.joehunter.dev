@@ -310,8 +310,9 @@ export default function MomentAction({
         : undefined;
 
     // Icon travels the full row width minus its own size (~2rem = 32px) + gap.
-    // rowRef.current is valid by the time dragProgress > 0 (component is mounted).
-    const maxTravel = Math.max(0, (rowRef.current?.clientWidth ?? 320) - 40);
+    // Cap travel so the icon stops ~48px from the right edge (thumb room).
+    const RIGHT_MARGIN = 48;
+    const maxTravel = Math.max(0, (rowRef.current?.clientWidth ?? 320) - 40 - RIGHT_MARGIN);
     const iconTranslateX = isCompleted
         ? `translateX(${dragProgress * -maxTravel}px)`
         : `translateX(${dragProgress * maxTravel}px)`;
@@ -322,9 +323,20 @@ export default function MomentAction({
 
     const hasFriction = friction.requiredHoldMs > 0;
     const arcPerimeter = 4 * 38;
-    const arcProgress = hasFriction ? holdProgress : Math.min(1, dragProgress / 0.85);
+    // No friction → fill tracks drag position directly.
+    // Friction     → empty during drag; the moment the wall is hit, target jumps to 1
+    //                and the CSS transition runs uninterrupted for exactly requiredHoldMs.
+    //                Using holdProgress here would reset the transition every rAF tick.
+    const normDrag = Math.min(1, dragProgress / 0.85);
+    const atWall = dragProgress >= 0.85;
+    const arcProgress = hasFriction ? (atWall ? 1 : 0) : normDrag;
     const arcOffset = arcPerimeter * (1 - arcProgress);
-    const arcColor = moment.color ?? 'var(--mm-progress-complete, #00E5AA)';
+    // Colour by friction level so the border signals urgency.
+    const arcColor = friction.frictionLevel === 'low'
+        ? '#ef4444'
+        : friction.frictionLevel === 'mid'
+            ? '#f59e0b'
+            : (moment.color ?? 'var(--mm-progress-complete, #00E5AA)');
 
     return (
         <div
@@ -367,28 +379,28 @@ export default function MomentAction({
                             : <img src="/logo.png" alt="" className="moment-action__icon-img" />
                         }
                     </span>
-                    {dragProgress > 0 && (
-                        <svg
-                            className="moment-action__arc"
-                            viewBox="0 0 44 44"
-                            aria-hidden
-                        >
-                            <rect x="3" y="3" width="38" height="38"
-                                fill="none"
-                                stroke="rgba(0,0,0,0.08)"
-                                strokeWidth="3"
-                            />
-                            <rect x="3" y="3" width="38" height="38"
-                                fill="none"
-                                stroke={arcColor}
-                                strokeWidth="3"
-                                strokeDasharray={arcPerimeter}
-                                strokeDashoffset={arcOffset}
-                                strokeLinecap="butt"
-                                style={{ transition: hasFriction ? 'stroke-dashoffset 0.05s linear' : 'none' }}
-                            />
-                        </svg>
-                    )}
+                    <svg
+                        className="moment-action__arc"
+                        viewBox="0 0 44 44"
+                        aria-hidden
+                    >
+                        <rect x="3" y="3" width="38" height="38"
+                            fill="none"
+                            stroke="rgba(0,0,0,0.08)"
+                            strokeWidth="3"
+                        />
+                        <rect x="3" y="3" width="38" height="38"
+                            fill="none"
+                            stroke={arcColor}
+                            strokeWidth="3"
+                            strokeDasharray={arcPerimeter}
+                            strokeLinecap="butt"
+                            style={{
+                                strokeDashoffset: arcOffset,
+                                transition: hasFriction ? `stroke-dashoffset ${friction.requiredHoldMs}ms linear` : 'none',
+                            }}
+                        />
+                    </svg>
                 </span>
                 <div
                     className="moment-action__body"

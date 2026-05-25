@@ -81,6 +81,7 @@ declare namespace App {
             sleep_time: string;
             office_start: string;
             office_end: string;
+            friction_level: 'auto' | 'none' | 'mid' | 'low';
         };
         export type WeekDayData = {
             date: string;
