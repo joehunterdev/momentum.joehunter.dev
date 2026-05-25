@@ -75,6 +75,7 @@ export function useMomentComplete({
     const rowWidthRef = useRef<number>(0);
     const progressRef = useRef<number>(0);
     const holdRef = useRef<number>(0);
+    const holdStartedRef = useRef<boolean>(false);
     const rafRef = useRef<number | null>(null);
     const abortedRef = useRef<boolean>(false);
     // Track which direction this gesture expects, captured at pointerdown so
@@ -139,7 +140,34 @@ export function useMomentComplete({
         progressRef.current = next;
         setDragProgress(next);
         broadcastDragProgress(momentId, next);
-    }, [momentId]);
+
+        // For friction items: start the hold timer the moment drag first hits the wall.
+        // If the user drags back below the threshold, stop and reset the timer.
+        if (requiredHoldMs > 0) {
+            if (next >= COMMIT_THRESHOLD && !holdStartedRef.current) {
+                holdStartedRef.current = true;
+                startTimeRef.current = performance.now();
+                const tick = () => {
+                    const elapsed = performance.now() - startTimeRef.current;
+                    const nextHold = Math.max(0, Math.min(1, elapsed / requiredHoldMs));
+                    holdRef.current = nextHold;
+                    setHoldProgress(nextHold);
+                    if (nextHold < 1) {
+                        rafRef.current = requestAnimationFrame(tick);
+                    } else {
+                        rafRef.current = null;
+                    }
+                };
+                rafRef.current = requestAnimationFrame(tick);
+            } else if (next < COMMIT_THRESHOLD && holdStartedRef.current) {
+                // Dragged back — cancel timer and reset hold
+                holdStartedRef.current = false;
+                stopHoldTimer();
+                holdRef.current = 0;
+                setHoldProgress(0);
+            }
+        }
+    }, [momentId, requiredHoldMs, stopHoldTimer]);
     onPointerMoveRef.current = onPointerMove;
 
     const onPointerUp = useCallback(() => {
@@ -177,24 +205,14 @@ export function useMomentComplete({
         rowWidthRef.current = rowRef.current?.getBoundingClientRect().width ?? 0;
         progressRef.current = 0;
         abortedRef.current = false;
+        holdStartedRef.current = false;
         // Incomplete: gesture goes right (+1). Completed: gesture goes left (-1).
         expectedDirRef.current = isCompleted ? -1 : 1;
         holdRef.current = requiredHoldMs > 0 ? 0 : 1;
 
         if (requiredHoldMs > 0) {
+            // Hold timer starts when drag reaches the wall — see onPointerMove.
             setHoldProgress(0);
-            const tick = () => {
-                const elapsed = performance.now() - startTimeRef.current;
-                const next = Math.max(0, Math.min(1, elapsed / requiredHoldMs));
-                holdRef.current = next;
-                setHoldProgress(next);
-                if (next < 1) {
-                    rafRef.current = requestAnimationFrame(tick);
-                } else {
-                    rafRef.current = null;
-                }
-            };
-            rafRef.current = requestAnimationFrame(tick);
         } else {
             setHoldProgress(1);
         }

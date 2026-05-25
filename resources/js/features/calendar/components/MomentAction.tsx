@@ -320,46 +320,43 @@ export default function MomentAction({
     // Body fades out as the icon starts sliding, giving it clear runway.
     const bodyOpacity = Math.max(0, 1 - dragProgress * 3);
 
-    // Arc animates around the icon ONLY while dragging.
-    // Square border fills clockwise via strokeDashoffset on a rect path.
-    // Two colours: teal = swiping to complete, gray = swiping to undo.
-    //
-    // Two modes depending on friction:
-    //   No friction  → arc fills as you drag (visual = how far you've pulled)
-    //   Friction     → drag gets you to the wall; arc fills over the hold timer
-    //                  (hold is the gate, not distance)
-    const arcPerimeter = 4 * 38; // rect is 38×38 inside the 44×44 viewBox (3px inset each side)
+    // ElectricBorder on the icon replaces the old arc indicator.
+    // hasFriction drives the two-mode logic in MomentActionBorder (and was used by the arc).
     const hasFriction = friction.requiredHoldMs > 0;
-    const arcProgress = hasFriction
-        ? holdProgress                                          // hold timer fills the arc
-        : Math.min(1, dragProgress / 0.85);                    // drag fills the arc, full at threshold
-    const arcOffset = arcPerimeter * (1 - arcProgress);
-    const arcColor = isCompleted ? 'rgba(160,160,160,0.8)' : 'var(--mm-progress-complete, #00E5AA)';
+
+    // (Arc variables kept as comments for reference — arc SVG is commented out above)
+    // const arcPerimeter = 4 * 38;
+    // const arcProgress = hasFriction ? holdProgress : Math.min(1, dragProgress / 0.85);
+    // const arcOffset = arcPerimeter * (1 - arcProgress);
+    // const arcColor = isCompleted ? 'rgba(160,160,160,0.8)' : 'var(--mm-progress-complete, #00E5AA)';
 
     return (
-        <MomentActionBorder
-            color={moment.color}
-            consistency={moment.consistency}
-            dragProgress={dragProgress}
-            holdProgress={holdProgress}
-            hasFriction={hasFriction}
-            isCompleted={isCompleted}
+        <div
+            ref={rowRef}
+            className={readCls}
+            style={{ '--hold-progress': holdProgress } as React.CSSProperties}
         >
-            <div
-                ref={rowRef}
-                className={readCls}
-                style={{ '--hold-progress': holdProgress } as React.CSSProperties}
-            >
-                <div className="moment-action__row">
+            <div className="moment-action__row">
+                <MomentActionBorder
+                    color={moment.color}
+                    consistency={moment.consistency}
+                    dragProgress={dragProgress}
+                    holdProgress={holdProgress}
+                    hasFriction={hasFriction}
+                    isCompleted={isCompleted}
+                    style={{
+                        transform: iconTranslateX,
+                        transition: iconTransition,
+                        willChange: dragProgress > 0 ? 'transform' : 'auto',
+                        zIndex: dragProgress > 0 ? 10 : undefined,
+                        flexShrink: 0,
+                    }}
+                >
                     <span
                         className="moment-action__icon"
                         style={{
                             touchAction: 'pan-y',
                             cursor: isCommitting ? 'wait' : 'pointer',
-                            transform: iconTranslateX,
-                            transition: iconTransition,
-                            willChange: dragProgress > 0 ? 'transform' : 'auto',
-                            zIndex: dragProgress > 0 ? 10 : undefined,
                             overflow: 'visible',
                         }}
                         role="button"
@@ -377,6 +374,7 @@ export default function MomentAction({
                             ? moment.icon
                             : <img src="/logo.png" alt="" className="moment-action__icon-img" />
                         }
+                        {/* Arc SVG replaced by ElectricBorder on the icon — see MomentActionBorder.
                         {dragProgress > 0 && (
                             <svg
                                 className="moment-action__arc"
@@ -387,13 +385,11 @@ export default function MomentAction({
                                     transformOrigin: '22px 22px',
                                 } : undefined}
                             >
-                                {/* Track — faint square outline */}
                                 <rect x="3" y="3" width="38" height="38"
                                     fill="none"
                                     stroke="rgba(0,0,0,0.08)"
                                     strokeWidth="3"
                                 />
-                                {/* Fill — clockwise from top-left */}
                                 <rect x="3" y="3" width="38" height="38"
                                     fill="none"
                                     stroke={arcColor}
@@ -403,31 +399,31 @@ export default function MomentAction({
                                     strokeLinecap="butt"
                                 />
                             </svg>
-                        )}
+                        )} */}
                     </span>
-                    <div
-                        className="moment-action__body"
-                        style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
-                    >
-                        <span className="moment-action__name">{name}</span>
-                        {moment.description && (
-                            <span ref={descRef} className={descClassName} style={descStyle}>
-                                <span ref={descTrackRef} className="moment-action__desc-track">
-                                    {moment.description}
-                                </span>
+                </MomentActionBorder>
+                <div
+                    className="moment-action__body"
+                    style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
+                >
+                    <span className="moment-action__name">{name}</span>
+                    {moment.description && (
+                        <span ref={descRef} className={descClassName} style={descStyle}>
+                            <span ref={descTrackRef} className="moment-action__desc-track">
+                                {moment.description}
                             </span>
-                        )}
-                    </div>
-                    {isCompleted && (
-                        <span className="moment-action__tick" aria-hidden>
-                            ✓
                         </span>
                     )}
                 </div>
-                <div className="moment-action__progress">
-                    <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} previewProgress={Math.max(dragProgress, siblingDragPreview)} />
-                </div>
+                {isCompleted && (
+                    <span className="moment-action__tick" aria-hidden>
+                        ✓
+                    </span>
+                )}
             </div>
-        </MomentActionBorder>
+            <div className="moment-action__progress">
+                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} previewProgress={Math.max(dragProgress, siblingDragPreview)} />
+            </div>
+        </div>
     );
 }

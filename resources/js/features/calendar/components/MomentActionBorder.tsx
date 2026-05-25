@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import ElectricBorder from '@/shared/components/ElectricBorder';
 
 export interface MomentActionBorderProps {
@@ -10,6 +10,7 @@ export interface MomentActionBorderProps {
     /** True when this moment requires a hold timer to commit (low consistency). */
     hasFriction: boolean;
     isCompleted: boolean;
+    style?: CSSProperties;
 }
 
 /**
@@ -32,6 +33,7 @@ export default function MomentActionBorder({
     holdProgress,
     hasFriction,
     isCompleted,
+    style,
 }: MomentActionBorderProps) {
     const normalizedConsistency = consistency !== null && consistency !== undefined ? consistency / 100 : 0.5;
 
@@ -64,8 +66,9 @@ export default function MomentActionBorder({
             speed={speed}
             chaos={chaos}
             thickness={thickness}
-            borderRadius={8}
+            borderRadius={0}
             active={active}
+            style={style}
         >
             {children}
         </ElectricBorder>
