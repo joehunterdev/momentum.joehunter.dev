@@ -1,3 +1,4 @@
+import Icon from '@/shared/components/Icon';
 import { useSwipeComplete } from '@/features/calendar/hooks/useSwipeComplete';
 import type { CalendarMoment } from './types';
 import { MomentStatus } from '@/shared/types/enums';
@@ -43,7 +44,7 @@ export default function MomentIcon({ moment, date, onToggle, onSwipeProgress, is
             className="slot-icon-track"
             title={`${moment.name ?? 'Untitled Moment'}${moment.status ? ` (${moment.status})` : ''}`}
         >
-            {!isStatic && <span className="slot-icon-track__check" aria-hidden>✓</span>}
+            {!isStatic && <span className="slot-icon-track__check" aria-hidden><Icon name="check" /></span>}
             <div
                 className={['slot-icon', statusClass, swipeClass].filter(Boolean).join(' ')}
                 style={isStatic
@@ -64,7 +65,7 @@ export default function MomentIcon({ moment, date, onToggle, onSwipeProgress, is
                 }}
             >
                 {moment.icon ? (
-                    moment.icon
+                    <Icon name={moment.icon} />
                 ) : (
                     <img src="/logo.png" alt="" className="slot-icon__default-logo" />
                 )}

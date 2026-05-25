@@ -1,0 +1,70 @@
+[
+    { "id": "health", "name": "Health", "emojis": [
+        { "id": "droplet",       "name": "Water" },
+        { "id": "apple",         "name": "Apple" },
+        { "id": "green_salad",   "name": "Salad" },
+        { "id": "pill",          "name": "Vitamin" },
+        { "id": "sleeping_face", "name": "Sleep" },
+        { "id": "tooth",         "name": "Tooth" },
+        { "id": "heart",         "name": "Heart" },
+        { "id": "stethoscope",   "name": "Medicine" }
+    ]},
+    { "id": "fitness", "name": "Fitness", "emojis": [
+        { "id": "runner",                   "name": "Run" },
+        { "id": "weight_lifter",            "name": "Gym" },
+        { "id": "person_in_lotus_position", "name": "Yoga" },
+        { "id": "bike",                     "name": "Cycle" },
+        { "id": "swimmer",                  "name": "Swim" },
+        { "id": "walking",                  "name": "Walk" },
+        { "id": "cartwheeling",             "name": "Stretch" },
+        { "id": "hiking_boot",              "name": "Hike" }
+    ]},
+    { "id": "mind", "name": "Mind", "emojis": [
+        { "id": "lotus",             "name": "Meditate" },
+        { "id": "books",             "name": "Read" },
+        { "id": "memo",              "name": "Journal" },
+        { "id": "brain",             "name": "Brain" },
+        { "id": "pray",              "name": "Pray" },
+        { "id": "wind_blowing_face", "name": "Breathe" },
+        { "id": "cherry_blossom",    "name": "Gratitude" },
+        { "id": "mortar_board",      "name": "Learn" }
+    ]},
+    { "id": "work", "name": "Work", "emojis": [
+        { "id": "computer",     "name": "Code" },
+        { "id": "e-mail",       "name": "Email" },
+        { "id": "handshake",    "name": "Meeting" },
+        { "id": "book",         "name": "Study" },
+        { "id": "writing_hand", "name": "Write" },
+        { "id": "clipboard",    "name": "Plan" },
+        { "id": "dart",         "name": "Focus" },
+        { "id": "mag",          "name": "Review" }
+    ]},
+    { "id": "social", "name": "Social", "emojis": [
+        { "id": "telephone_receiver",    "name": "Call" },
+        { "id": "family_man_woman_girl", "name": "Family" },
+        { "id": "busts_in_silhouette",   "name": "Friends" },
+        { "id": "speech_balloon",        "name": "Message" },
+        { "id": "couple_with_heart",     "name": "Date" },
+        { "id": "open_hands",            "name": "Volunteer" }
+    ]},
+    { "id": "creative", "name": "Creative", "emojis": [
+        { "id": "musical_note", "name": "Music" },
+        { "id": "art",          "name": "Art" },
+        { "id": "camera",       "name": "Camera" },
+        { "id": "guitar",       "name": "Guitar" },
+        { "id": "dancer",       "name": "Dance" },
+        { "id": "thread",       "name": "Craft" }
+    ]},
+    { "id": "general", "name": "General", "emojis": [
+        { "id": "star",             "name": "Star" },
+        { "id": "fire",             "name": "Fire" },
+        { "id": "white_check_mark", "name": "Check" },
+        { "id": "alarm_clock",      "name": "Clock" },
+        { "id": "moneybag",         "name": "Money" },
+        { "id": "broom",            "name": "Clean" },
+        { "id": "cooking",          "name": "Cook" },
+        { "id": "seedling",         "name": "Plant" },
+        { "id": "sunny",            "name": "Sun" },
+        { "id": "crescent_moon",    "name": "Moon" }
+    ]}
+]

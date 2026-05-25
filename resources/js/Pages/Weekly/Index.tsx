@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
+import Icon from '@/shared/components/Icon';
 import { WeeklyContainer } from '@/features/calendar';
 import type { WeeklyPageProps } from '@/features/calendar';
 import { MomentModal, useMomentForm } from '@/features/moments';
@@ -94,7 +95,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                                 title="Configure schedule"
                                 onClick={() => scheduling.setMode('configure')}
                             >
-                                ⚙️
+                                <Icon name="settings" size={20} aria-hidden />
                             </button>
                         ) : (
                             <button
@@ -102,7 +103,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                                 className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"
                                 onClick={scheduling.exit}
                             >
-                                ✕ Done
+                                <Icon name="close" size={18} aria-hidden /> Done
                             </button>
                         )}
                     </div>

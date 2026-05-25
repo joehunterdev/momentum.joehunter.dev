@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { SchedulingKind } from '@/shared/types/enums';
 import { WEEK_DAYS } from '@/shared/constants/moments';
+import Icon from '@/shared/components/Icon';
 
 const ALL_DAYS: IsoDayNumber[] = [1, 2, 3, 4, 5, 6, 7];
 const WEEKDAYS: IsoDayNumber[] = [1, 2, 3, 4, 5];
@@ -130,7 +131,7 @@ export default function MomentFrequencyConfig({
                     className="calendar-frequency-config__conflicts"
                     title={`${conflictCount} time slot(s) already have a moment`}
                 >
-                    ⚠️ {conflictCount} conflict{conflictCount > 1 ? 's' : ''}
+                    <Icon name="warning" size={16} aria-hidden /> {conflictCount} conflict{conflictCount > 1 ? 's' : ''}
                 </span>
             )}
 
@@ -140,14 +141,14 @@ export default function MomentFrequencyConfig({
                     className="calendar-frequency-config__cancel"
                     onClick={onCancel}
                 >
-                    ✕
+                    <Icon name="close" size={18} aria-hidden />
                 </button>
                 <button
                     type="button"
                     className="calendar-frequency-config__confirm"
                     onClick={onConfirm}
                 >
-                    ✓ Confirm
+                    <Icon name="check" size={18} aria-hidden /> Confirm
                 </button>
             </div>
         </div>

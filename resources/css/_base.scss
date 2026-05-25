@@ -1,5 +1,17 @@
 // _base.scss — global resets, body, typography
 
+// Material Icons — ensure icons inherit text sizing and align on the baseline
+.material-icons,
+.material-icons-outlined,
+.material-icons-round,
+.material-icons-sharp,
+.material-icons-two-tone {
+  font-size: inherit;
+  line-height: 1;
+  vertical-align: middle;
+  user-select: none;
+}
+
 body {
   font-family: var(--mm-font-sans);
   background: var(--mm-bg-gradient);

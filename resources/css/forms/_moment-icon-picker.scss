@@ -1,0 +1,49 @@
+// _moment-icon-picker.scss — trigger button and picker panel positioning
+
+.moment-icon-picker {
+    position: relative;
+    display: inline-block;
+
+    &__trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.375rem 0.5rem;
+        background: var(--mm-surface, #fff);
+        border: 1px solid var(--mm-border);
+        border-radius: 0.375rem;
+        cursor: pointer;
+        font-size: 1.25rem;
+        line-height: 1;
+        color: var(--mm-text);
+        transition: border-color 0.12s;
+
+        &:hover,
+        &.is-open {
+            border-color: var(--mm-accent, #6366f1);
+        }
+    }
+
+    &__default {
+        width: 1.5rem;
+        height: 1.5rem;
+        object-fit: contain;
+        opacity: 0.5;
+    }
+
+    &__loading {
+        padding: 1rem;
+        font-size: var(--mm-text-sm);
+        color: var(--mm-text-mute);
+    }
+
+    &__panel {
+        position: absolute;
+        top: calc(100% + 0.375rem);
+        left: 0;
+        z-index: 200;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+}

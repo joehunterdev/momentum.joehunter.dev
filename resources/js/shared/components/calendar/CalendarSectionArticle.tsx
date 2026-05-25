@@ -3,6 +3,7 @@ import { isOutOfOffice, jsToIsoDay } from '@/features/calendar/utils';
 import { MomentStatus, SchedulingKind } from '@/shared/types/enums';
 import { format, parseISO, startOfDay } from 'date-fns';
 import { WEEK_DAYS } from '@/shared/constants/moments';
+import Icon from '@/shared/components/Icon';
 import type { CalendarConfig, CalendarMoment } from './types';
 import MomentAction from '@/features/calendar/components/MomentAction';
 
@@ -285,7 +286,7 @@ export default function CalendarSectionArticle({
                         />
                         {isConflict && (
                             <span className="calendar-article__conflict-badge" title="Scheduling conflict">
-                                ⚠️
+                                <Icon name="warning" size={14} aria-hidden />
                             </span>
                         )}
                     </>

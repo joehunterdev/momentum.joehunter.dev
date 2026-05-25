@@ -8,7 +8,7 @@ import type { Moment, MomentFormData } from '../types';
 import { useMomentForm } from '../hooks/useMomentForm';
 import ColorPicker from './ColorPicker';
 import CueFields from './CueFields';
-import IconPicker from './IconPicker';
+import MomentIconPicker from './MomentIconPicker';
 import RewardFields from './RewardFields';
 import ScheduleFields from './ScheduleFields';
 
@@ -88,7 +88,7 @@ export default function MomentForm({ moment, defaultValues, onSubmit, submitLabe
                                         <div>
                                             <InputLabel htmlFor="icon" value="Icon" />
                                             <div className="mt-2">
-                                                <IconPicker
+                                                <MomentIconPicker
                                                     value={form.data.icon}
                                                     onChange={(emoji) => setField('icon', emoji)}
                                                 />

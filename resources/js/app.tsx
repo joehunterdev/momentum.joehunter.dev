@@ -1,5 +1,10 @@
 import '../css/app.scss';
 import './bootstrap';
+import 'material-icons/iconfont/sharp.css';
+import { init } from 'emoji-mart';
+import emojiData from '@emoji-mart/data';
+import momentEmojiCatalog from '@/shared/config/moment-emoji-catalog.json';
+init({ data: emojiData, custom: momentEmojiCatalog });
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';

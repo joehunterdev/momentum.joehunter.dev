@@ -3,6 +3,7 @@ import {
     WEEK_DAYS,
     type SchedulePreset,
 } from '@/shared/constants/moments';
+import Icon from '@/shared/components/Icon';
 
 interface Props {
     time?: string | null;
@@ -95,16 +96,16 @@ export default function FrequencyBadge({
 
             {conflictCount > 0 && (
                 <span className="frequency-bar__conflicts" title={`${conflictCount} time slot(s) already have a moment`}>
-                    ⚠️ {conflictCount} conflict{conflictCount > 1 ? 's' : ''}
+                    <Icon name="warning" size={16} aria-hidden /> {conflictCount} conflict{conflictCount > 1 ? 's' : ''}
                 </span>
             )}
 
             <div className="frequency-bar__actions">
                 <button type="button" className="frequency-bar__cancel" onClick={onCancel}>
-                    ✕
+                    <Icon name="close" size={18} aria-hidden />
                 </button>
                 <button type="button" className="frequency-bar__confirm" onClick={onConfirm}>
-                    ✓ Confirm
+                    <Icon name="check" size={18} aria-hidden /> Confirm
                 </button>
             </div>
         </div>

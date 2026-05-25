@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DailyContainer } from '@/features/calendar';
 import { Head } from '@inertiajs/react';
+import Icon from '@/shared/components/Icon';
 import {
     CalendarNav,
     CalendarProgressBar,
@@ -52,7 +53,7 @@ export default function Index({ date, day, config, completedCount, totalCount }:
                                 title="Configure schedule"
                                 onClick={() => scheduling.setMode('configure')}
                             >
-                                ⚙️
+                                <Icon name="settings" size={20} aria-hidden />
                             </button>
                         ) : (
                             <button
@@ -60,7 +61,7 @@ export default function Index({ date, day, config, completedCount, totalCount }:
                                 className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"
                                 onClick={scheduling.exit}
                             >
-                                ✕ Done
+                                <Icon name="close" size={18} aria-hidden /> Done
                             </button>
                         )}
                     </div>

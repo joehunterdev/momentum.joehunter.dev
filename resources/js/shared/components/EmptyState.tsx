@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import Icon from '@/shared/components/Icon';
 
 interface EmptyStateProps {
     title: string;
@@ -11,7 +12,7 @@ interface EmptyStateProps {
 export default function EmptyState({ title, description, actionLabel, actionHref, onAction }: EmptyStateProps) {
     return (
         <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 px-6 py-16 text-center">
-            <div className="mb-4 text-5xl">✨</div>
+            <div className="mb-4 text-5xl"><Icon name="auto_awesome" size={48} /></div>
             <h3 className="mb-2 text-lg font-semibold text-gray-800">{title}</h3>
             <p className="mb-6 max-w-sm text-sm text-gray-500">{description}</p>
             {actionLabel && onAction && (

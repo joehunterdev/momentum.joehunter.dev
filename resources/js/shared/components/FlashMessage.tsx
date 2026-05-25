@@ -1,6 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { PageProps } from '@/types';
+import Icon from '@/shared/components/Icon';
 
 export default function FlashMessage() {
     const { flash } = usePage<PageProps>().props;
@@ -50,7 +51,7 @@ export default function FlashMessage() {
                     className="shrink-0 text-current opacity-60 hover:opacity-100"
                     aria-label="Dismiss"
                 >
-                    ✕
+                    <Icon name="close" size={16} aria-hidden />
                 </button>
             </div>
         </div>

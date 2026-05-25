@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import Icon from '@/shared/components/Icon';
 import { CalendarNav, CalendarProgressBar } from '@/shared/components/calendar';
 import { MonthlyContainer } from '@/features/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
@@ -70,7 +71,7 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
                                 title="Configure schedule"
                                 onClick={() => scheduling.setMode('configure')}
                             >
-                                ⚙️
+                                <Icon name="settings" size={20} aria-hidden />
                             </button>
                         ) : (
                             <button
@@ -78,7 +79,7 @@ export default function Index({ month, monthStart, days, scheduleRows, completed
                                 className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"
                                 onClick={scheduling.exit}
                             >
-                                ✕ Done
+                                <Icon name="close" size={18} aria-hidden /> Done
                             </button>
                         )}
                     </div>

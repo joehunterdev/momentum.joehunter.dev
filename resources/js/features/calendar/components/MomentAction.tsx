@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { router } from '@inertiajs/react';
+import Icon from '@/shared/components/Icon';
+import MomentIconPicker from '@/features/moments/components/MomentIconPicker';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
 import MomentIcon from '@/shared/components/calendar/MomentIcon';
 import MomentProgressBar from '@/shared/components/calendar/MomentProgressBar';
 // import MomentActionBorder from './MomentActionBorder';
-import { MOMENT_ICONS } from '@/shared/constants/icons';
 import { MomentStatus } from '@/shared/types/enums';
 import {
     consistencyBand,
@@ -136,7 +137,7 @@ export default function MomentAction({
             return (
                 <div className={`${cls} moment-action--draft-ghost`}>
                     <span className="moment-action__icon">
-                        {moment.icon ?? <img src="/logo.png" alt="" className="moment-action__icon-img" />}
+                        {moment.icon ? <Icon name={moment.icon} /> : <img src="/logo.png" alt="" className="moment-action__icon-img" />}
                     </span>
                     <div className="moment-action__body">
                         <span className="moment-action__name">{draftValue || 'New moment'}</span>
@@ -149,7 +150,7 @@ export default function MomentAction({
                             aria-label="Exclude this day"
                             onClick={onGhostExclude}
                         >
-                            ✕
+                            <Icon name="close" size={16} aria-hidden />
                         </button>
                     )}
                 </div>
@@ -166,30 +167,18 @@ export default function MomentAction({
                         title="Pick an icon"
                         onClick={(e) => { e.stopPropagation(); setPickerOpen((v) => !v); }}
                     >
-                        {moment.icon ?? <img src="/logo.png" alt="" className="moment-action__icon-img" />}
+                        {moment.icon ? <Icon name={moment.icon} /> : <img src="/logo.png" alt="" className="moment-action__icon-img" />}
                     </button>
 
                     {pickerOpen && createPortal(
                         <div ref={pickerPanelRef} className="draft-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
-                            <div className="draft-icon-picker__grid">
-                                {MOMENT_ICONS.map((opt) => (
-                                    <button
-                                        key={opt.name}
-                                        type="button"
-                                        className={[
-                                            'draft-icon-picker__item',
-                                            moment.icon === opt.emoji ? 'draft-icon-picker__item--active' : '',
-                                        ].filter(Boolean).join(' ')}
-                                        title={opt.name}
-                                        onClick={() => {
-                                            onDraftIconChange?.(opt.emoji);
-                                            setPickerOpen(false);
-                                        }}
-                                    >
-                                        {opt.emoji}
-                                    </button>
-                                ))}
-                            </div>
+                            <MomentIconPicker
+                                value={moment.icon ?? ''}
+                                onChange={(emoji) => {
+                                    onDraftIconChange?.(emoji);
+                                    setPickerOpen(false);
+                                }}
+                            />
                         </div>,
                         document.body,
                     )}
@@ -230,7 +219,7 @@ export default function MomentAction({
                         aria-label="Cancel"
                         onClick={onDraftCancel}
                     >
-                        ✕
+                        <Icon name="close" size={18} aria-hidden />
                     </button>
                     <button
                         type="button"
@@ -254,7 +243,7 @@ export default function MomentAction({
                         }}
                         onClick={() => { if (canCommit) onDraftApply?.(); }}
                     >
-                        ✓
+                        <Icon name="check" size={18} aria-hidden />
                     </button>
                 </div>
             </div>
@@ -284,7 +273,7 @@ export default function MomentAction({
                     onClick={() => router.get(route('moments.edit', { moment: moment.id }))}
                     aria-label={`Edit ${name}`}
                 >
-                    ✏️
+                    <Icon name="edit" size={18} aria-hidden />
                 </button>
             </div>
         );
@@ -375,7 +364,7 @@ export default function MomentAction({
                         {...bindHandlers}
                     >
                         {moment.icon
-                            ? moment.icon
+                            ? <Icon name={moment.icon} />
                             : <img src="/logo.png" alt="" className="moment-action__icon-img" />
                         }
                     </span>
@@ -422,7 +411,7 @@ export default function MomentAction({
                 </div>
                 {isCompleted && (
                     <span className="moment-action__tick" aria-hidden>
-                        ✓
+                        <Icon name="check" size={16} />
                     </span>
                 )}
             </div>

@@ -13,5 +13,18 @@ declare global {
 }
 
 declare module '@inertiajs/core' {
-    interface PageProps extends InertiaPageProps, AppPageProps {}
+    interface PageProps extends InertiaPageProps, AppPageProps { }
+}
+
+declare module 'react' {
+    namespace JSX {
+        interface IntrinsicElements {
+            'em-emoji': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+                id?: string;
+                native?: string;
+                set?: string;
+                size?: string | number;
+            };
+        }
+    }
 }
