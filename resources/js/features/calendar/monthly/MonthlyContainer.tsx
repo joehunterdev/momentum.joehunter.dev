@@ -119,6 +119,7 @@ export default function MonthlyContainer({
                                                 <MomentAction
                                                     key={m.id}
                                                     moment={m}
+                                                    date={day.date}
                                                 />
                                             ))
                                         ) : (

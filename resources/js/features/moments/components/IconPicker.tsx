@@ -51,7 +51,7 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
                         {!isKnown && <span className="icon-picker__custom-badge">custom</span>}
                     </span>
                 ) : (
-                    <span className="icon-picker__trigger-placeholder">Choose icon…</span>
+                    <img src="/logo.png" alt="Default icon" className="icon-picker__trigger-logo" />
                 )}
                 <svg className="icon-picker__trigger-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
                     <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
@@ -105,11 +105,11 @@ export default function IconPicker({ value, onChange }: IconPickerProps) {
                             {/* Clear / none */}
                             <button
                                 type="button"
-                                title="No icon"
+                                title="Default (logo)"
                                 onClick={() => handleSelect('')}
                                 className={`icon-picker__item icon-picker__item--none${!value ? ' icon-picker__item--selected' : ''}`}
                             >
-                                &mdash;
+                                <img src="/logo.png" alt="Default" className="icon-picker__item-logo" />
                             </button>
 
                             {filtered.map((icon) => (

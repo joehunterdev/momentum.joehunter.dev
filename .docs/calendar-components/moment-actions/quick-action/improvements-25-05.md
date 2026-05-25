@@ -25,3 +25,8 @@ maintain the text 18 May – 24 May tho just hide it on mobile
 draft-name-input should really just have no rounded borders and grey borderded input
 text doesnt need to be itialic
 
+-- 
+moment-action__progress needs to have some space on the right
+
+calendar-progress__bar doesnt need any rounded borders
+

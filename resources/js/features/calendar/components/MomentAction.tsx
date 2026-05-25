@@ -71,6 +71,7 @@ export default function MomentAction({
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
     const iconBtnRef = useRef<HTMLButtonElement>(null);
+    const pickerPanelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!pickerOpen || !iconBtnRef.current) { return; }
@@ -88,7 +89,10 @@ export default function MomentAction({
     useEffect(() => {
         if (!pickerOpen) { return; }
         const close = (e: MouseEvent) => {
-            if (iconBtnRef.current && !iconBtnRef.current.contains(e.target as Node)) {
+            const target = e.target as Node;
+            const insideBtn = iconBtnRef.current?.contains(target);
+            const insidePanel = pickerPanelRef.current?.contains(target);
+            if (!insideBtn && !insidePanel) {
                 setPickerOpen(false);
             }
         };
@@ -163,7 +167,7 @@ export default function MomentAction({
                     </button>
 
                     {pickerOpen && createPortal(
-                        <div className="draft-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
+                        <div ref={pickerPanelRef} className="draft-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
                             <div className="draft-icon-picker__grid">
                                 {MOMENT_ICONS.map((opt) => (
                                     <button
@@ -349,7 +353,10 @@ export default function MomentAction({
                     }}
                     {...bindHandlers}
                 >
-                    {moment.icon ?? '📌'}
+                    {moment.icon
+                        ? moment.icon
+                        : <img src="/logo.png" alt="" className="moment-action__icon-img" />
+                    }
                     {dragProgress > 0 && (
                         <svg className="moment-action__arc" viewBox="0 0 44 44" aria-hidden>
                             {/* Track — faint square outline */}
