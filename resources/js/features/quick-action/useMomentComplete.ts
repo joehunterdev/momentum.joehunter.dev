@@ -80,6 +80,10 @@ export function useMomentComplete({
     // Track which direction this gesture expects, captured at pointerdown so
     // it doesn't flip mid-gesture if isCompleted changes.
     const expectedDirRef = useRef<1 | -1>(1);
+    // Stable refs for listener functions — avoids stale-closure mismatches
+    // on removeEventListener (critical for Safari iOS).
+    const onPointerMoveRef = useRef<((e: PointerEvent) => void) | null>(null);
+    const onPointerUpRef = useRef<(() => void) | null>(null);
 
     const stopHoldTimer = useCallback(() => {
         if (rafRef.current !== null) {
@@ -136,15 +140,20 @@ export function useMomentComplete({
         setDragProgress(next);
         broadcastDragProgress(momentId, next);
     }, [momentId]);
+    onPointerMoveRef.current = onPointerMove;
 
     const onPointerUp = useCallback(() => {
         const dragReady = progressRef.current >= COMMIT_THRESHOLD;
         const holdReady = holdRef.current >= 1;
         const shouldCommit = !abortedRef.current && dragReady && holdReady;
 
-        document.removeEventListener('pointermove', onPointerMove);
-        document.removeEventListener('pointerup', onPointerUp);
-        document.removeEventListener('pointercancel', onPointerUp);
+        if (onPointerMoveRef.current) {
+            document.removeEventListener('pointermove', onPointerMoveRef.current);
+        }
+        if (onPointerUpRef.current) {
+            document.removeEventListener('pointerup', onPointerUpRef.current);
+            document.removeEventListener('pointercancel', onPointerUpRef.current);
+        }
         stopHoldTimer();
 
         if (shouldCommit) {
@@ -152,7 +161,8 @@ export function useMomentComplete({
         } else {
             reset();
         }
-    }, [onPointerMove, commit, reset, stopHoldTimer]);
+    }, [commit, reset, stopHoldTimer]);
+    onPointerUpRef.current = onPointerUp;
 
     const onPointerDown = useCallback((e: React.PointerEvent<HTMLElement>) => {
         if (isCommitting) {
@@ -189,10 +199,15 @@ export function useMomentComplete({
             setHoldProgress(1);
         }
 
-        document.addEventListener('pointermove', onPointerMove);
-        document.addEventListener('pointerup', onPointerUp);
-        document.addEventListener('pointercancel', onPointerUp);
-    }, [isCommitting, isCompleted, rowRef, requiredHoldMs, onPointerMove, onPointerUp]);
+        // Register stable refs so removeEventListener always finds the same function.
+        if (onPointerMoveRef.current) {
+            document.addEventListener('pointermove', onPointerMoveRef.current);
+        }
+        if (onPointerUpRef.current) {
+            document.addEventListener('pointerup', onPointerUpRef.current);
+            document.addEventListener('pointercancel', onPointerUpRef.current);
+        }
+    }, [isCommitting, isCompleted, rowRef, requiredHoldMs]);
 
     /** Keyboard activation (Enter/Space). Toggles immediately. */
     const onActivate = useCallback(() => {
@@ -203,11 +218,15 @@ export function useMomentComplete({
     }, [isCommitting, commit]);
 
     useEffect(() => () => {
-        document.removeEventListener('pointermove', onPointerMove);
-        document.removeEventListener('pointerup', onPointerUp);
-        document.removeEventListener('pointercancel', onPointerUp);
+        if (onPointerMoveRef.current) {
+            document.removeEventListener('pointermove', onPointerMoveRef.current);
+        }
+        if (onPointerUpRef.current) {
+            document.removeEventListener('pointerup', onPointerUpRef.current);
+            document.removeEventListener('pointercancel', onPointerUpRef.current);
+        }
         stopHoldTimer();
-    }, [onPointerMove, onPointerUp, stopHoldTimer]);
+    }, [stopHoldTimer]);
 
     return {
         dragProgress,
