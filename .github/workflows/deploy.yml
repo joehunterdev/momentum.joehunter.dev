@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       source_branch:
-        description: 'Branch to deploy (merged → dev → main)'
+        description: 'Branch to deploy (merged → develop → main)'
         required: false
         default: ''
 
@@ -28,23 +28,23 @@ jobs:
         run: |
           SOURCE="${{ github.event.inputs.source_branch }}"
 
+          # Ensure all remote branches are available locally
+          git fetch --all
+
           # If a feature branch was specified, merge it into dev first
-          if [ -n "$SOURCE" ] && [ "$SOURCE" != "dev" ] && [ "$SOURCE" != "main" ]; then
-            echo "Merging $SOURCE → dev"
-            git checkout dev
-            git pull origin dev
-            git merge --no-ff "origin/$SOURCE" -m "chore: merge $SOURCE into dev [deploy]"
-            git push origin dev
+          if [ -n "$SOURCE" ] && [ "$SOURCE" != "develop" ] && [ "$SOURCE" != "main" ]; then
+            echo "Merging $SOURCE → develop"
+            git checkout -B develop origin/develop
+            git merge --no-ff "origin/$SOURCE" -m "chore: merge $SOURCE into develop [deploy]"
+            git push origin develop
           else
-            git checkout dev
-            git pull origin dev
+            git checkout -B develop origin/develop
           fi
 
-          # Merge dev → main
-          echo "Merging dev → main"
-          git checkout main
-          git pull origin main
-          git merge --no-ff dev -m "chore: merge dev into main [deploy]"
+          # Merge develop → main
+          echo "Merging develop → main"
+          git checkout -B main origin/main
+          git merge --no-ff develop -m "chore: merge develop into main [deploy]"
           git push origin main
 
       - name: Set up PHP
