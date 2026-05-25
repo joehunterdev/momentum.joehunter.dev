@@ -294,7 +294,7 @@ $border-light: var(--mm-border-light);
         // slots get the same 0.5rem breathing room as daily/weekly, so the
         // + button isn't pinched against the row borders.
 
-        >.moment-action {
+        > :is(.moment-action, .electric-border) {
             border-bottom: 1px solid var(--mm-border-light);
 
             &:last-child {

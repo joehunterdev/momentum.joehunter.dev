@@ -8,6 +8,16 @@
 //   --draft  configure mode while scheduling a new moment: icon-picker
 //            trigger + name input, dashed primary border.
 
+@keyframes moment-arc-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .moment-action {
     position: relative;
     display: flex;
