@@ -173,6 +173,7 @@ export default function MomentAction({
                     {pickerOpen && createPortal(
                         <div ref={pickerPanelRef} className="draft-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
                             <MomentIconPicker
+                                embedded
                                 value={moment.icon ?? ''}
                                 onChange={(emoji) => {
                                     onDraftIconChange?.(emoji);
@@ -355,11 +356,6 @@ export default function MomentAction({
                     style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
                 >
                     <span className="moment-action__name">{name}</span>
-                    {friction.frictionLevel !== 'none' && (
-                        <span className={`moment-action__friction-badge moment-action__friction-badge--${friction.frictionLevel}`}>
-                            {friction.frictionLevel === 'low' ? '🔴' : '🟡'} {friction.label}
-                        </span>
-                    )}
                     {moment.description && (
                         <span ref={descRef} className={descClassName} style={descStyle}>
                             <span ref={descTrackRef} className="moment-action__desc-track">

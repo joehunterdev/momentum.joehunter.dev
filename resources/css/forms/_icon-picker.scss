@@ -3,6 +3,17 @@
 .icon-picker {
   position: relative;
 
+  // Embedded mode — the panel lives inside a parent-owned popover (e.g. the
+  // draft scheduling portal) that already supplies border / shadow / padding.
+  // Strip the panel's own chrome so it sits flush instead of double-framed.
+  &--embedded .icon-picker__panel {
+    margin-top: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+
   // ── Trigger button ─────────────────────────────────────────────
   &__trigger {
     display: flex;

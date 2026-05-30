@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice, jsToIsoDay } from '@/features/calendar/utils';
 import { MomentStatus, SchedulingKind } from '@/shared/types/enums';
@@ -227,9 +228,15 @@ export default function CalendarSectionArticle({
     const isSource = isDraft && isSourceCandidate;
     const canApplyAll = scheduling?.kind === SchedulingKind.Recurring;
     const isConflict = !!capabilities.conflictBadge && targets && !!moment;
-    const ooo = capabilities.outOfOffice && time && config && !moment
+
+    // Off-hours (out-of-office) empty slots are gated: no + button, just a dot.
+    // A long-press on the time key unlocks the row for this session so a moment
+    // can still be scheduled there. `unlocked` flips the effective OOO off.
+    const [unlocked, setUnlocked] = useState(false);
+    const configOoo = !!capabilities.outOfOffice && !!time && !!config && !moment
         ? isOutOfOffice(time, config)
         : false;
+    const ooo = configOoo && !unlocked;
 
     const cls = [
         'calendar-article',
@@ -246,13 +253,53 @@ export default function CalendarSectionArticle({
     // Past slots can't be anchored — habits start now, no backdating.
     const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !ooo && !isPast;
 
+    // A gated off-hours slot can be long-pressed (hold) on its time key to
+    // unlock scheduling for that one row. Past slots stay locked (no backdating).
+    const canUnlock = configOoo && !isPast;
+    const keyInteractive = emptyClickable || canUnlock;
+    const lpTimer = useRef<number | null>(null);
+    const lpFired = useRef(false);
+
+    const startLongPress = () => {
+        if (!canUnlock) { return; }
+        lpFired.current = false;
+        lpTimer.current = window.setTimeout(() => {
+            lpFired.current = true;
+            setUnlocked((u) => !u);
+        }, 500);
+    };
+    const cancelLongPress = () => {
+        if (lpTimer.current !== null) {
+            clearTimeout(lpTimer.current);
+            lpTimer.current = null;
+        }
+    };
+    const handleKeyClick = () => {
+        // A completed long-press already toggled the row — don't also schedule.
+        if (lpFired.current) { lpFired.current = false; return; }
+        if (emptyClickable) { onStartScheduling?.(); }
+    };
+
+    const keyTitle = canUnlock
+        ? (unlocked ? `Add moment at ${time} · hold to hide` : `Off-hours — hold to enable ${time}`)
+        : (emptyClickable ? `Add moment at ${time}` : undefined);
+
     return (
         <div className={cls}>
             {time !== undefined && (
                 <span
-                    className={`calendar-article__key${emptyClickable ? ' calendar-article__key--clickable' : ''}`}
-                    onClick={emptyClickable ? onStartScheduling : undefined}
-                    title={emptyClickable ? `Add moment at ${time}` : undefined}
+                    className={[
+                        'calendar-article__key',
+                        keyInteractive && 'calendar-article__key--clickable',
+                        canUnlock && 'calendar-article__key--unlockable',
+                        canUnlock && unlocked && 'calendar-article__key--unlocked',
+                    ].filter(Boolean).join(' ')}
+                    onClick={keyInteractive ? handleKeyClick : undefined}
+                    onPointerDown={canUnlock ? startLongPress : undefined}
+                    onPointerUp={canUnlock ? cancelLongPress : undefined}
+                    onPointerLeave={canUnlock ? cancelLongPress : undefined}
+                    onPointerCancel={canUnlock ? cancelLongPress : undefined}
+                    title={keyTitle}
                 >
                     {time}
                 </span>

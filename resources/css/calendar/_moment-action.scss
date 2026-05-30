@@ -29,12 +29,23 @@
     overflow: hidden;
     isolation: isolate;
 
+    // Spacing tokens resolve from the calendar-layout custom properties so all
+    // three variants (read/edit/draft) — and every view — share one source of
+    // truth. To re-space a view, override --mm-cal-* on the parent slot, not
+    // these (see .calendar-article--monthly-day).
+    --ma-pad-v: var(--mm-cal-row-pad-v);
+    --ma-pad-l: var(--mm-cal-row-pad-l);
+    --ma-pad-r: var(--mm-cal-row-gutter-r); // right gutter: tick / action clearance
+    --ma-row-h: var(--mm-cal-row-h); // fixed height — body text clips, not grows the row
+
     // Inner row: icon + body side by side
     &__row {
         display: flex;
         align-items: center;
         gap: 0.625rem;
-        padding: 0.5rem 0.5rem 0.5rem;
+        padding: var(--ma-pad-v) var(--ma-pad-r) var(--ma-pad-v) var(--ma-pad-l);
+        height: var(--ma-row-h);
+        overflow: hidden; // body text clips within fixed row height
     }
 
     // &__progress-bg {
@@ -105,27 +116,6 @@
         text-overflow: ellipsis;
     }
 
-    &__friction-badge {
-        display: inline-block;
-        font-size: 0.62rem;
-        font-weight: 600;
-        letter-spacing: 0.02em;
-        padding: 0.1rem 0.35rem;
-        border-radius: 3px;
-        line-height: 1.4;
-        align-self: flex-start;
-
-        &--low {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.12);
-        }
-
-        &--mid {
-            color: #f59e0b;
-            background: rgba(245, 158, 11, 0.12);
-        }
-    }
-
     &__desc {
         font-size: var(--mm-text-sm);
         color: var(--mm-text-mute);
@@ -176,8 +166,9 @@
         flex-direction: row;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.375rem 0.75rem 0.375rem;
-        min-height: 2.5rem;
+        padding: var(--ma-pad-v) var(--ma-pad-r) var(--ma-pad-v) var(--ma-pad-l);
+        height: var(--ma-row-h);
+        overflow: hidden;
 
         .moment-action__name {
             font-size: 0.75em;
@@ -202,8 +193,8 @@
         flex-direction: row;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.375rem 0.75rem 0.375rem;
-        min-height: 2.5rem;
+        padding: var(--ma-pad-v) var(--ma-pad-r) var(--ma-pad-v) var(--ma-pad-l);
+        height: var(--ma-row-h);
         border: 1.5px dashed var(--mm-secondary, #8B5CF6);
         background: rgba(var(--mm-secondary-rgb), 0.08);
         border-radius: 0;
@@ -332,29 +323,10 @@
 
 .moment-action__tick {
     flex-shrink: 0;
+    margin-left: auto; // flexbox owns placement — sits flush at the right gutter
     font-size: 1rem;
     line-height: 1;
-    color: var(--mm-progress-complete, #00CFA0);
-    animation: tick-pop 0.2s ease both;
-}
-
-@keyframes tick-pop {
-    from {
-        opacity: 0;
-        transform: scale(0.5);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.moment-action__tick {
-    flex-shrink: 0;
-    font-size: 1rem;
-    line-height: 1;
-    color: var(--mm-progress-complete, #00CFA0);
+    color: var(--mm-text-mute);
     animation: tick-pop 0.2s ease both;
 }
 

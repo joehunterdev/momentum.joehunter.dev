@@ -45,7 +45,8 @@ export default function MomentActionIcon({
                 willChange: isActioning ? 'transform' : 'auto',
                 zIndex: isActioning ? 10 : undefined,
                 flexShrink: 0,
-                display: 'inline-block',
+                display: 'flex',
+                alignItems: 'center',
                 position: 'relative',
             }}
         >

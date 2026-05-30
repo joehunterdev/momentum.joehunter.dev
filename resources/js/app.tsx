@@ -1,6 +1,6 @@
 import '../css/app.scss';
 import './bootstrap';
-import 'material-icons/iconfont/sharp.css';
+import '@material-symbols/font-100/sharp.css';
 import { init } from 'emoji-mart';
 import emojiData from '@emoji-mart/data';
 init({ data: emojiData });

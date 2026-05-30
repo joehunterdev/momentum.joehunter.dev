@@ -16,7 +16,16 @@
       "Bash(php artisan *)",
       "Bash(findstr /i \"boost mcp\")",
       "Bash(cmd /c \"dir /b e:\\\\www\\\\momentum.joehunter.dev\")",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(grep -E \"mm-cal-row-gutter-r|--ma-pad-r|mm-cal-key-w\" /tmp/_compile_check.css | head -20; rm -f /tmp/_compile_check.css)",
+      "Read(//tmp/**)",
+      "Bash(npx sass *)",
+      "Bash(echo \"sass exit: $?\")",
+      "Bash(rm -f /tmp/_chk2.css)",
+      "Bash(npx playwright *)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }

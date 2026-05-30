@@ -24,7 +24,7 @@ $border-light: var(--mm-border-light);
 
     &__key {
         flex-shrink: 0;
-        width: 3.5rem;
+        width: var(--mm-cal-key-w);
         padding: 0.625rem 0.75rem;
         font-size: 0.6875rem;
         font-weight: 600;
@@ -42,18 +42,16 @@ $border-light: var(--mm-border-light);
     &__content {
         flex: 1;
         display: flex;
+        flex-direction: column;
         align-items: stretch;
         justify-content: flex-start;
-        padding: 0.5rem;
-        gap: 0.625rem;
-        min-height: 2.5rem;
         position: relative;
+        min-height: 2.5rem;
 
-        // All moment-action variants go edge-to-edge so the progress bar
-        // can sit flush at the slot bottom. Padding lives on __row instead.
-        &:has(.moment-action) {
-            padding: 0;
-            align-items: stretch;
+        // Direct children that are NOT .moment-action get breathing room.
+        // .moment-action rows go edge-to-edge (padding is on __row inside them).
+        > :not(.moment-action) {
+            padding: 0.5rem;
         }
     }
 
@@ -84,7 +82,6 @@ $border-light: var(--mm-border-light);
         &__content {
             flex: 1;
             justify-content: center;
-            padding: 0.5rem 0.25rem;
             min-height: $slot-h;
         }
     }
@@ -208,6 +205,26 @@ $border-light: var(--mm-border-light);
     right: 0.25rem;
 }
 
+// ─── Vertical key — rotated label (monthly day view, toggleable) ────────────
+// Apply .calendar-article__key--vertical to collapse the key to ~25% width
+// and rotate the text. Works on top of the base __key styles.
+
+.calendar-article__key--vertical {
+    width: 25%;
+    max-width: var(--mm-cal-key-w-vertical);
+    padding: 0.75rem 0;
+    align-items: center;
+    justify-content: flex-start;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 0.6rem;
+    text-align: left;
+    letter-spacing: 0.06em;
+    border-right: 1px solid var(--mm-border-light);
+    border-bottom: none;
+    background: var(--mm-surface-alt);
+}
+
 // ─── Clickable time label — empty slots in both overview and configure modes ──
 
 .calendar-article__key--clickable {
@@ -217,6 +234,22 @@ $border-light: var(--mm-border-light);
     &:hover {
         opacity: 0.7;
     }
+}
+
+// ─── Off-hours unlock — long-press the time key to reveal the + for one row ───
+// Dotted underline hints the key is hold-actionable; unlocked picks up the
+// primary tint so the row reads as "now active" once toggled.
+
+.calendar-article__key--unlockable {
+    cursor: pointer;
+    text-decoration: underline dotted var(--mm-text-ghost);
+    text-underline-offset: 3px;
+    -webkit-touch-callout: none; // suppress iOS text callout during hold
+}
+
+.calendar-article__key--unlocked {
+    color: var(--mm-primary);
+    text-decoration-color: var(--mm-primary);
 }
 
 // ─── No-time slot — used in monthly configure mode (no time gutter) ──────────
@@ -253,6 +286,11 @@ $border-light: var(--mm-border-light);
 .calendar-article--monthly-day {
     align-items: stretch;
 
+    // Monthly stacks moments against the day sidebar — widen the right gutter so
+    // the completion tick isn't jammed against the edge. Cascades into every
+    // descendant moment-action's --ma-pad-r (no child-selector override needed).
+    --mm-cal-row-gutter-r: 1.25rem;
+
     // Base .calendar-article flips to column layout at ≥768px (calendar grid
     // cells). Monthly-day rows are list rows, not grid cells — keep the key
     // on the left and the content column on the right at all breakpoints.
@@ -264,36 +302,15 @@ $border-light: var(--mm-border-light);
         min-width: 0;
     }
 
+    // Key uses the shared --vertical modifier; width normalised to 25% / 3.5rem max.
     .calendar-article__key {
-        width: 3.5rem;
-        padding: 0.75rem 0;
-        align-items: center;
-        justify-content: flex-start;
-        writing-mode: vertical-rl;
-        transform: rotate(180deg);
-        font-size: 0.6rem;
-        text-align: left;
-        letter-spacing: 0.06em;
-        border-right: 1px solid $border-light;
-        border-bottom: none;
-        background: var(--mm-surface-alt);
-
-        @media (min-width: 768px) {
-            width: 3.5rem;
-        }
+        @extend .calendar-article__key--vertical;
     }
 
     .calendar-article__content {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-        justify-content: flex-start !important;
-        align-items: stretch;
-        // Base `&:has(.moment-action)` rule already zeroes padding when
-        // moments are present. Leaving padding here on default means empty
-        // slots get the same 0.5rem breathing room as daily/weekly, so the
-        // + button isn't pinched against the row borders.
+        justify-content: flex-start;
 
+        // Separator between stacked moments
         >.moment-action {
             border-bottom: 1px solid var(--mm-border-light);
 
@@ -308,10 +325,10 @@ $border-light: var(--mm-border-light);
 // key column than the 4.5rem the overview uses for "TUE 26".
 .calendar-article--monthly-schedule {
     .calendar-article__key {
-        width: 6.25rem;
+        width: var(--mm-cal-key-w-schedule);
 
         @media (min-width: 768px) {
-            width: 6.25rem;
+            width: var(--mm-cal-key-w-schedule);
         }
     }
 }

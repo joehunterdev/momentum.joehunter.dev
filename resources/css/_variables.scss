@@ -94,6 +94,17 @@
   --mm-duration: 200ms;
   --mm-duration-slow: 400ms;
 
+  // ─── Calendar layout (single source of truth for slot rows + time gutter) ───
+  // Override these on a parent (e.g. .calendar-article--monthly-day) instead of
+  // reaching into child selectors — every variant + view reads from here.
+  --mm-cal-row-h: 3rem; // canonical filled-row height (read / edit / draft)
+  --mm-cal-row-pad-v: 0.5rem; // inner row vertical padding
+  --mm-cal-row-pad-l: 0.5rem; // inner row left padding
+  --mm-cal-row-gutter-r: 0.875rem; // right gutter — tick / action-button clearance
+  --mm-cal-key-w: 3.5rem; // time-gutter (key) width, horizontal layout
+  --mm-cal-key-w-vertical: 3.5rem; // rotated key max width (monthly day view)
+  --mm-cal-key-w-schedule: 6.25rem; // monthly configure: full day-name labels
+
   // ─── Progress Gradient (purple base → green completion) ───
   --mm-progress-base: #8B5CF6; // Purple
   --mm-progress-complete: #00CFA0; // Teal/Cyan
