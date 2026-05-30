@@ -4,6 +4,7 @@ import {
     CalendarSectionHeader,
 } from '@/shared/components/calendar';
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
+import { firstUnactionedMoment } from '../utils';
 import MomentAction from '../components/MomentAction';
 import MonthlyScheduleRow from './MonthlyScheduleRow';
 
@@ -88,6 +89,11 @@ export default function MonthlyContainer({
 
     const weeks = groupByIsoWeek(visibleDays);
 
+    // Single animated row: first unactioned moment across the visible days.
+    const nextMoment = firstUnactionedMoment(
+        visibleDays.map((d) => ({ date: d.date, moments: d.moments })),
+    );
+
     return (
         <div className="monthly-vertical-view">
             {weeks.map(({ weekStartIso, days: weekDays }) => {
@@ -120,6 +126,7 @@ export default function MonthlyContainer({
                                                     key={m.id}
                                                     moment={m}
                                                     date={day.date}
+                                                    isNext={nextMoment?.date === day.date && m.id === nextMoment?.momentId}
                                                 />
                                             ))
                                         ) : (

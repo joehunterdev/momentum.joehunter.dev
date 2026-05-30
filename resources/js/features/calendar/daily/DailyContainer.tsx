@@ -5,7 +5,7 @@ import {
     CalendarSectionArticle,
 } from '@/shared/components/calendar';
 import type { CalendarConfig } from '@/shared/components/calendar';
-import { getVisibleTimeSlots } from '../utils';
+import { getVisibleTimeSlots, firstUnactionedSlot } from '../utils';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 
 interface Props {
@@ -41,6 +41,7 @@ export default function DailyContainer({
 }: Props) {
     const currentDate = parseISO(day.date);
     const visibleSlots = getVisibleTimeSlots(day.slots, config);
+    const nextTime = firstUnactionedSlot([{ date: day.date, slots: visibleSlots }])?.time ?? null;
 
     return (
         <CalendarSection
@@ -78,6 +79,7 @@ export default function DailyContainer({
                     onDraftCancel={onDraftCancel}
                     onGhostExclude={onGhostExclude}
                     isToday={day.isToday}
+                    isNext={!!nextTime && slot.time === nextTime}
                 />
             ))}
         </CalendarSection>

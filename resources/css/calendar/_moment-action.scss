@@ -104,6 +104,11 @@
         display: flex;
         flex-direction: column;
         gap: 0.125rem;
+
+        // Tappable when the detail line can rotate (tap = advance to next field).
+        &[data-cycle="true"] {
+            cursor: pointer;
+        }
     }
 
     &__name {
@@ -128,6 +133,24 @@
     &__desc-track {
         display: inline-block;
         white-space: nowrap;
+    }
+
+    // Rotating detail line — crossfades between the description and the
+    // populated behavioural fields (intention / habit stack / environment).
+    // Occupies the same slot as __desc; single line, clipped with ellipsis.
+    &__detail {
+        font-size: var(--mm-text-sm);
+        color: var(--mm-text-mute);
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        opacity: 1;
+        transition: opacity 0.25s ease;
+
+        &[data-visible="false"] {
+            opacity: 0;
+        }
     }
 
     &__edit-btn {
@@ -386,5 +409,10 @@
     .moment-action__desc--marquee .moment-action__desc-track {
         animation: none;
         transform: translateX(0);
+    }
+
+    // Detail rotation swaps text instantly (the hook also skips the fade delay).
+    .moment-action__detail {
+        transition: none;
     }
 }

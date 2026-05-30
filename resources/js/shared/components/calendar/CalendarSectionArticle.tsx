@@ -217,6 +217,7 @@ export default function CalendarSectionArticle({
     onGhostExclude,
     isToday,
     isWeekend,
+    isNext,
 }: Props) {
     const targets = articleTargetsScheduling(scheduling, date, time, isoDayNumber);
     const isSourceCandidate = isSourceSlot(scheduling, date, time, isoDayNumber);
@@ -330,6 +331,7 @@ export default function CalendarSectionArticle({
                             variant={mode === 'configure' ? 'edit' : 'read'}
                             date={date}
                             time={time}
+                            isNext={isNext}
                         />
                         {isConflict && (
                             <span className="calendar-article__conflict-badge" title="Scheduling conflict">

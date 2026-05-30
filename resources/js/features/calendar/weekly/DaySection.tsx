@@ -17,6 +17,8 @@ interface Props {
     onDraftCancel: () => void;
     onGhostExclude: (isoDay: IsoDayNumber) => void;
     windowStart: number;
+    /** The single row to auto-animate across the week (date + slot time), or null. */
+    nextSlot: { date: string; time: string } | null;
 }
 
 const VISIBLE_SLOTS = 6;
@@ -38,6 +40,7 @@ export default function DaySection({
     onDraftCancel,
     onGhostExclude,
     windowStart,
+    nextSlot,
 }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = getWindowedSlots(day.slots, windowStart);
@@ -81,6 +84,7 @@ export default function DaySection({
                     onGhostExclude={onGhostExclude}
                     isWeekend={day.isWeekend}
                     isToday={day.isToday}
+                    isNext={nextSlot?.date === day.date && nextSlot?.time === slot.time}
                 />
             ))}
         </CalendarSection>

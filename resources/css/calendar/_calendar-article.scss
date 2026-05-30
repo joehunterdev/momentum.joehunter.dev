@@ -52,6 +52,7 @@ $border-light: var(--mm-border-light);
         // .moment-action rows go edge-to-edge (padding is on __row inside them).
         > :not(.moment-action) {
             padding: 0.5rem;
+            margin-left: 0.25rem;
         }
     }
 

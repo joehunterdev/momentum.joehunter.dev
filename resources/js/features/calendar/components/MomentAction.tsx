@@ -6,6 +6,7 @@ import MomentIconPicker from '@/features/moments/components/MomentIconPicker';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
 import MomentIcon from '@/shared/components/calendar/MomentIcon';
 import MomentProgressBar from '@/shared/components/calendar/MomentProgressBar';
+import Ticker from '@/shared/components/Ticker';
 import MomentActionIcon from './MomentActionIcon';
 import { MomentStatus } from '@/shared/types/enums';
 import {
@@ -13,6 +14,7 @@ import {
     useMomentComplete,
     useMomentCompletionFriction,
     useMomentDescriptionMarquee,
+    useMomentDetailCycle,
     useMomentDragPreview,
 } from '@/features/quick-action';
 
@@ -44,6 +46,8 @@ interface Props {
     date?: string;
     /** Read variant: time slot (forwarded to the toggle endpoint). */
     time?: string;
+    /** Read variant: this is the single "next up" action — auto-cycle its detail line. */
+    isNext?: boolean;
 }
 
 /**
@@ -70,6 +74,7 @@ export default function MomentAction({
     recurrenceLabel,
     date,
     time,
+    isNext = false,
 }: Props) {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
@@ -125,6 +130,17 @@ export default function MomentAction({
 
     const { isOverflowing: descOverflowing, overflowPx: descOverflowPx } =
         useMomentDescriptionMarquee(descRef, descTrackRef, !!moment.description, moment.description);
+
+    // Rotating detail line: description (home) then each populated behavioural
+    // field. Only the single "next up" row auto-cycles; any row can be tapped.
+    const detailItems = [
+        moment.description,
+        moment.implementation_intention,
+        moment.habit_stack_after,
+        moment.environment_prompt,
+    ].filter((v): v is string => !!v && v.trim().length > 0);
+    const { text: detailText, visible: detailVisible, advance: advanceDetail, canCycle } =
+        useMomentDetailCycle({ items: detailItems, auto: variant === 'read' && isNext });
 
     // ── Draft variant ───────────────────────────────────────────────────────
     if (variant === 'draft') {
@@ -353,10 +369,22 @@ export default function MomentAction({
                 />
                 <div
                     className="moment-action__body"
+                    data-cycle={canCycle || undefined}
                     style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
+                    onClick={canCycle ? advanceDetail : undefined}
+                    onKeyDown={canCycle ? (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advanceDetail(); }
+                    } : undefined}
+                    role={canCycle ? 'button' : undefined}
+                    tabIndex={canCycle ? 0 : undefined}
+                    aria-label={canCycle ? 'Show next habit detail' : undefined}
                 >
                     <span className="moment-action__name">{name}</span>
-                    {moment.description && (
+                    {canCycle ? (
+                        <span className="moment-action__detail" data-visible={detailVisible}>
+                            <Ticker text={detailText} />
+                        </span>
+                    ) : moment.description && (
                         <span ref={descRef} className={descClassName} style={descStyle}>
                             <span ref={descTrackRef} className="moment-action__desc-track">
                                 {moment.description}

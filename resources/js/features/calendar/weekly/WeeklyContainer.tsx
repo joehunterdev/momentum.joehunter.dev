@@ -1,7 +1,7 @@
 import { parseISO, startOfDay } from 'date-fns';
 import type { WeekDay, WeeklyConfig } from '../types';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
-import { computeWindowStart } from '../utils';
+import { computeWindowStart, firstUnactionedSlot } from '../utils';
 import DaySection from './DaySection';
 
 const VISIBLE_SLOTS = 6;
@@ -46,6 +46,15 @@ export default function WeeklyContainer({
     ).sort();
     const windowStart = computeWindowStart(allTimes, VISIBLE_SLOTS);
 
+    // Single animated row across the visible week: the first unactioned moment
+    // among the on-screen (windowed) slots, in day → time order.
+    const nextSlot = firstUnactionedSlot(
+        visibleDays.map((d) => ({
+            date: d.date,
+            slots: d.slots.slice(windowStart, windowStart + VISIBLE_SLOTS),
+        })),
+    );
+
     return (
         <div className="weekly-grid">
             {visibleDays.map((day) => (
@@ -53,6 +62,7 @@ export default function WeeklyContainer({
                     key={day.date}
                     day={day}
                     config={config}
+                    nextSlot={nextSlot}
                     mode={mode}
                     scheduling={scheduling}
                     onStartScheduling={onStartScheduling}
