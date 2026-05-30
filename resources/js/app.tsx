@@ -3,15 +3,14 @@ import './bootstrap';
 import 'material-icons/iconfont/sharp.css';
 import { init } from 'emoji-mart';
 import emojiData from '@emoji-mart/data';
-import momentEmojiCatalog from '@/shared/config/moment-emoji-catalog.json';
-init({ data: emojiData, custom: momentEmojiCatalog });
+init({ data: emojiData });
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
+//TODO: Refactor what is this progress why do we need this ?
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) =>
