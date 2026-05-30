@@ -1,1 +1,0 @@
-import{s as e}from"./app-DEeXYcpg.js";var t=e();function n({className:e}){return(0,t.jsx)(`img`,{src:`/logo.png`,alt:`Momentum`,className:e})}export{n as t};
