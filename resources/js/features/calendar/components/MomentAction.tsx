@@ -6,7 +6,7 @@ import MomentIconPicker from '@/features/moments/components/MomentIconPicker';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
 import MomentIcon from '@/shared/components/calendar/MomentIcon';
 import MomentProgressBar from '@/shared/components/calendar/MomentProgressBar';
-// import MomentActionBorder from './MomentActionBorder';
+import MomentActionIcon from './MomentActionIcon';
 import { MomentStatus } from '@/shared/types/enums';
 import {
     consistencyBand,
@@ -334,63 +334,22 @@ export default function MomentAction({
             style={{ '--hold-progress': holdProgress } as React.CSSProperties}
         >
             <div className="moment-action__row">
-                <span
-                    style={{
-                        transform: iconTranslateX,
-                        transition: iconTransition,
-                        willChange: dragProgress > 0 ? 'transform' : 'auto',
-                        zIndex: dragProgress > 0 ? 10 : undefined,
-                        flexShrink: 0,
-                        display: 'inline-block',
-                        position: 'relative',
-                    }}
-                >
-                    <span
-                        className="moment-action__icon"
-                        style={{
-                            touchAction: 'pan-y',
-                            cursor: isCommitting ? 'wait' : 'pointer',
-                            overflow: 'visible',
-                        }}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={friction.label || (isCompleted ? 'Mark as incomplete' : 'Mark as complete')}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                onActivate();
-                            }
-                        }}
-                        {...bindHandlers}
-                    >
-                        {moment.icon
-                            ? <Icon name={moment.icon} />
-                            : <img src="/logo.png" alt="" className="moment-action__icon-img" />
-                        }
-                    </span>
-                    <svg
-                        className="moment-action__arc"
-                        viewBox="0 0 44 44"
-                        aria-hidden
-                    >
-                        <rect x="3" y="3" width="38" height="38"
-                            fill="none"
-                            stroke="rgba(0,0,0,0.08)"
-                            strokeWidth="3"
-                        />
-                        <rect x="3" y="3" width="38" height="38"
-                            fill="none"
-                            stroke={arcColor}
-                            strokeWidth="3"
-                            strokeDasharray={arcPerimeter}
-                            strokeLinecap="butt"
-                            style={{
-                                strokeDashoffset: arcOffset,
-                                transition: hasFriction ? `stroke-dashoffset ${friction.requiredHoldMs}ms linear` : 'none',
-                            }}
-                        />
-                    </svg>
-                </span>
+                <MomentActionIcon
+                    moment={moment}
+                    dragProgress={dragProgress}
+                    isCommitting={isCommitting}
+                    isCompleted={isCompleted}
+                    arcColor={arcColor}
+                    arcOffset={arcOffset}
+                    arcPerimeter={arcPerimeter}
+                    hasFriction={hasFriction}
+                    requiredHoldMs={friction.requiredHoldMs}
+                    frictionLabel={friction.label}
+                    bindHandlers={bindHandlers}
+                    onActivate={onActivate}
+                    translateX={iconTranslateX}
+                    transition={iconTransition}
+                />
                 <div
                     className="moment-action__body"
                     style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
