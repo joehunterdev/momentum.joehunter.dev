@@ -1,6 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
 import data from '@emoji-mart/data';
-import momentCatalog from '@/shared/config/moment-emoji-catalog.json';
 import { EMOJI_SET } from '@/shared/config/icons.config';
 import Icon from '@/shared/components/Icon';
 
@@ -33,8 +32,7 @@ export default function MomentIconPicker({ value, onChange }: Props) {
                     <div className="moment-icon-picker__panel">
                         <Picker
                             data={data}
-                            custom={momentCatalog}
-                            categories={['health', 'fitness', 'mind', 'work', 'social', 'creative', 'general']}
+                            categories={['people', 'nature', 'foods', 'activity', 'places', 'objects', 'symbols', 'flags']}
                             set={EMOJI_SET}
                             onEmojiSelect={(e: { id: string; native: string }) => {
                                 onChange(e.native);
