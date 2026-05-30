@@ -5,11 +5,11 @@ export type MaterialIconStyle =
 export const MATERIAL_STYLE: MaterialIconStyle = 'sharp';
 
 export const MATERIAL_STYLE_CLASS: Record<MaterialIconStyle, string> = {
-    'filled': 'material-icons',
-    'outlined': 'material-icons-outlined',
-    'rounded': 'material-icons-round',
-    'sharp': 'material-icons-sharp',
-    'two-tone': 'material-icons-two-tone',
+    'filled': 'material-symbols-outlined',
+    'outlined': 'material-symbols-outlined',
+    'rounded': 'material-symbols-rounded',
+    'sharp': 'material-symbols-sharp',
+    'two-tone': 'material-symbols-outlined',
 };
 
 // ── emoji-mart (moment emoji rendering) ────────────────────────────────

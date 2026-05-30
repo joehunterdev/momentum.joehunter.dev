@@ -1,0 +1,46 @@
+// _ticker.scss — single-line text that scrolls left when it overflows its
+// container, and stays static (clipped) when it fits. Driven by <Ticker>,
+// which sets --ticker-distance / --ticker-duration when overflowing.
+
+.ticker {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &__track {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    // Scroll the track left to reveal the tail, hold, then loop.
+    &--scrolling .ticker__track {
+        animation: ticker-scroll var(--ticker-duration, 8s) linear infinite;
+        will-change: transform;
+    }
+
+    // Pause while the row is hovered so it can be read.
+    &--scrolling:hover .ticker__track {
+        animation-play-state: paused;
+    }
+}
+
+@keyframes ticker-scroll {
+
+    0%,
+    10% {
+        transform: translateX(0);
+    }
+
+    90%,
+    100% {
+        transform: translateX(calc(-1 * var(--ticker-distance, 0px)));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ticker--scrolling .ticker__track {
+        animation: none;
+        transform: translateX(0);
+    }
+}

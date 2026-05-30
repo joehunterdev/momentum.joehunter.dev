@@ -1,6 +1,6 @@
 [
     {
-        "name": "🟢 Perfect habit",
+        "name": "Perfect habit",
         "description": "consistency: ~95 — no friction — instant commit",
         "icon": "🟢",
         "color": "#10B981",
@@ -16,7 +16,7 @@
         "completion_rate_end": 0.98
     },
     {
-        "name": "🟩 Good habit",
+        "name": "Good habit",
         "description": "consistency: ~72 — no friction — instant commit",
         "icon": "🟩",
         "color": "#34D399",
@@ -32,7 +32,7 @@
         "completion_rate_end": 0.78
     },
     {
-        "name": "🟡 Building habit",
+        "name": "Building habit",
         "description": "consistency: ~55 — mid friction — hold 1.5 s",
         "icon": "🟡",
         "color": "#F59E0B",
@@ -48,7 +48,7 @@
         "completion_rate_end": 0.60
     },
     {
-        "name": "🟠 Struggling habit",
+        "name": "Struggling habit",
         "description": "consistency: ~38 — mid friction — hold 1.5 s",
         "icon": "🟠",
         "color": "#F97316",
@@ -64,7 +64,7 @@
         "completion_rate_end": 0.42
     },
     {
-        "name": "🔴 New habit",
+        "name": "New habit",
         "description": "consistency: ~18 — low friction — hold 3 s",
         "icon": "🔴",
         "color": "#EF4444",
@@ -80,7 +80,7 @@
         "completion_rate_end": 0.22
     },
     {
-        "name": "🟥 Abandoned habit",
+        "name": "Abandoned habit",
         "description": "consistency: ~5 — low friction — hold 3 s",
         "icon": "🟥",
         "color": "#DC2626",

@@ -53,19 +53,4 @@ test.describe('Friction mechanic', () => {
         // Arc should be gone after commit
         await expect(page.locator('.moment-action__arc').first()).not.toBeVisible();
     });
-
-    test('friction badge is visible for low-friction moments', async ({ page }) => {
-        await page.goto('/?friction=low');
-        await expect(page.locator('.moment-action__friction-badge--low').first()).toBeVisible();
-    });
-
-    test('friction badge is visible for mid-friction moments', async ({ page }) => {
-        await page.goto('/?friction=mid');
-        await expect(page.locator('.moment-action__friction-badge--mid').first()).toBeVisible();
-    });
-
-    test('no friction badge shown when friction is none', async ({ page }) => {
-        await page.goto('/?friction=none');
-        await expect(page.locator('.moment-action__friction-badge').first()).not.toBeVisible();
-    });
 });

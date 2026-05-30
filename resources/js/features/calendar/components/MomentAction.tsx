@@ -6,13 +6,15 @@ import MomentIconPicker from '@/features/moments/components/MomentIconPicker';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
 import MomentIcon from '@/shared/components/calendar/MomentIcon';
 import MomentProgressBar from '@/shared/components/calendar/MomentProgressBar';
-// import MomentActionBorder from './MomentActionBorder';
+import Ticker from '@/shared/components/Ticker';
+import MomentActionIcon from './MomentActionIcon';
 import { MomentStatus } from '@/shared/types/enums';
 import {
     consistencyBand,
     useMomentComplete,
     useMomentCompletionFriction,
     useMomentDescriptionMarquee,
+    useMomentDetailCycle,
     useMomentDragPreview,
 } from '@/features/quick-action';
 
@@ -44,6 +46,8 @@ interface Props {
     date?: string;
     /** Read variant: time slot (forwarded to the toggle endpoint). */
     time?: string;
+    /** Read variant: this is the single "next up" action — auto-cycle its detail line. */
+    isNext?: boolean;
 }
 
 /**
@@ -70,6 +74,7 @@ export default function MomentAction({
     recurrenceLabel,
     date,
     time,
+    isNext = false,
 }: Props) {
     const [pickerOpen, setPickerOpen] = useState(false);
     const [pickerStyle, setPickerStyle] = useState<React.CSSProperties>({});
@@ -126,6 +131,17 @@ export default function MomentAction({
     const { isOverflowing: descOverflowing, overflowPx: descOverflowPx } =
         useMomentDescriptionMarquee(descRef, descTrackRef, !!moment.description, moment.description);
 
+    // Rotating detail line: description (home) then each populated behavioural
+    // field. Only the single "next up" row auto-cycles; any row can be tapped.
+    const detailItems = [
+        moment.description,
+        moment.implementation_intention,
+        moment.habit_stack_after,
+        moment.environment_prompt,
+    ].filter((v): v is string => !!v && v.trim().length > 0);
+    const { text: detailText, visible: detailVisible, advance: advanceDetail, canCycle } =
+        useMomentDetailCycle({ items: detailItems, auto: variant === 'read' && isNext });
+
     // ── Draft variant ───────────────────────────────────────────────────────
     if (variant === 'draft') {
         const draftValue = name === 'New Moment' ? '' : (moment.name ?? '');
@@ -173,6 +189,7 @@ export default function MomentAction({
                     {pickerOpen && createPortal(
                         <div ref={pickerPanelRef} className="draft-icon-picker" style={pickerStyle} role="dialog" aria-label="Pick an icon">
                             <MomentIconPicker
+                                embedded
                                 value={moment.icon ?? ''}
                                 onChange={(emoji) => {
                                     onDraftIconChange?.(emoji);
@@ -334,74 +351,40 @@ export default function MomentAction({
             style={{ '--hold-progress': holdProgress } as React.CSSProperties}
         >
             <div className="moment-action__row">
-                <span
-                    style={{
-                        transform: iconTranslateX,
-                        transition: iconTransition,
-                        willChange: dragProgress > 0 ? 'transform' : 'auto',
-                        zIndex: dragProgress > 0 ? 10 : undefined,
-                        flexShrink: 0,
-                        display: 'inline-block',
-                        position: 'relative',
-                    }}
-                >
-                    <span
-                        className="moment-action__icon"
-                        style={{
-                            touchAction: 'pan-y',
-                            cursor: isCommitting ? 'wait' : 'pointer',
-                            overflow: 'visible',
-                        }}
-                        role="button"
-                        tabIndex={0}
-                        aria-label={friction.label || (isCompleted ? 'Mark as incomplete' : 'Mark as complete')}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                onActivate();
-                            }
-                        }}
-                        {...bindHandlers}
-                    >
-                        {moment.icon
-                            ? <Icon name={moment.icon} />
-                            : <img src="/logo.png" alt="" className="moment-action__icon-img" />
-                        }
-                    </span>
-                    <svg
-                        className="moment-action__arc"
-                        viewBox="0 0 44 44"
-                        aria-hidden
-                    >
-                        <rect x="3" y="3" width="38" height="38"
-                            fill="none"
-                            stroke="rgba(0,0,0,0.08)"
-                            strokeWidth="3"
-                        />
-                        <rect x="3" y="3" width="38" height="38"
-                            fill="none"
-                            stroke={arcColor}
-                            strokeWidth="3"
-                            strokeDasharray={arcPerimeter}
-                            strokeLinecap="butt"
-                            style={{
-                                strokeDashoffset: arcOffset,
-                                transition: hasFriction ? `stroke-dashoffset ${friction.requiredHoldMs}ms linear` : 'none',
-                            }}
-                        />
-                    </svg>
-                </span>
+                <MomentActionIcon
+                    moment={moment}
+                    dragProgress={dragProgress}
+                    isCommitting={isCommitting}
+                    isCompleted={isCompleted}
+                    arcColor={arcColor}
+                    arcOffset={arcOffset}
+                    arcPerimeter={arcPerimeter}
+                    hasFriction={hasFriction}
+                    requiredHoldMs={friction.requiredHoldMs}
+                    frictionLabel={friction.label}
+                    bindHandlers={bindHandlers}
+                    onActivate={onActivate}
+                    translateX={iconTranslateX}
+                    transition={iconTransition}
+                />
                 <div
                     className="moment-action__body"
+                    data-cycle={canCycle || undefined}
                     style={{ opacity: bodyOpacity, transition: bodyOpacity === 1 ? 'opacity 0.2s ease' : 'none' }}
+                    onClick={canCycle ? advanceDetail : undefined}
+                    onKeyDown={canCycle ? (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); advanceDetail(); }
+                    } : undefined}
+                    role={canCycle ? 'button' : undefined}
+                    tabIndex={canCycle ? 0 : undefined}
+                    aria-label={canCycle ? 'Show next habit detail' : undefined}
                 >
                     <span className="moment-action__name">{name}</span>
-                    {friction.frictionLevel !== 'none' && (
-                        <span className={`moment-action__friction-badge moment-action__friction-badge--${friction.frictionLevel}`}>
-                            {friction.frictionLevel === 'low' ? '🔴' : '🟡'} {friction.label}
+                    {canCycle ? (
+                        <span className="moment-action__detail" data-visible={detailVisible}>
+                            <Ticker text={detailText} />
                         </span>
-                    )}
-                    {moment.description && (
+                    ) : moment.description && (
                         <span ref={descRef} className={descClassName} style={descStyle}>
                             <span ref={descTrackRef} className="moment-action__desc-track">
                                 {moment.description}

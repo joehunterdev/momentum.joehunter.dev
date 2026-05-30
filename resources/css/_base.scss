@@ -1,15 +1,15 @@
 // _base.scss — global resets, body, typography
 
-// Material Icons — ensure icons inherit text sizing and align on the baseline
-.material-icons,
-.material-icons-outlined,
-.material-icons-round,
-.material-icons-sharp,
-.material-icons-two-tone {
+// Material Symbols — variable font, all axes locked to design spec:
+//   FILL=0 (no fill), wght=100, GRAD=-25, OPSZ=20
+.material-symbols-sharp,
+.material-symbols-outlined,
+.material-symbols-rounded {
   font-size: inherit;
   line-height: 1;
   vertical-align: middle;
   user-select: none;
+  font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 200, 'opsz' 20;
 }
 
 body {
@@ -27,7 +27,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%236366F1' fill-opacity='0.03'%3E%3Cpath d='M20 20h-4v-4h4v4zm0-20h-4v4h4V0zM0 20h4v-4H0v4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  // background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%236366F1' fill-opacity='0.03'%3E%3Cpath d='M20 20h-4v-4h4v4zm0-20h-4v4h4V0zM0 20h4v-4H0v4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 0;
 }

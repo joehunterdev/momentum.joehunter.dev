@@ -3,7 +3,8 @@
  * cells. Mirrors the helpers in backend's CalendarService.
  */
 
-import type { CalendarConfig, TimeSlot } from '@/shared/components/calendar/types';
+import type { CalendarConfig, CalendarMoment, TimeSlot } from '@/shared/components/calendar/types';
+import { MomentStatus } from '@/shared/types/enums';
 
 /**
  * Filter time slots to those inside the user's wake→sleep window.
@@ -73,6 +74,43 @@ export function computeWindowStart(allTimes: string[], visibleCount: number): nu
 
     const half = Math.floor(visibleCount / 2);
     return Math.max(0, Math.min(anchorIdx - half, allTimes.length - visibleCount));
+}
+
+/**
+ * The "next up" action to auto-animate: the FIRST unactioned (not completed)
+ * moment in the currently-viewed days, in chronological order (day, then slot
+ * time). Returns its {date, time}, or null when everything is done. Used by
+ * daily (one day) and weekly (across the visible week) — the single animated
+ * row follows whatever date range the view is showing.
+ */
+export function firstUnactionedSlot(
+    days: { date: string; slots: TimeSlot[] }[],
+): { date: string; time: string } | null {
+    for (const day of days) {
+        for (const slot of day.slots) {
+            if (slot.moment && slot.moment.status !== MomentStatus.Completed) {
+                return { date: day.date, time: slot.time };
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Monthly equivalent: rows are day-level with no per-moment time, so the next
+ * up is the first non-completed moment (render order) across the viewed days.
+ */
+export function firstUnactionedMoment(
+    days: { date: string; moments: CalendarMoment[] }[],
+): { date: string; momentId: number } | null {
+    for (const day of days) {
+        for (const m of day.moments) {
+            if (m.status !== MomentStatus.Completed) {
+                return { date: day.date, momentId: m.id };
+            }
+        }
+    }
+    return null;
 }
 
 /**
