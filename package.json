@@ -41,6 +41,7 @@
         "date-fns": "^4.1.0",
         "emoji-mart": "^5.6.0",
         "gsap": "^3.15.0",
-        "material-icons": "^1.13.14"
+        "material-icons": "^1.13.14",
+        "recharts": "^3.8.1"
     }
 }

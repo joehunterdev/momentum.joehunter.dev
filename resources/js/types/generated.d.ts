@@ -12,6 +12,16 @@ declare namespace App {
             completedCount: number;
             totalCount: number;
         };
+        export type HabitStatData = {
+            id: number;
+            name: string;
+            icon: string | null;
+            color: string | null;
+            completionRate: number | null;
+            currentStreak: number;
+            longestStreak: number;
+            cells: string[];
+        };
         export type MomentData = {
             id: number;
             name: string;
@@ -72,16 +82,33 @@ declare namespace App {
             environment_prompt: string | null;
             progress: number | null;
         };
+        export type StatsPageData = {
+            rangeDays: number;
+            days: string[];
+            summary: App.Data.StatsSummaryData;
+            habits: App.Data.HabitStatData[];
+            trend: App.Data.TrendPointData[];
+        };
+        export type StatsSummaryData = {
+            completionRate: number;
+            totalCompleted: number;
+            longestStreak: number;
+            missedDays: number;
+        };
         export type TimeSlotData = {
             time: string;
             moment: App.Data.SlotMomentData | null;
+        };
+        export type TrendPointData = {
+            date: string;
+            rate: number;
         };
         export type UserConfigData = {
             wake_time: string;
             sleep_time: string;
             office_start: string;
             office_end: string;
-            friction_level: 'auto' | 'none' | 'mid' | 'low';
+            friction_level: string;
         };
         export type WeekDayData = {
             date: string;

@@ -7,6 +7,7 @@ use App\Http\Controllers\MomentController;
 use App\Http\Controllers\MomentInstanceController;
 use App\Http\Controllers\MonthlyController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StatsController;
 use App\Http\Controllers\WeeklyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -68,6 +69,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/daily', [DailyController::class, 'index'])->name('daily');
     Route::get('/weekly', [WeeklyController::class, 'index'])->name('weekly');
     Route::get('/monthly', [MonthlyController::class, 'index'])->name('monthly');
+    Route::get('/stats', [StatsController::class, 'index'])->name('stats');
 
     Route::resource('moments', MomentController::class)
         ->only(['create', 'store', 'edit', 'update', 'destroy']);

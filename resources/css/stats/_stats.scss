@@ -1,0 +1,280 @@
+// _stats.scss — the /stats dashboard (summary cards, trend, habit grid, bars).
+
+$border: var(--mm-border);
+$border-light: var(--mm-border-light);
+
+// ─── Header (title + range selector) ─────────────────────────────────────────
+.stats-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+
+    &__title {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--mm-text-strong);
+        margin: 0;
+    }
+}
+
+.stats-range {
+    display: inline-flex;
+    border: 1px solid $border;
+    background: var(--mm-surface);
+    overflow: hidden;
+
+    &__btn {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--mm-text-mute);
+        background: none;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.12s, color 0.12s;
+
+        & + & {
+            border-left: 1px solid $border-light;
+        }
+
+        &:hover {
+            background: rgba(var(--mm-primary-rgb), 0.06);
+        }
+
+        &--active {
+            background: var(--mm-primary);
+            color: #fff;
+
+            &:hover {
+                background: var(--mm-primary-dark);
+            }
+        }
+    }
+}
+
+// ─── Page column ──────────────────────────────────────────────────────────────
+.stats-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stats-section {
+    background: var(--mm-surface);
+    border: 1px solid $border;
+    padding: 0.875rem 1rem 1rem;
+
+    &__title {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--mm-text-mute);
+        margin: 0 0 0.75rem;
+    }
+}
+
+.stats-empty {
+    font-size: 0.8125rem;
+    color: var(--mm-text-faint);
+    margin: 0;
+}
+
+// ─── Summary cards ────────────────────────────────────────────────────────────
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.625rem;
+
+    @media (min-width: 640px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.stats-card {
+    background: var(--mm-surface);
+    border: 1px solid $border;
+    border-top: 3px solid var(--mm-muted-light);
+    padding: 0.75rem 0.875rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    &__icon {
+        color: var(--mm-text-faint);
+    }
+
+    &__value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--mm-text-strong);
+    }
+
+    &__label {
+        font-size: 0.6875rem;
+        color: var(--mm-text-mute);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    &--primary {
+        border-top-color: var(--mm-primary);
+        .stats-card__icon { color: var(--mm-primary); }
+    }
+
+    &--streak {
+        border-top-color: var(--mm-streak-color);
+        .stats-card__icon { color: var(--mm-streak-color); }
+    }
+
+    &--danger {
+        border-top-color: var(--mm-danger);
+        .stats-card__icon { color: var(--mm-danger); }
+    }
+}
+
+// ─── Trend chart ──────────────────────────────────────────────────────────────
+.stats-trend {
+    width: 100%;
+
+    &--loading {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8125rem;
+        color: var(--mm-text-faint);
+    }
+}
+
+// ─── Habit grid (habits × days) ───────────────────────────────────────────────
+.stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__label {
+        flex-shrink: 0;
+        width: 7.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        font-size: 0.75rem;
+        color: var(--mm-text-body);
+        overflow: hidden;
+    }
+
+    &__label-img {
+        width: 1rem;
+        height: 1rem;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    &__name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__cells {
+        display: flex;
+        gap: 2px;
+        overflow-x: auto;
+        flex: 1;
+        min-width: 0;
+        padding-bottom: 2px;
+    }
+
+    &__cell {
+        flex: 0 0 auto;
+        width: 0.5rem;
+        height: 1rem;
+        border-radius: 1px;
+
+        &--missed {
+            background: rgba(var(--mm-progress-base-rgb), 0.10);
+            box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.25);
+        }
+
+        &--notdue {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--mm-surface-alt),
+                var(--mm-surface-alt) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            opacity: 0.6;
+        }
+    }
+}
+
+// ─── Per-habit bars ───────────────────────────────────────────────────────────
+.stats-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.stats-bar {
+    &__head {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        margin-bottom: 0.25rem;
+    }
+
+    &__img {
+        width: 1rem;
+        height: 1rem;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    &__name {
+        font-size: 0.8125rem;
+        color: var(--mm-text-body);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__pct {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--mm-text-strong);
+        flex-shrink: 0;
+    }
+
+    &__track {
+        height: 8px;
+        background: rgba(var(--mm-progress-base-rgb), 0.10);
+        overflow: hidden;
+    }
+
+    &__fill {
+        height: 100%;
+        transition: width 0.4s ease;
+    }
+
+    &__streak {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.15rem;
+        font-size: 0.6875rem;
+        color: var(--mm-streak-color);
+        margin-top: 0.2rem;
+    }
+}

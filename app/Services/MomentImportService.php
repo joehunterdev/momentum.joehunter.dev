@@ -74,6 +74,15 @@ class MomentImportService
                     'sort_order' => $i,
                 ]);
 
+                // Backdate creation to the start of the simulated history so the
+                // no-backdating rule in Moment::isScheduledFor() (and therefore
+                // the Stats dashboard) counts the seeded instances rather than
+                // treating those pre-creation days as "not due".
+                if ($generateHistory) {
+                    $moment->created_at = $periodStart;
+                    $moment->save();
+                }
+
                 MomentSchedule::create([
                     'moment_id' => $moment->id,
                     'frequency' => $data['frequency'],
