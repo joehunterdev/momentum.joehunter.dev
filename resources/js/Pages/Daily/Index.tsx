@@ -16,14 +16,14 @@ interface Props extends PageProps, App.Data.DailyPageData { }
 export default function Index({ date, day, config, completedCount, totalCount }: Props) {
     const scheduling = useScheduling({ redirectTo: route('daily', { date }) });
 
+    // Daily has a single day on screen — no surface to preview a repeat — so a
+    // tap creates a one-off for that day. (Recurring habits are built in the
+    // weekly/monthly views where the ghosts can show the pattern.)
     function handleStartScheduling(targetDate: string, time: string) {
-        const endDate = format(addDays(parseISO(targetDate), 7), 'yyyy-MM-dd');
         scheduling.start({
-            kind: SchedulingKind.Recurring,
-            daysOfWeek: [1, 2, 3, 4, 5, 6, 7],
+            kind: SchedulingKind.OneOff,
+            date: targetDate,
             time,
-            anchorDate: targetDate,
-            endDate,
             name: '',
             icon: null,
         });

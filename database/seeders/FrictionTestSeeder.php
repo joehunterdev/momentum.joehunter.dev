@@ -41,7 +41,7 @@ class FrictionTestSeeder extends Seeder
 
         $count = $this->importer->import(
             user: $user,
-            jsonPath: database_path('data/test-user-moments-data.json'),
+            filePath: database_path('data/test-user-moments-data.json'),
         );
 
         $this->command->info("✅  FrictionTestSeeder: {$count} moments seeded for {$email}");

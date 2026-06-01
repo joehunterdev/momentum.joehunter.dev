@@ -181,6 +181,21 @@ $border-light: var(--mm-border-light);
                 opacity: 0.7;
             }
         }
+
+        // "Add this day to the habit" — the recurrence-time row of a not-yet-
+        // included day while a recurring draft is active. Purple to read as
+        // "extend the moment you're scheduling", matching the draft palette.
+        &--add-day {
+            opacity: 0.85;
+            border-color: var(--mm-secondary, #8B5CF6);
+            color: var(--mm-secondary, #8B5CF6);
+
+            &:hover {
+                opacity: 1;
+                border-color: var(--mm-secondary-dark, #7C3AED);
+                color: var(--mm-secondary-dark, #7C3AED);
+            }
+        }
     }
 
 }

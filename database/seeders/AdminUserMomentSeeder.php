@@ -42,7 +42,7 @@ class AdminUserMomentSeeder extends Seeder
 
         $count = $this->importer->import(
             user: $user,
-            jsonPath: database_path('data/admin-moments-data.json'),
+            filePath: database_path('data/admin-moments-data.json'),
         );
 
         $this->command->info("✅  Admin user moments seeded: {$count} moments for {$email}");

@@ -17,11 +17,11 @@ return [
     ],
 
     'basic' => [
-        'first_name' => env('BASIC_FIRST_NAME', 'Test'),
-        'last_name' => env('BASIC_LAST_NAME', 'User'),
-        'email' => env('BASIC_EMAIL'),
-        'password' => env('BASIC_PASSWORD', 'password'),
-        'role' => env('BASIC_ROLE', 'basic'),
+        'first_name' => env('TEST_FIRST_NAME', 'Test'),
+        'last_name' => env('TEST_LAST_NAME', 'User'),
+        'email' => env('TEST_EMAIL'),
+        'password' => env('TEST_PASSWORD', 'password'),
+        'role' => env('TEST_ROLE', 'basic'),
     ],
 
     'demo' => [

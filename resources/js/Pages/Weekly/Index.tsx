@@ -11,9 +11,9 @@ import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import { SchedulingKind } from '@/shared/types/enums';
 import {
-    addDays,
     addWeeks,
     endOfISOWeek,
+    endOfMonth,
     format,
     parseISO,
     startOfISOWeek,
@@ -22,8 +22,6 @@ import {
 import type { PageProps } from '@/types';
 
 interface Props extends PageProps, WeeklyPageProps { }
-
-const ALL_DAYS: IsoDayNumber[] = [1, 2, 3, 4, 5, 6, 7];
 
 export default function Index({ weekStart, config, days, completedCount, totalCount }: Props) {
     const scheduling = useScheduling({ redirectTo: route('weekly') });
@@ -52,11 +50,30 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
     }
 
     // ── Schedule-first creation flow ──────────────────────────────────────────
+    // Tap → "every {that weekday}" for the month. With a recurring draft already
+    // active, a tap on another day instead ADDS that weekday to the pattern
+    // (add-up) — so Mon/Wed/Fri is built by tapping each, not pruning from all 7.
+    function isoWeekdayOf(date: string): IsoDayNumber {
+        const js = parseISO(date).getDay();
+        return (js === 0 ? 7 : js) as IsoDayNumber;
+    }
+
     function handleStartScheduling(date: string, time: string) {
-        const endDate = format(addDays(parseISO(date), 30), 'yyyy-MM-dd');
+        const active = scheduling.state;
+        if (active && active.kind === SchedulingKind.Recurring) {
+            const weekday = isoWeekdayOf(date);
+            if (!active.daysOfWeek.includes(weekday)) {
+                scheduling.setDaysOfWeek(
+                    [...active.daysOfWeek, weekday].sort((a, b) => a - b),
+                );
+            }
+            return;
+        }
+
+        const endDate = format(endOfMonth(parseISO(date)), 'yyyy-MM-dd');
         scheduling.start({
             kind: SchedulingKind.Recurring,
-            daysOfWeek: [...ALL_DAYS],
+            daysOfWeek: [isoWeekdayOf(date)],
             time,
             anchorDate: date,
             endDate,

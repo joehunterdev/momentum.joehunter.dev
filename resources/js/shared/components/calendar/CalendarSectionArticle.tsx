@@ -249,11 +249,23 @@ export default function CalendarSectionArticle({
         time === undefined && 'calendar-article--no-time',
     ].filter(Boolean).join(' ');
 
-    // Past slots can't be anchored — habits start now, no backdating. Every
-    // other empty slot (office or off-hours) is freely actionable.
-    const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !isPast;
+    // While a recurring draft is active, the grid is "editing this habit", not
+    // "start a new one": the only empty slots that stay tappable are the
+    // recurrence-time row on days not yet in the pattern — tapping one ADDS that
+    // day (add-up). Every other empty slot goes inert until the draft resolves.
+    const isAddDayCandidate = !!scheduling
+        && scheduling.kind === SchedulingKind.Recurring
+        && time !== undefined
+        && scheduling.time === time
+        && !targets;
 
-    const keyTitle = emptyClickable ? `Add moment at ${time}` : undefined;
+    // Past slots can't be anchored — habits start now, no backdating.
+    const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !isPast
+        && (!scheduling || isAddDayCandidate);
+
+    const keyTitle = emptyClickable
+        ? (isAddDayCandidate ? 'Add this day to the habit' : `Add moment at ${time}`)
+        : undefined;
 
     return (
         <div className={cls}>
@@ -306,8 +318,12 @@ export default function CalendarSectionArticle({
                 ) : emptyClickable ? (
                     <button
                         type="button"
-                        className="calendar-article__add-btn calendar-article__add-btn--always-visible"
-                        title={time ? `Add moment at ${time}` : 'Add moment'}
+                        className={[
+                            'calendar-article__add-btn',
+                            'calendar-article__add-btn--always-visible',
+                            isAddDayCandidate && 'calendar-article__add-btn--add-day',
+                        ].filter(Boolean).join(' ')}
+                        title={keyTitle}
                         onClick={onStartScheduling}
                     >
                         +
