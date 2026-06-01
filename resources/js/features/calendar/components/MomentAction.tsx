@@ -245,29 +245,29 @@ export default function MomentAction({
                     >
                         <Icon name="close" size={18} aria-hidden />
                     </button>
+                    {/* Recurring draft → two explicit choices. "Once" commits just
+                        this slot as a one-off; "Save" (primary) commits the recurring
+                        pattern shown by the ghost rows. */}
+                    {canApplyAll && (
+                        <button
+                            type="button"
+                            className="moment-action__draft-btn moment-action__draft-btn--once"
+                            title="Save just this one time — no repeat"
+                            disabled={!canCommit}
+                            onClick={() => { if (canCommit) onDraftApply?.(); }}
+                        >
+                            Once
+                        </button>
+                    )}
                     <button
                         type="button"
-                        className="moment-action__draft-btn moment-action__draft-btn--apply"
-                        title={canApplyAll ? 'Tap to apply once · Hold to apply to all matching days' : 'Apply'}
-                        aria-label={canApplyAll ? 'Apply (hold for all)' : 'Apply'}
+                        className="moment-action__draft-btn moment-action__draft-btn--apply moment-action__draft-btn--save"
+                        title={canApplyAll ? `Save${recurrenceLabel ? ` — ${recurrenceLabel}` : ' — repeats'}` : 'Save'}
+                        aria-label="Save"
                         disabled={!canCommit}
-                        onPointerDown={(e) => {
-                            if (!canCommit) return;
-                            const target = e.currentTarget as HTMLButtonElement;
-                            const timer = window.setTimeout(() => {
-                                onDraftApplyAll?.();
-                            }, 600);
-                            const up = () => {
-                                clearTimeout(timer);
-                                target.removeEventListener('pointerup', up);
-                                target.removeEventListener('pointerleave', up);
-                            };
-                            target.addEventListener('pointerup', up);
-                            target.addEventListener('pointerleave', up);
-                        }}
-                        onClick={() => { if (canCommit) onDraftApply?.(); }}
+                        onClick={() => { if (canCommit) (canApplyAll ? onDraftApplyAll : onDraftApply)?.(); }}
                     >
-                        <Icon name="check" size={18} aria-hidden />
+                        {canApplyAll ? 'Save' : <Icon name="check" size={18} aria-hidden />}
                     </button>
                 </div>
             </div>
