@@ -23,6 +23,8 @@ interface Props {
     focused: boolean;
     /** Toggle the week's "Now" focus — wired to the badge on today's column only. */
     onToggleNow: () => void;
+    /** Past day — rendered dimmed (recap) but still actionable. */
+    isPast: boolean;
 }
 
 const VISIBLE_SLOTS = 6;
@@ -47,6 +49,7 @@ export default function DaySection({
     nextSlot,
     focused,
     onToggleNow,
+    isPast,
 }: Props) {
     const dateObj = parseISO(day.date);
     const visibleSlots = focused ? getWindowedSlots(day.slots, windowStart) : day.slots;
@@ -56,6 +59,7 @@ export default function DaySection({
         <CalendarSection
             isToday={day.isToday}
             isWeekend={day.isWeekend}
+            isPast={isPast}
             layout="vertical"
             header={
                 <CalendarSectionHeader

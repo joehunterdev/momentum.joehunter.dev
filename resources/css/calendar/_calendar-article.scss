@@ -211,6 +211,19 @@ $border-light: var(--mm-border-light);
     }
 }
 
+// ─── Past day row (monthly recap) ───────────────────────────────────────────────
+// Whole-row dim for past days in the monthly view — still actionable; brightens
+// on interaction. (Distinct from --past above, which only dims an empty slot's key.)
+.calendar-article--past-day {
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+
+    &:hover,
+    &:focus-within {
+        opacity: 0.9;
+    }
+}
+
 // ─── Conflict indicator ────────────────────────────────────────────────────────
 
 .calendar-article--conflict {

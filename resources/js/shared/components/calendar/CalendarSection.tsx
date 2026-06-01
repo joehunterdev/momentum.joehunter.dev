@@ -3,6 +3,8 @@ import React from 'react';
 interface Props {
     isToday?: boolean;
     isWeekend?: boolean;
+    /** Past day/period — rendered dimmed for recap, but still actionable. */
+    isPast?: boolean;
     /**
      * 'vertical' — stack of articles (daily, weekly, monthly-vertical).
      * 'horizontal' — flex row of articles (monthly schedule rows).
@@ -16,6 +18,7 @@ interface Props {
 export default function CalendarSection({
     isToday = false,
     isWeekend = false,
+    isPast = false,
     layout = 'vertical',
     header,
     children,
@@ -24,6 +27,7 @@ export default function CalendarSection({
         'calendar-section',
         // isToday ? 'calendar-section--today' : '',
         isWeekend ? 'calendar-section--weekend' : '',
+        isPast ? 'calendar-section--past' : '',
     ].filter(Boolean).join(' ');
 
     const articlesCls = [

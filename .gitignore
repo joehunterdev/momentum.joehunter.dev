@@ -75,3 +75,4 @@ lerna-debug.log*
 .docs/**/*.tif
 .docs/**/*.tiff
 .docs/**/*.avif
+.docs/**

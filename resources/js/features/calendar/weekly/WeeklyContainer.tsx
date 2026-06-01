@@ -36,13 +36,11 @@ export default function WeeklyContainer({
 }: Props) {
     const { focused, toggle } = useNowFocus(false);
 
-    // On the current week, hide days before today — habits start from now.
-    // Past weeks and future weeks render in full.
+    // Show the whole week — past days included, rendered dimmed (recap), but
+    // still actionable so the user can tick off what they did earlier.
     const today = startOfDay(new Date());
-    const isCurrentWeek = days.some((d) => d.isToday);
-    const visibleDays = isCurrentWeek
-        ? days.filter((d) => parseISO(d.date) >= today)
-        : days;
+    const visibleDays = days;
+    const isPastDay = (date: string) => parseISO(date) < today;
 
     const allTimes = Array.from(
         new Set(visibleDays.flatMap((d) => d.slots.map((s) => s.time)))
@@ -52,10 +50,12 @@ export default function WeeklyContainer({
     const sliceForDay = (slots: WeekDay['slots']) =>
         focused ? slots.slice(windowStart, windowStart + VISIBLE_SLOTS) : slots;
 
-    // Single animated row across the visible week: the first unactioned moment
-    // among the on-screen slots, in day → time order.
+    // Single animated "next up" row — forward-looking only, so a past unactioned
+    // moment doesn't steal the animation during a recap.
     const nextSlot = firstUnactionedSlot(
-        visibleDays.map((d) => ({ date: d.date, slots: sliceForDay(d.slots) })),
+        visibleDays
+            .filter((d) => !isPastDay(d.date))
+            .map((d) => ({ date: d.date, slots: sliceForDay(d.slots) })),
     );
 
     return (
@@ -78,6 +78,7 @@ export default function WeeklyContainer({
                     windowStart={windowStart}
                     focused={focused}
                     onToggleNow={toggle}
+                    isPast={isPastDay(day.date)}
                 />
             ))}
         </div>

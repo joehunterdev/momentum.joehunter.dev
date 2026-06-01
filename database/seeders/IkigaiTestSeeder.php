@@ -42,12 +42,14 @@ class IkigaiTestSeeder extends Seeder
             'office_start' => '09:00:00',
             'office_end' => '17:00:00',
             'week_starts_on' => 1,
+            'identity_statement' => 'Love you Mum <3',
         ]);
 
         $count = $this->importer->import(
             user: $user,
             filePath: database_path('data/ikigai-moments-data.csv'),
             format: 'csv',
+            generateHistory: false,
         );
 
         $this->command->info("✅  IkigaiTestSeeder: {$count} moments seeded for {$email}");

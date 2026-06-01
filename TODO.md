@@ -7,3 +7,7 @@
 - [x] All those views should be the same with the progress bars top and inner rows
 - [x] E:\www\momentum.joehunter.dev\resources\js\shared\components\Cubes.css to proper scss component
 - [] Rewrite skills instructions based on new architecture
+
+- Hotfixes Various 
+
+- See now 

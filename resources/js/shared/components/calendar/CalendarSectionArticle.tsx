@@ -62,6 +62,8 @@ interface Props {
     isToday?: boolean;
     isWeekend?: boolean;
     isNext?: boolean;
+    /** This slot is the live, current time slot on today — highlights the key. */
+    isNow?: boolean;
 }
 
 function articleTargetsScheduling(

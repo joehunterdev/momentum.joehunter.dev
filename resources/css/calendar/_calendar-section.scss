@@ -31,6 +31,19 @@ $border-light: var(--mm-border-light);
             background: rgba(100, 116, 139, 0.03);
         }
     }
+
+    // Past day/period — dimmed for recap, but still fully interactive (opacity
+    // doesn't block pointer events, so moments stay draggable to complete).
+    // Brightens on interaction so a recap of an earlier day reads clearly.
+    &--past {
+        opacity: 0.6;
+        transition: opacity 0.15s ease;
+
+        &:hover,
+        &:focus-within {
+            opacity: 0.9;
+        }
+    }
 }
 
 // ─── Day header ───────────────────────────────────────────────────────────────

@@ -81,17 +81,19 @@ export default function MonthlyContainer({
         );
     }
 
+    // Show the whole month — past days included, dimmed (recap) but actionable.
     const today = startOfDay(new Date());
-    const isCurrentMonthView = days.some((d) => d.isToday);
-    const visibleDays = isCurrentMonthView
-        ? days.filter((d) => parseISO(d.date) >= today)
-        : days;
+    const isPastDay = (date: string) => parseISO(date) < today;
+    const visibleDays = days;
 
     const weeks = groupByIsoWeek(visibleDays);
 
-    // Single animated row: first unactioned moment across the visible days.
+    // Single animated "next up" row — forward-looking only, so a past unactioned
+    // moment doesn't steal the animation during a recap.
     const nextMoment = firstUnactionedMoment(
-        visibleDays.map((d) => ({ date: d.date, moments: d.moments })),
+        visibleDays
+            .filter((d) => !isPastDay(d.date))
+            .map((d) => ({ date: d.date, moments: d.moments })),
     );
 
     return (
@@ -112,6 +114,7 @@ export default function MonthlyContainer({
                                 'calendar-article--monthly-day',
                                 // day.isToday && 'calendar-article--today',
                                 day.isWeekend && 'calendar-article--weekend',
+                                isPastDay(day.date) && 'calendar-article--past-day',
                             ].filter(Boolean).join(' ');
 
                             return (
