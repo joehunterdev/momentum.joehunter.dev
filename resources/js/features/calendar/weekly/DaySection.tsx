@@ -1,7 +1,7 @@
 import { format, parseISO } from 'date-fns';
 import type { TimeSlot, WeekDay, WeeklyConfig } from '../types';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
-import { jsToIsoDay } from '../utils';
+import { jsToIsoDay, currentSlotTime } from '../utils';
 import { CalendarSection, CalendarSectionHeader, CalendarSectionArticle, CalendarNowToggle } from '@/shared/components/calendar';
 
 interface Props {
@@ -54,6 +54,7 @@ export default function DaySection({
     const dateObj = parseISO(day.date);
     const visibleSlots = focused ? getWindowedSlots(day.slots, windowStart) : day.slots;
     const dayIso = jsToIsoDay(dateObj.getDay()) as IsoDayNumber;
+    const nowSlot = day.isToday ? currentSlotTime() : null;
 
     return (
         <CalendarSection
@@ -95,6 +96,7 @@ export default function DaySection({
                     isWeekend={day.isWeekend}
                     isToday={day.isToday}
                     isNext={nextSlot?.date === day.date && nextSlot?.time === slot.time}
+                    isNow={slot.time === nowSlot}
                 />
             ))}
         </CalendarSection>

@@ -219,6 +219,7 @@ export default function CalendarSectionArticle({
     isToday,
     isWeekend,
     isNext,
+    isNow,
 }: Props) {
     const targets = articleTargetsScheduling(scheduling, date, time, isoDayNumber);
     const isSourceCandidate = isSourceSlot(scheduling, date, time, isoDayNumber);
@@ -276,6 +277,7 @@ export default function CalendarSectionArticle({
                     className={[
                         'calendar-article__key',
                         emptyClickable && 'calendar-article__key--clickable',
+                        isNow && 'calendar-article__key--now',
                     ].filter(Boolean).join(' ')}
                     onClick={emptyClickable ? () => onStartScheduling?.() : undefined}
                     title={keyTitle}

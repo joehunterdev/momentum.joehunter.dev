@@ -77,6 +77,19 @@ export function computeWindowStart(allTimes: string[], visibleCount: number): nu
 }
 
 /**
+ * The current 30-min slot label (HH:mm), floored to the slot grid — e.g. 22:37
+ * → "22:30". Used to highlight the live time slot on today.
+ */
+export function currentSlotTime(intervalMinutes: number = 30): string {
+    const now = new Date();
+    const total = now.getHours() * 60 + now.getMinutes();
+    const floored = Math.floor(total / intervalMinutes) * intervalMinutes;
+    const h = Math.floor(floored / 60);
+    const m = floored % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+/**
  * Slice a single day's slots down to a window centred on the current hour —
  * used by the "Now" focus toggle. Returns the slots unchanged when fewer than
  * `visibleCount` exist.

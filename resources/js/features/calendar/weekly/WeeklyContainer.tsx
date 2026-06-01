@@ -34,7 +34,7 @@ export default function WeeklyContainer({
     onDraftCancel,
     onGhostExclude,
 }: Props) {
-    const { focused, toggle } = useNowFocus(false);
+    const { focused, toggle } = useNowFocus(true);
 
     // Show the whole week — past days included, rendered dimmed (recap), but
     // still actionable so the user can tick off what they did earlier.
