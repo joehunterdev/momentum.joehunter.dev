@@ -2,6 +2,7 @@ import { parseISO, startOfDay } from 'date-fns';
 import type { WeekDay, WeeklyConfig } from '../types';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { computeWindowStart, firstUnactionedSlot } from '../utils';
+import { useNowFocus } from '../hooks/useNowFocus';
 import DaySection from './DaySection';
 
 const VISIBLE_SLOTS = 6;
@@ -33,6 +34,8 @@ export default function WeeklyContainer({
     onDraftCancel,
     onGhostExclude,
 }: Props) {
+    const { focused, toggle } = useNowFocus(false);
+
     // On the current week, hide days before today — habits start from now.
     // Past weeks and future weeks render in full.
     const today = startOfDay(new Date());
@@ -44,15 +47,15 @@ export default function WeeklyContainer({
     const allTimes = Array.from(
         new Set(visibleDays.flatMap((d) => d.slots.map((s) => s.time)))
     ).sort();
+    // Shared window start so every day column stays time-aligned when focused.
     const windowStart = computeWindowStart(allTimes, VISIBLE_SLOTS);
+    const sliceForDay = (slots: WeekDay['slots']) =>
+        focused ? slots.slice(windowStart, windowStart + VISIBLE_SLOTS) : slots;
 
     // Single animated row across the visible week: the first unactioned moment
-    // among the on-screen (windowed) slots, in day → time order.
+    // among the on-screen slots, in day → time order.
     const nextSlot = firstUnactionedSlot(
-        visibleDays.map((d) => ({
-            date: d.date,
-            slots: d.slots.slice(windowStart, windowStart + VISIBLE_SLOTS),
-        })),
+        visibleDays.map((d) => ({ date: d.date, slots: sliceForDay(d.slots) })),
     );
 
     return (
@@ -73,6 +76,8 @@ export default function WeeklyContainer({
                     onDraftCancel={onDraftCancel}
                     onGhostExclude={onGhostExclude}
                     windowStart={windowStart}
+                    focused={focused}
+                    onToggleNow={toggle}
                 />
             ))}
         </div>

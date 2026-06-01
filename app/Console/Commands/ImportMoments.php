@@ -10,7 +10,8 @@ class ImportMoments extends Command
 {
     protected $signature = 'moments:import
         {--email= : Email of the user to import moments for}
-        {--file=  : Path to the JSON moments file (relative to project root or absolute)}
+        {--file=  : Path to the moments file (relative to project root or absolute)}
+        {--format=json : File format: json or csv}
         {--clear  : Clear existing moments before importing}
         {--no-history : Skip generating 6-month completion history}';
 
@@ -47,6 +48,13 @@ class ImportMoments extends Command
 
         $clear = (bool) $this->option('clear');
         $generateHistory = ! $this->option('no-history');
+        $format = strtolower($this->option('format') ?? 'json');
+
+        if (! in_array($format, ['json', 'csv'])) {
+            $this->error("Unsupported format: {$format}. Use json or csv.");
+
+            return self::FAILURE;
+        }
 
         if ($clear && ! $this->confirm("Clear all existing moments for {$email}?", true)) {
             $this->info('Aborted.');
@@ -58,7 +66,8 @@ class ImportMoments extends Command
 
         $count = $this->importer->import(
             user: $user,
-            jsonPath: $file,
+            filePath: $file,
+            format: $format,
             clearExisting: $clear,
             generateHistory: $generateHistory,
         );

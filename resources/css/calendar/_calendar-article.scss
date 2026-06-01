@@ -37,6 +37,12 @@ $border-light: var(--mm-border-light);
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        // Long-pressing the key (to unlock an office row) must not start a text
+        // selection or trigger the iOS callout/magnifier.
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        touch-action: manipulation;
     }
 
     &__content {
@@ -54,6 +60,15 @@ $border-light: var(--mm-border-light);
         > :not(.moment-action) {
             padding: 0.5rem;
             margin-left: 0.25rem;
+        }
+
+        // The + add button of an EMPTY slot lines up with a filled slot's icon:
+        // same left offset as the moment row's icon (--mm-cal-row-pad-l) so every
+        // slot shares one leading edge, filled or empty. The top margin mirrors
+        // the moment row's vertical padding so it isn't jammed against the top.
+        > .calendar-article__add-btn {
+            margin-left: var(--mm-cal-row-pad-l);
+            margin-top: var(--mm-cal-row-pad-v);
         }
     }
 
@@ -88,25 +103,20 @@ $border-light: var(--mm-border-light);
         }
     }
 
-    &--ooo {
-        background: var(--mm-surface-alt);
+    // Office-hours empty slots carry a faint grey wash — denser on the right,
+    // fading to white on the left — as a soft "work time" hint. It's purely
+    // visual: the slot is still freely actionable. Off-hours slots get no wash
+    // (peak time for new moments, stays plain white).
+    &--office {
+        background: linear-gradient(to left,
+                rgba(var(--mm-muted-dark-rgb), 0.05) 0%,
+                rgba(var(--mm-muted-dark-rgb), 0.015) 50%,
+                transparent 100%);
 
-        .calendar-article__key {
-            color: var(--mm-text-ghost);
-        }
-
-        .calendar-article__add-btn {
-            opacity: 0.35;
-        }
-
-        &:hover {
-            background: rgba(var(--mm-primary-rgb), 0.04);
-
-            .calendar-article__add-btn {
-                opacity: 0.65;
-                border-color: var(--mm-primary, #6366f1);
-                color: var(--mm-primary, #6366f1);
-            }
+        &:hover .calendar-article__add-btn {
+            opacity: 0.65;
+            border-color: var(--mm-primary, #6366f1);
+            color: var(--mm-primary, #6366f1);
         }
     }
 
@@ -170,25 +180,18 @@ $border-light: var(--mm-border-light);
                 outline-offset: -2px;
                 opacity: 0.7;
             }
-
-            // Dimmer inside OOO slots
-            .calendar-article--ooo & {
-                opacity: 0.22;
-
-                &:hover {
-                    opacity: 0.45;
-                }
-            }
         }
     }
+
 }
 
 // ─── Past slot ─────────────────────────────────────────────────────────────────
-// Empty past slots: no + button, key column dimmed so the user can tell the
-// slot exists but isn't actionable.
+// Empty past slots: no + button. The key stays readable — the missing add box
+// is enough of a "not actionable" cue — with only a light mute and a default
+// cursor.
 .calendar-article--past {
     .calendar-article__key {
-        opacity: 0.35;
+        opacity: 0.7;
         cursor: default;
     }
 }
@@ -236,22 +239,6 @@ $border-light: var(--mm-border-light);
     &:hover {
         opacity: 0.7;
     }
-}
-
-// ─── Off-hours unlock — long-press the time key to reveal the + for one row ───
-// Dotted underline hints the key is hold-actionable; unlocked picks up the
-// primary tint so the row reads as "now active" once toggled.
-
-.calendar-article__key--unlockable {
-    cursor: pointer;
-    text-decoration: underline dotted var(--mm-text-ghost);
-    text-underline-offset: 3px;
-    -webkit-touch-callout: none; // suppress iOS text callout during hold
-}
-
-.calendar-article__key--unlocked {
-    color: var(--mm-primary);
-    text-decoration-color: var(--mm-primary);
 }
 
 // ─── No-time slot — used in monthly configure mode (no time gutter) ──────────

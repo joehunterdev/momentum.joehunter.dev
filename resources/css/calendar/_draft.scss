@@ -69,8 +69,11 @@
     color: var(--mm-text-mute);
     padding: 0.25rem 0.5rem;
 
+    // Faint, lighter-weight placeholder — reads as a soft prompt at body size,
+    // distinct from the heavier text the user actually types.
     &::placeholder {
-        color: var(--mm-text-faint);
+        color: var(--mm-text-ghost);
+        font-weight: 400;
         opacity: 1;
     }
 

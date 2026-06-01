@@ -84,14 +84,19 @@ export default function MomentAction({
     useEffect(() => {
         if (!pickerOpen || !iconBtnRef.current) { return; }
         const rect = iconBtnRef.current.getBoundingClientRect();
-        const pickerWidth = 224; // 14rem at 16px
+        // Span the full slot row so the picker reads as belonging to this row
+        // rather than a narrow popover hanging off the icon.
+        const row = iconBtnRef.current.closest('.calendar-article');
+        const rowRect = (row ?? iconBtnRef.current).getBoundingClientRect();
         const spaceBelow = window.innerHeight - rect.bottom;
         const top = spaceBelow >= 260 ? rect.bottom + 6 : rect.top - 266;
-        let left = rect.left;
-        if (left + pickerWidth > window.innerWidth - 8) {
-            left = window.innerWidth - pickerWidth - 8;
-        }
-        setPickerStyle({ position: 'fixed', top, left, width: pickerWidth, zIndex: 9999 });
+        setPickerStyle({
+            position: 'fixed',
+            top,
+            left: rowRect.left,
+            width: rowRect.width,
+            zIndex: 9999,
+        });
     }, [pickerOpen]);
 
     useEffect(() => {
@@ -183,7 +188,9 @@ export default function MomentAction({
                         title="Pick an icon"
                         onClick={(e) => { e.stopPropagation(); setPickerOpen((v) => !v); }}
                     >
-                        {moment.icon ? <Icon name={moment.icon} /> : <img src="/logo.png" alt="" className="moment-action__icon-img" />}
+                        {moment.icon
+                            ? <Icon name={moment.icon} />
+                            : <Icon name="add_reaction" size={20} aria-hidden />}
                     </button>
 
                     {pickerOpen && createPortal(

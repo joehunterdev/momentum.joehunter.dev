@@ -1,4 +1,3 @@
-import { useRef, useState } from 'react';
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { isOutOfOffice, jsToIsoDay } from '@/features/calendar/utils';
 import { MomentStatus, SchedulingKind } from '@/shared/types/enums';
@@ -230,60 +229,31 @@ export default function CalendarSectionArticle({
     const canApplyAll = scheduling?.kind === SchedulingKind.Recurring;
     const isConflict = !!capabilities.conflictBadge && targets && !!moment;
 
-    // Off-hours (out-of-office) empty slots are gated: no + button, just a dot.
-    // A long-press on the time key unlocks the row for this session so a moment
-    // can still be scheduled there. `unlocked` flips the effective OOO off.
-    const [unlocked, setUnlocked] = useState(false);
-    const configOoo = !!capabilities.outOfOffice && !!time && !!config && !moment
-        ? isOutOfOffice(time, config)
+    // Office-hours empty slots carry a grey wash as a visual hint that this is
+    // work time — but it's only a tint: every empty slot still shows the add
+    // box and is directly actionable. Weekends are treated like off-hours
+    // (no wash) per the schedule spec.
+    const configOffice = !!capabilities.outOfOffice && !!time && !!config && !moment && !isWeekend
+        ? !isOutOfOffice(time, config)
         : false;
-    const ooo = configOoo && !unlocked;
 
     const cls = [
         'calendar-article',
         // isToday && 'calendar-article--today',
         isWeekend && 'calendar-article--weekend',
-        ooo && 'calendar-article--ooo',
+        configOffice && 'calendar-article--office',
         isPast && !moment && 'calendar-article--past',
-        !moment && !ooo && mode === 'configure' && 'calendar-article--empty',
+        !moment && mode === 'configure' && 'calendar-article--empty',
         // moment?.status === MomentStatus.Completed && 'calendar-article--completed',
         isConflict && 'calendar-article--conflict',
         time === undefined && 'calendar-article--no-time',
     ].filter(Boolean).join(' ');
 
-    // Past slots can't be anchored — habits start now, no backdating.
-    const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !ooo && !isPast;
+    // Past slots can't be anchored — habits start now, no backdating. Every
+    // other empty slot (office or off-hours) is freely actionable.
+    const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !isPast;
 
-    // A gated off-hours slot can be long-pressed (hold) on its time key to
-    // unlock scheduling for that one row. Past slots stay locked (no backdating).
-    const canUnlock = configOoo && !isPast;
-    const keyInteractive = emptyClickable || canUnlock;
-    const lpTimer = useRef<number | null>(null);
-    const lpFired = useRef(false);
-
-    const startLongPress = () => {
-        if (!canUnlock) { return; }
-        lpFired.current = false;
-        lpTimer.current = window.setTimeout(() => {
-            lpFired.current = true;
-            setUnlocked((u) => !u);
-        }, 500);
-    };
-    const cancelLongPress = () => {
-        if (lpTimer.current !== null) {
-            clearTimeout(lpTimer.current);
-            lpTimer.current = null;
-        }
-    };
-    const handleKeyClick = () => {
-        // A completed long-press already toggled the row — don't also schedule.
-        if (lpFired.current) { lpFired.current = false; return; }
-        if (emptyClickable) { onStartScheduling?.(); }
-    };
-
-    const keyTitle = canUnlock
-        ? (unlocked ? `Add moment at ${time} · hold to hide` : `Off-hours — hold to enable ${time}`)
-        : (emptyClickable ? `Add moment at ${time}` : undefined);
+    const keyTitle = emptyClickable ? `Add moment at ${time}` : undefined;
 
     return (
         <div className={cls}>
@@ -291,15 +261,9 @@ export default function CalendarSectionArticle({
                 <span
                     className={[
                         'calendar-article__key',
-                        keyInteractive && 'calendar-article__key--clickable',
-                        canUnlock && 'calendar-article__key--unlockable',
-                        canUnlock && unlocked && 'calendar-article__key--unlocked',
+                        emptyClickable && 'calendar-article__key--clickable',
                     ].filter(Boolean).join(' ')}
-                    onClick={keyInteractive ? handleKeyClick : undefined}
-                    onPointerDown={canUnlock ? startLongPress : undefined}
-                    onPointerUp={canUnlock ? cancelLongPress : undefined}
-                    onPointerLeave={canUnlock ? cancelLongPress : undefined}
-                    onPointerCancel={canUnlock ? cancelLongPress : undefined}
+                    onClick={emptyClickable ? () => onStartScheduling?.() : undefined}
                     title={keyTitle}
                 >
                     {time}
@@ -339,8 +303,6 @@ export default function CalendarSectionArticle({
                             </span>
                         )}
                     </>
-                ) : ooo ? (
-                    <span className="calendar-article__ooo-dot" aria-hidden />
                 ) : emptyClickable ? (
                     <button
                         type="button"

@@ -2,7 +2,7 @@ import { format, parseISO } from 'date-fns';
 import type { TimeSlot, WeekDay, WeeklyConfig } from '../types';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { jsToIsoDay } from '../utils';
-import { CalendarSection, CalendarSectionHeader, CalendarSectionArticle } from '@/shared/components/calendar';
+import { CalendarSection, CalendarSectionHeader, CalendarSectionArticle, CalendarNowToggle } from '@/shared/components/calendar';
 
 interface Props {
     day: WeekDay;
@@ -19,6 +19,10 @@ interface Props {
     windowStart: number;
     /** The single row to auto-animate across the week (date + slot time), or null. */
     nextSlot: { date: string; time: string } | null;
+    /** True when the week is snapped to the current hour (windowed); false = full range. */
+    focused: boolean;
+    /** Toggle the week's "Now" focus — wired to the badge on today's column only. */
+    onToggleNow: () => void;
 }
 
 const VISIBLE_SLOTS = 6;
@@ -41,9 +45,11 @@ export default function DaySection({
     onGhostExclude,
     windowStart,
     nextSlot,
+    focused,
+    onToggleNow,
 }: Props) {
     const dateObj = parseISO(day.date);
-    const visibleSlots = getWindowedSlots(day.slots, windowStart);
+    const visibleSlots = focused ? getWindowedSlots(day.slots, windowStart) : day.slots;
     const dayIso = jsToIsoDay(dateObj.getDay()) as IsoDayNumber;
 
     return (
@@ -55,7 +61,7 @@ export default function DaySection({
                 <CalendarSectionHeader
                     label={day.dayName}
                     sublabel={format(dateObj, 'd MMM')}
-                    badge={day.isToday ? 'Today' : undefined}
+                    badge={day.isToday ? <CalendarNowToggle focused={focused} onToggle={onToggleNow} /> : undefined}
                 />
             }
         >

@@ -31,28 +31,29 @@ use Illuminate\Support\Facades\DB;
 class MomentImportService
 {
     /**
-     * Import moments from a JSON file path for the given user.
+     * Import moments from a JSON or CSV file for the given user.
      *
-     * @param  string  $jsonPath  Absolute path to the JSON file.
+     * @param  string  $filePath  Absolute path to the file.
+     * @param  string  $format  'json' or 'csv'.
      * @param  bool  $clearExisting  If true, wipe existing moments first.
      * @param  bool  $generateHistory  If true, simulate 6-month completion history.
      * @return int Number of moments imported.
      */
     public function import(
         User $user,
-        string $jsonPath,
+        string $filePath,
+        string $format = 'json',
         bool $clearExisting = true,
         bool $generateHistory = true,
     ): int {
-        if (! file_exists($jsonPath)) {
-            throw new \InvalidArgumentException("JSON file not found: {$jsonPath}");
+        if (! file_exists($filePath)) {
+            throw new \InvalidArgumentException("File not found: {$filePath}");
         }
 
-        $moments = json_decode(file_get_contents($jsonPath), true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Invalid JSON: '.json_last_error_msg());
-        }
+        $moments = match ($format) {
+            'csv' => $this->parseCsv($filePath),
+            default => $this->parseJson($filePath),
+        };
 
         if ($clearExisting) {
             $this->clearUserMoments($user);
@@ -129,6 +130,76 @@ class MomentImportService
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
+
+    private function parseJson(string $path): array
+    {
+        $moments = json_decode(file_get_contents($path), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Invalid JSON: ' . json_last_error_msg());
+        }
+
+        return $moments;
+    }
+
+    /**
+     * Parse a CSV file into the same array shape the JSON importer expects.
+     *
+     * CSV columns (in any order, header row required):
+     *   name, description, icon, color, frequency, days_of_week,
+     *   preferred_time, implementation_intention, habit_stack_after,
+     *   environment_prompt, reward_description, temptation_bundle,
+     *   completion_rate_start, completion_rate_end
+     *
+     * days_of_week: comma-separated ints inside quotes, e.g. "1,3" or empty for daily.
+     */
+    private function parseCsv(string $path): array
+    {
+        $handle = fopen($path, 'r');
+
+        if ($handle === false) {
+            throw new \InvalidArgumentException("Cannot open CSV: {$path}");
+        }
+
+        $headers = array_map('trim', fgetcsv($handle) ?: []);
+        $moments = [];
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count($row) < count($headers)) {
+                continue; // skip malformed rows
+            }
+
+            $data = array_combine($headers, $row);
+
+            // Cast days_of_week from "1,3,5" → [1,3,5] or null
+            $days = trim($data['days_of_week'] ?? '');
+            $data['days_of_week'] = $days !== ''
+                ? array_map('intval', explode(',', $days))
+                : null;
+
+            // Cast float fields
+            $data['completion_rate_start'] = isset($data['completion_rate_start']) && $data['completion_rate_start'] !== ''
+                ? (float) $data['completion_rate_start']
+                : 0.4;
+
+            $data['completion_rate_end'] = isset($data['completion_rate_end']) && $data['completion_rate_end'] !== ''
+                ? (float) $data['completion_rate_end']
+                : 0.7;
+
+            // Normalise empty strings to null for optional fields
+            foreach (['description', 'icon', 'color', 'implementation_intention', 'habit_stack_after', 'environment_prompt', 'reward_description', 'temptation_bundle'] as $field) {
+                if (isset($data[$field]) && trim($data[$field]) === '') {
+                    $data[$field] = null;
+                }
+            }
+
+            $moments[] = $data;
+        }
+
+        fclose($handle);
+
+        return $moments;
+    }
 
     private function clearUserMoments(User $user): void
     {

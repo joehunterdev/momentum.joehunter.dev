@@ -9,6 +9,7 @@ export { default as MomentAction } from './components/MomentAction';
 // Hooks
 export { useCalendarActions } from './hooks/useCalendarActions';
 export type { UseCalendarActionsReturn } from './hooks/useCalendarActions';
+export { useNowFocus } from './hooks/useNowFocus';
 
 // Types
 export type * from './types';

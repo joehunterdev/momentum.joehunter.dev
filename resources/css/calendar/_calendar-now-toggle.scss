@@ -1,0 +1,39 @@
+// _calendar-now-toggle.scss — the "Today / Now" toggle badge in a calendar
+// section header (CalendarNowToggle). Built on the .calendar-section__badge
+// look, but interactive: hover darkens it; --active reads as pressed.
+
+.calendar-now-toggle {
+    margin-left: auto;
+    font-size: 0.625rem;
+    font-weight: 700;
+    // Idle: outlined purple button — reads clearly as tappable.
+    color: var(--mm-secondary, #8B5CF6);
+    background: rgba(var(--mm-secondary-rgb), 0.08);
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--mm-secondary, #8B5CF6);
+    border-radius: 0;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+
+    &:hover {
+        background: rgba(var(--mm-secondary-rgb), 0.16);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--mm-secondary, #8B5CF6);
+        outline-offset: 1px;
+    }
+
+    // Pressed = snapped to now: solid purple fill.
+    &--active {
+        background: var(--mm-secondary, #8B5CF6);
+        color: #fff;
+
+        &:hover {
+            background: var(--mm-secondary-dark, #7C3AED);
+        }
+    }
+}

@@ -77,6 +77,16 @@ export function computeWindowStart(allTimes: string[], visibleCount: number): nu
 }
 
 /**
+ * Slice a single day's slots down to a window centred on the current hour —
+ * used by the "Now" focus toggle. Returns the slots unchanged when fewer than
+ * `visibleCount` exist.
+ */
+export function nowWindow(slots: TimeSlot[], visibleCount: number = 6): TimeSlot[] {
+    const start = computeWindowStart(slots.map((s) => s.time), visibleCount);
+    return slots.slice(start, start + visibleCount);
+}
+
+/**
  * The "next up" action to auto-animate: the FIRST unactioned (not completed)
  * moment in the currently-viewed days, in chronological order (day, then slot
  * time). Returns its {date, time}, or null when everything is done. Used by

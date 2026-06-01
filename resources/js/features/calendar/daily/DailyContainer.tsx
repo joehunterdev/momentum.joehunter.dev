@@ -3,9 +3,11 @@ import {
     CalendarSection,
     CalendarSectionHeader,
     CalendarSectionArticle,
+    CalendarNowToggle,
 } from '@/shared/components/calendar';
 import type { CalendarConfig } from '@/shared/components/calendar';
-import { getVisibleTimeSlots, firstUnactionedSlot } from '../utils';
+import { getVisibleTimeSlots, firstUnactionedSlot, nowWindow } from '../utils';
+import { useNowFocus } from '../hooks/useNowFocus';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 
 interface Props {
@@ -39,8 +41,11 @@ export default function DailyContainer({
     onDraftCancel,
     onGhostExclude,
 }: Props) {
+    const { focused, toggle } = useNowFocus(false);
     const currentDate = parseISO(day.date);
-    const visibleSlots = getVisibleTimeSlots(day.slots, config);
+    const allSlots = getVisibleTimeSlots(day.slots, config);
+    // "Now" focus only narrows today — other days have no current hour to snap to.
+    const visibleSlots = focused && day.isToday ? nowWindow(allSlots) : allSlots;
     const nextTime = firstUnactionedSlot([{ date: day.date, slots: visibleSlots }])?.time ?? null;
 
     return (
@@ -51,7 +56,7 @@ export default function DailyContainer({
                 <CalendarSectionHeader
                     label={day.dayName}
                     sublabel={format(currentDate, 'd MMMM yyyy')}
-                    badge={day.isToday ? 'Today' : undefined}
+                    badge={day.isToday ? <CalendarNowToggle focused={focused} onToggle={toggle} /> : undefined}
                 />
             }
         >
