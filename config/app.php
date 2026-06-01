@@ -15,7 +15,7 @@ return [
 
     'name' => env('APP_NAME', 'Momentum'),
 
-    'version' => env('APP_VERSION', '2.5.0'),
+    'version' => env('APP_VERSION', '2.5.1'),
 
     /*
     |--------------------------------------------------------------------------
