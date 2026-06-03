@@ -103,16 +103,7 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
                             nextParam={{ week: format(nextWeekStart, 'yyyy-MM-dd') }}
                             routeName="weekly"
                         />
-                        {scheduling.mode === 'overview' ? (
-                            <button
-                                type="button"
-                                className="calendar-page-header__mode-btn"
-                                title="Configure schedule"
-                                onClick={() => scheduling.setMode('configure')}
-                            >
-                                <Icon name="settings" size={20} aria-hidden />
-                            </button>
-                        ) : (
+                        {scheduling.mode === 'configure' && (
                             <button
                                 type="button"
                                 className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"

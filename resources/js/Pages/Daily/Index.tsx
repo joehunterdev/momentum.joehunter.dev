@@ -4,7 +4,6 @@ import { Head, router } from '@inertiajs/react';
 import Icon from '@/shared/components/Icon';
 import {
     CalendarNav,
-    CalendarNowToggle,
     CalendarProgressBar,
 } from '@/shared/components/calendar';
 import { addDays, format, parseISO, subDays } from 'date-fns';
@@ -59,17 +58,7 @@ export default function Index({ from, whole, days, config, completedCount, total
                             nextParam={dayParam(nextStart)}
                             routeName="daily"
                         />
-                        <CalendarNowToggle focused={!whole} onToggle={toggleWhole} idleLabel="Today" />
-                        {scheduling.mode === 'overview' ? (
-                            <button
-                                type="button"
-                                className="calendar-page-header__mode-btn"
-                                title="Configure schedule"
-                                onClick={() => scheduling.setMode('configure')}
-                            >
-                                <Icon name="settings" size={20} aria-hidden />
-                            </button>
-                        ) : (
+                        {scheduling.mode === 'configure' && (
                             <button
                                 type="button"
                                 className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"
@@ -97,6 +86,8 @@ export default function Index({ from, whole, days, config, completedCount, total
                         config={config}
                         mode={scheduling.mode}
                         scheduling={scheduling.state}
+                        whole={whole}
+                        onToggleWhole={toggleWhole}
                         onStartScheduling={handleStartScheduling}
                         onGhostNameChange={scheduling.setName}
                         onGhostIconChange={scheduling.setIcon}

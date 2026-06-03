@@ -8,17 +8,20 @@ import type { PageProps } from '@/types';
 
 interface Props extends PageProps {
     moment: Moment;
+    /** The view the user came from — returned to on save/close/delete. */
+    returnTo: string;
 }
 
-export default function Edit({ moment }: Props) {
+export default function Edit({ moment, returnTo }: Props) {
     function handleSubmit(_data: MomentFormData, form: ReturnType<typeof useMomentForm>) {
+        form.transform((d) => ({ ...d, _redirect: returnTo }));
         form.put(route('moments.update', moment.id), {
             onError: () => { },
         });
     }
 
     function handleDelete(m: Moment) {
-        router.delete(route('moments.destroy', m.id));
+        router.delete(route('moments.destroy', m.id), { data: { _redirect: returnTo } });
     }
 
     return (
@@ -32,7 +35,7 @@ export default function Edit({ moment }: Props) {
 
             <MomentModal
                 show={true}
-                onClose={() => router.visit(route('weekly'))}
+                onClose={() => router.visit(returnTo)}
                 moment={moment}
                 onSubmit={handleSubmit}
                 onDelete={handleDelete}

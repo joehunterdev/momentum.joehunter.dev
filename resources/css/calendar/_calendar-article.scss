@@ -64,11 +64,13 @@ $border-light: var(--mm-border-light);
 
         // The + add button of an EMPTY slot lines up with a filled slot's icon:
         // same left offset as the moment row's icon (--mm-cal-row-pad-l) so every
-        // slot shares one leading edge, filled or empty. The top margin mirrors
-        // the moment row's vertical padding so it isn't jammed against the top.
+        // slot shares one leading edge, filled or empty. The vertical margins
+        // mirror the moment row's padding so it sits centred, not jammed against
+        // the top or bottom edge.
         > .calendar-article__add-btn {
             margin-left: var(--mm-cal-row-pad-l);
             margin-top: var(--mm-cal-row-pad-v);
+            margin-bottom: var(--mm-cal-row-pad-v);
         }
     }
 

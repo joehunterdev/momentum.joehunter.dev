@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import Icon from '@/shared/components/Icon';
-import { CalendarNav, CalendarNowToggle, CalendarProgressBar } from '@/shared/components/calendar';
+import { CalendarNav, CalendarProgressBar } from '@/shared/components/calendar';
 import { MonthlyContainer } from '@/features/calendar';
 import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
@@ -78,17 +78,7 @@ export default function Index({ rangeStart, whole, days, scheduleRows, completed
                             nextParam={navParam(next)}
                             routeName="monthly"
                         />
-                        <CalendarNowToggle focused={!whole} onToggle={toggleWhole} idleLabel="Month" />
-                        {scheduling.mode === 'overview' ? (
-                            <button
-                                type="button"
-                                className="calendar-page-header__mode-btn"
-                                title="Configure schedule"
-                                onClick={() => scheduling.setMode('configure')}
-                            >
-                                <Icon name="settings" size={20} aria-hidden />
-                            </button>
-                        ) : (
+                        {scheduling.mode === 'configure' && (
                             <button
                                 type="button"
                                 className="calendar-page-header__mode-btn calendar-page-header__mode-btn--done"
@@ -116,6 +106,8 @@ export default function Index({ rangeStart, whole, days, scheduleRows, completed
                         scheduleRows={scheduleRows}
                         mode={scheduling.mode}
                         scheduling={scheduling.state}
+                        whole={whole}
+                        onToggleWhole={toggleWhole}
                         onStartSchedulingFromDate={(date) => {
                             scheduling.start({
                                 kind: SchedulingKind.Recurring,

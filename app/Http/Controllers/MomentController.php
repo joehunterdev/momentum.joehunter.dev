@@ -7,6 +7,7 @@ use App\Http\Requests\StoreMomentRequest;
 use App\Http\Requests\UpdateMomentRequest;
 use App\Models\Moment;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -48,12 +49,12 @@ class MomentController extends Controller
             'temptation_bundle' => $data['temptation_bundle'] ?? null,
         ]);
 
-        $redirectTo = $request->input('_redirect', route('weekly'));
+        $redirectTo = $this->safeRedirect($request, $request->input('_redirect'), route('weekly'));
 
         return redirect()->to($redirectTo)->with('success', 'Moment created.');
     }
 
-    public function edit(Moment $moment): Response
+    public function edit(Request $request, Moment $moment): Response
     {
         $this->authorize($moment);
 
@@ -61,6 +62,8 @@ class MomentController extends Controller
 
         return Inertia::render('Moments/Edit', [
             'moment' => MomentData::fromModel($moment),
+            // Where to send the user on save/close — the view they came from.
+            'returnTo' => $this->safeRedirect($request, $request->query('return'), route('weekly')),
         ]);
     }
 
@@ -105,20 +108,44 @@ class MomentController extends Controller
             ]
         );
 
-        return redirect()->route('weekly')->with('success', 'Moment updated.');
+        $redirectTo = $this->safeRedirect($request, $request->input('_redirect'), route('weekly'));
+
+        return redirect()->to($redirectTo)->with('success', 'Moment updated.');
     }
 
-    public function destroy(Moment $moment): RedirectResponse
+    public function destroy(Request $request, Moment $moment): RedirectResponse
     {
         $this->authorize($moment);
 
         $moment->delete();
 
-        return redirect()->route('weekly')->with('success', 'Moment deleted.');
+        $redirectTo = $this->safeRedirect($request, $request->input('_redirect'), route('weekly'));
+
+        return redirect()->to($redirectTo)->with('success', 'Moment deleted.');
     }
 
     private function authorize(Moment $moment): void
     {
         abort_unless($moment->user_id === request()->user()->id, 403);
+    }
+
+    /**
+     * Guard a caller-supplied redirect target against open-redirects: only allow
+     * a same-origin relative path ("/…") or an absolute URL on the request host.
+     * Anything else falls back to the default.
+     */
+    private function safeRedirect(Request $request, ?string $target, string $fallback): string
+    {
+        if (! is_string($target) || $target === '') {
+            return $fallback;
+        }
+
+        if (str_starts_with($target, '/') && ! str_starts_with($target, '//')) {
+            return $target;
+        }
+
+        $host = parse_url($target, PHP_URL_HOST);
+
+        return $host !== null && $host === $request->getHost() ? $target : $fallback;
     }
 }

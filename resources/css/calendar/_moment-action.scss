@@ -367,6 +367,22 @@
     background: var(--mm-surface-actioned, #F4F6F8);
 }
 
+// Right-aligned cluster on a read row: the edit pencil, then the ✓ tick for
+// completed items (pencil sits to the left of the tick).
+.moment-action__row-actions {
+    flex-shrink: 0;
+    margin-left: auto; // flexbox owns placement — sits flush at the right gutter
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    position: relative;
+    z-index: 1;
+
+    .moment-action__tick {
+        margin-left: 0; // the wrapper owns right-alignment now
+    }
+}
+
 .moment-action__tick {
     flex-shrink: 0;
     margin-left: auto; // flexbox owns placement — sits flush at the right gutter

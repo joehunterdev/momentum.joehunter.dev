@@ -3,6 +3,7 @@ import {
     CalendarSection,
     CalendarSectionHeader,
     CalendarSectionArticle,
+    CalendarNowToggle,
 } from '@/shared/components/calendar';
 import type { CalendarConfig } from '@/shared/components/calendar';
 import { getVisibleTimeSlots, firstUnactionedSlot, currentSlotTime } from '../utils';
@@ -13,6 +14,9 @@ interface Props {
     config: CalendarConfig;
     mode: 'overview' | 'configure';
     scheduling: SchedulingState | null;
+    /** Horizon mode: false = rolling 24h from now ("Now"), true = whole day ("Today"). */
+    whole?: boolean;
+    onToggleWhole?: () => void;
     onStartScheduling: (date: string, time: string) => void;
     onGhostNameChange: (name: string) => void;
     onGhostIconChange: (icon: string | null) => void;
@@ -26,13 +30,16 @@ interface Props {
  * Orchestrates the daily view: a rolling 24h window anchored on "now" that may
  * span two calendar dates (today's remaining wake→sleep slots, then tomorrow's
  * up to the same time). Each date is rendered as its own day section. The
- * window is already now-anchored, so there's no "Now" focus toggle to snap to.
+ * "Now / Today" toggle lives in the first section's header badge — same slot
+ * the weekly view uses — keeping the control consistent across views.
  */
 export default function DailyContainer({
     days,
     config,
     mode,
     scheduling,
+    whole,
+    onToggleWhole,
     onStartScheduling,
     onGhostNameChange,
     onGhostIconChange,
@@ -49,7 +56,7 @@ export default function DailyContainer({
 
     return (
         <>
-            {days.map((day) => {
+            {days.map((day, i) => {
                 const slots = getVisibleTimeSlots(day.slots, config);
 
                 return (
@@ -61,6 +68,9 @@ export default function DailyContainer({
                             <CalendarSectionHeader
                                 label={day.dayName}
                                 sublabel={format(parseISO(day.date), 'd MMMM yyyy')}
+                                badge={i === 0 && onToggleWhole
+                                    ? <CalendarNowToggle focused={!whole} onToggle={onToggleWhole} idleLabel="Today" />
+                                    : undefined}
                             />
                         }
                     >

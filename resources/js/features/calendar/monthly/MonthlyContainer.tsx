@@ -2,6 +2,7 @@ import { format, parseISO, startOfDay, startOfISOWeek } from 'date-fns';
 import {
     CalendarSection,
     CalendarSectionHeader,
+    CalendarNowToggle,
 } from '@/shared/components/calendar';
 import type { CalendarMode, IsoDayNumber, SchedulingState } from '@/features/scheduling';
 import { firstUnactionedMoment } from '../utils';
@@ -13,6 +14,9 @@ interface Props {
     scheduleRows: App.Data.MonthlyScheduleRowData[];
     mode: CalendarMode;
     scheduling: SchedulingState | null;
+    /** Horizon mode: false = rolling 30 days from now ("Now"), true = whole month ("Month"). */
+    whole?: boolean;
+    onToggleWhole?: () => void;
     onStartSchedulingFromDate: (date: string) => void;
     onStartSchedulingFromIsoDay: (isoDay: number) => void;
     onDraftNameChange: (name: string) => void;
@@ -50,6 +54,8 @@ export default function MonthlyContainer({
     scheduleRows,
     mode,
     scheduling,
+    whole,
+    onToggleWhole,
     onStartSchedulingFromDate,
     onStartSchedulingFromIsoDay,
     onDraftNameChange,
@@ -98,14 +104,21 @@ export default function MonthlyContainer({
 
     return (
         <div className="monthly-vertical-view">
-            {weeks.map(({ weekStartIso, days: weekDays }) => {
+            {weeks.map(({ weekStartIso, days: weekDays }, i) => {
                 const weekLabel = `Week of ${format(parseISO(weekStartIso), 'd MMM')}`;
 
                 return (
                     <CalendarSection
                         key={weekStartIso}
                         layout="vertical"
-                        header={<CalendarSectionHeader label={weekLabel} />}
+                        header={
+                            <CalendarSectionHeader
+                                label={weekLabel}
+                                badge={i === 0 && onToggleWhole
+                                    ? <CalendarNowToggle focused={!whole} onToggle={onToggleWhole} idleLabel="Month" />
+                                    : undefined}
+                            />
+                        }
                     >
                         {weekDays.map((day) => {
                             const dayLabel = format(parseISO(day.date), 'EEE d').toUpperCase();

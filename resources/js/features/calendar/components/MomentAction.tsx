@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { router } from '@inertiajs/react';
 import Icon from '@/shared/components/Icon';
 import MomentIconPicker from '@/features/moments/components/MomentIconPicker';
 import type { CalendarMoment } from '@/shared/components/calendar/types';
@@ -8,6 +7,7 @@ import MomentIcon from '@/shared/components/calendar/MomentIcon';
 import MomentProgressBar from '@/shared/components/calendar/MomentProgressBar';
 import Ticker from '@/shared/components/Ticker';
 import MomentActionIcon from './MomentActionIcon';
+import MomentEditButton from './MomentEditButton';
 import { MomentStatus } from '@/shared/types/enums';
 import {
     consistencyBand,
@@ -290,15 +290,7 @@ export default function MomentAction({
                         <span className="moment-action__desc">{moment.description}</span>
                     )}
                 </div>
-                <button
-                    type="button"
-                    className="moment-action__edit-btn"
-                    title={`Edit ${name}`}
-                    onClick={() => router.get(route('moments.edit', { moment: moment.id }))}
-                    aria-label={`Edit ${name}`}
-                >
-                    <Icon name="edit" size={18} aria-hidden />
-                </button>
+                <MomentEditButton momentId={moment.id} momentName={name} />
             </div>
         );
     }
@@ -399,11 +391,14 @@ export default function MomentAction({
                         </span>
                     )}
                 </div>
-                {isCompleted && (
-                    <span className="moment-action__tick" aria-hidden>
-                        <Icon name="check" size={16} />
-                    </span>
-                )}
+                <div className="moment-action__row-actions">
+                    <MomentEditButton momentId={moment.id} momentName={name} />
+                    {isCompleted && (
+                        <span className="moment-action__tick" aria-hidden>
+                            <Icon name="check" size={16} />
+                        </span>
+                    )}
+                </div>
             </div>
             <div className="moment-action__progress">
                 <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} previewProgress={Math.max(dragProgress, siblingDragPreview)} />
