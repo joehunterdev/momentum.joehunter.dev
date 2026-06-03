@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
             BaseUserSeeder::class,
             AdminUserMomentSeeder::class,
             DemoUserMomentSeeder::class,
-            IkigaiTestSeeder::class,
         ]);
     }
 }

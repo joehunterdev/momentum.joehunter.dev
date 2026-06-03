@@ -16,7 +16,7 @@ return [
         'password' => env('ADMIN_PASSWORD', 'password'),
     ],
 
-    'basic' => [
+    'test' => [
         'first_name' => env('TEST_FIRST_NAME', 'Test'),
         'last_name' => env('TEST_LAST_NAME', 'User'),
         'email' => env('TEST_EMAIL'),

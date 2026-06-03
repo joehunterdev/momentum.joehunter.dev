@@ -21,7 +21,7 @@ class FrictionTestSeeder extends Seeder
 
     public function run(): void
     {
-        $email = config('users.basic.email');
+        $email = config('users.test.email');
 
         if (! $email) {
             $this->command->warn('⚠️  BASIC_EMAIL not set in .env — skipping FrictionTestSeeder');

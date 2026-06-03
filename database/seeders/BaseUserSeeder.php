@@ -78,21 +78,21 @@ class BaseUserSeeder extends Seeder
 
     private function seedTestUser(): void
     {
-        $email = config('users.basic.email');
+        $email = config('users.test.email');
 
         if (! $email) {
             return;
         }
 
-        $password = config('users.basic.password');
+        $password = config('users.test.password');
 
         User::updateOrCreate(
             ['email' => $email],
             [
-                'first_name' => config('users.basic.first_name'),
-                'last_name' => config('users.basic.last_name'),
+                'first_name' => config('users.test.first_name'),
+                'last_name' => config('users.test.last_name'),
                 'password' => bcrypt($password),
-                'role' => config('users.basic.role'),
+                'role' => config('users.test.role'),
                 'email_verified_at' => now(),
             ]
         );
