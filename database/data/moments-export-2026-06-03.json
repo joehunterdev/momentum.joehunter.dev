@@ -1,0 +1,20 @@
+[
+    {
+        "name": "test",
+        "description": null,
+        "icon": null,
+        "color": null,
+        "frequency": "recurring",
+        "days_of_week": [
+            3
+        ],
+        "preferred_time": "18:30",
+        "implementation_intention": null,
+        "habit_stack_after": null,
+        "environment_prompt": null,
+        "reward_description": null,
+        "temptation_bundle": null,
+        "completion_rate_start": 0,
+        "completion_rate_end": 0
+    }
+]

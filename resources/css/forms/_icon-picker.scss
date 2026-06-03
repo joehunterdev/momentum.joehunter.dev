@@ -14,6 +14,26 @@
     background: transparent;
   }
 
+  // ── Trigger + inline search row ────────────────────────────────
+  // Standalone picker: the trigger shrinks to the icon + chevron and the
+  // search input fills the remaining width beside it.
+  &__field {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+
+    .icon-picker__trigger {
+      width: auto;
+      flex-shrink: 0;
+    }
+
+    .icon-picker__search {
+      flex: 1;
+      min-width: 0;
+      margin-bottom: 0;
+    }
+  }
+
   // ── Trigger button ─────────────────────────────────────────────
   &__trigger {
     display: flex;

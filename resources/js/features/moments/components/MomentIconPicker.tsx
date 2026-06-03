@@ -68,16 +68,22 @@ export default function MomentIconPicker({ value, onChange, embedded = false }: 
         if (!embedded) { setOpen(false); }
     }
 
+    const searchInput = (
+        <input
+            ref={searchRef}
+            type="text"
+            placeholder="Search icons…"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setOpen(true); }}
+            className="icon-picker__search"
+        />
+    );
+
     const panel = (
         <div className="icon-picker__panel">
-            <input
-                ref={searchRef}
-                type="text"
-                placeholder="Search…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="icon-picker__search"
-            />
+            {/* Embedded picker has no trigger row, so the search lives in the
+                panel. Standalone renders it inline next to the trigger instead. */}
+            {embedded && searchInput}
 
             <div className="icon-picker__categories">
                 {TABS.map((tab) => (
@@ -133,23 +139,27 @@ export default function MomentIconPicker({ value, onChange, embedded = false }: 
 
     return (
         <div className="icon-picker">
-            <button
-                type="button"
-                onClick={() => setOpen((o) => !o)}
-                className={`icon-picker__trigger${open ? ' icon-picker__trigger--open' : ''}`}
-                aria-label="Pick an icon"
-            >
-                {value ? (
-                    <span className="icon-picker__trigger-emoji">
-                        <Icon name={value} size={22} />
-                    </span>
-                ) : (
-                    <img src="/logo.png" alt="Default icon" className="icon-picker__trigger-logo" />
-                )}
-                <svg className="icon-picker__trigger-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
-                    <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                </svg>
-            </button>
+            <div className="icon-picker__field">
+                <button
+                    type="button"
+                    onClick={() => setOpen((o) => !o)}
+                    className={`icon-picker__trigger${open ? ' icon-picker__trigger--open' : ''}`}
+                    aria-label="Pick an icon"
+                >
+                    {value ? (
+                        <span className="icon-picker__trigger-emoji">
+                            <Icon name={value} size={22} />
+                        </span>
+                    ) : (
+                        <img src="/logo.png" alt="Default icon" className="icon-picker__trigger-logo" />
+                    )}
+                    <svg className="icon-picker__trigger-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                        <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                    </svg>
+                </button>
+
+                {searchInput}
+            </div>
 
             {open && panel}
         </div>
