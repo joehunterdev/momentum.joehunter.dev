@@ -97,11 +97,18 @@ function articleTargetsScheduling(
     return false;
 }
 
+/** Slot grid interval in minutes — matches the schedule's 30-min slots. */
+const SLOT_INTERVAL_MINUTES = 30;
+
 /**
  * True for date-bearing slots whose moment in time has already passed. Used
  * to both hide the + button (no backdating) and suppress non-source ghost
  * rendering (the pattern fires forward from the anchor, never backwards).
  * Articles without a date (Monthly configure rows = templates) are never past.
+ *
+ * A slot represents a window (its start until the next slot), so it only
+ * counts as past once that window has fully elapsed — the live slot containing
+ * "now" (e.g. 18:30 at 18:45) stays actionable until it ends at 19:00.
  */
 function isSlotInPast(date?: string, time?: string): boolean {
     if (!date) { return false; }
@@ -112,9 +119,9 @@ function isSlotInPast(date?: string, time?: string): boolean {
     if (slotDay.getTime() > today.getTime()) { return false; }
     if (!time) { return false; }
     const [h, m] = time.split(':').map(Number);
-    const slotMoment = new Date(slotDay);
-    slotMoment.setHours(h, m, 0, 0);
-    return slotMoment.getTime() <= now.getTime();
+    const slotEnd = new Date(slotDay);
+    slotEnd.setHours(h, m + SLOT_INTERVAL_MINUTES, 0, 0);
+    return slotEnd.getTime() <= now.getTime();
 }
 
 /**
@@ -266,7 +273,9 @@ export default function CalendarSectionArticle({
     const emptyClickable = capabilities.addOnEmpty && !moment && !isDraft && !isPast
         && (!scheduling || isAddDayCandidate);
 
-    const keyTitle = emptyClickable
+    // Add title for the + button. The time label itself is no longer pressable —
+    // the + button is the single, always-visible add affordance on every row.
+    const addTitle = emptyClickable
         ? (isAddDayCandidate ? 'Add this day to the habit' : `Add moment at ${time}`)
         : undefined;
 
@@ -276,11 +285,8 @@ export default function CalendarSectionArticle({
                 <span
                     className={[
                         'calendar-article__key',
-                        emptyClickable && 'calendar-article__key--clickable',
                         isNow && 'calendar-article__key--now',
                     ].filter(Boolean).join(' ')}
-                    onClick={emptyClickable ? () => onStartScheduling?.() : undefined}
-                    title={keyTitle}
                 >
                     {time}
                 </span>
@@ -327,7 +333,7 @@ export default function CalendarSectionArticle({
                             'calendar-article__add-btn--always-visible',
                             isAddDayCandidate && 'calendar-article__add-btn--add-day',
                         ].filter(Boolean).join(' ')}
-                        title={keyTitle}
+                        title={addTitle}
                         onClick={onStartScheduling}
                     >
                         +

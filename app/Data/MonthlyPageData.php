@@ -9,9 +9,10 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 class MonthlyPageData extends Data
 {
     public function __construct(
-        public string $month,
-        public string $monthStart,
-        public string $monthEnd,
+        public string $rangeStart,
+        public string $rangeEnd,
+        /** True = whole calendar month; false = rolling 30 days from now. */
+        public bool $whole,
         public UserConfigData $config,
         /** @var MonthlyDayData[] */
         public array $days,

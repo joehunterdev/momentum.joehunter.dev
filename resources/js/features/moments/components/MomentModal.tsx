@@ -33,7 +33,7 @@ export default function MomentModal({
     }
 
     return (
-        <Modal show={show} onClose={handleClose} maxWidth="2xl">
+        <Modal show={show} onClose={handleClose} maxWidth="2xl" fullScreen>
             <div className="moment-modal">
                 <div className="moment-modal__header">
                     <h2 className="moment-modal__title">{title}</h2>

@@ -4,6 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { FormEvent, useState } from 'react';
+import Icon from '@/shared/components/Icon';
 import type { Moment, MomentFormData } from '../types';
 import { useMomentForm } from '../hooks/useMomentForm';
 import ColorPicker from './ColorPicker';
@@ -46,13 +47,13 @@ export default function MomentForm({ moment, defaultValues, onSubmit, submitLabe
                         <button
                             type="button"
                             onClick={() => setOpenSection(isOpen ? '' : section.id)}
-                            className="flex w-full items-center justify-between px-5 py-4 text-left font-medium text-gray-900 hover:bg-gray-50"
+                            className="flex w-full items-center justify-between px-4 py-3 text-left text-sm font-semibold text-gray-900 hover:bg-gray-50"
                         >
                             <span className="flex items-center gap-2">
-                                <span>{section.emoji}</span>
+                                <Icon name={section.emoji} size={18} className="text-gray-500" aria-hidden />
                                 <span>{section.label}</span>
                             </span>
-                            <span className="text-gray-400">{isOpen ? '▲' : '▼'}</span>
+                            <span className="text-xs text-gray-400">{isOpen ? '▲' : '▼'}</span>
                         </button>
 
                         {isOpen && (
@@ -114,6 +115,7 @@ export default function MomentForm({ moment, defaultValues, onSubmit, submitLabe
                                         frequency={form.data.frequency}
                                         daysOfWeek={form.data.days_of_week}
                                         preferredTime={form.data.preferred_time}
+                                        endDate={form.data.end_date}
                                         errors={form.errors}
                                         onChange={(field, value) => setField(field as keyof MomentFormData, value as never)}
                                     />

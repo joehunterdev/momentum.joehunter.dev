@@ -3,15 +3,13 @@ import {
     CalendarSection,
     CalendarSectionHeader,
     CalendarSectionArticle,
-    CalendarNowToggle,
 } from '@/shared/components/calendar';
 import type { CalendarConfig } from '@/shared/components/calendar';
-import { getVisibleTimeSlots, firstUnactionedSlot, nowWindow, currentSlotTime } from '../utils';
-import { useNowFocus } from '../hooks/useNowFocus';
+import { getVisibleTimeSlots, firstUnactionedSlot, currentSlotTime } from '../utils';
 import type { IsoDayNumber, SchedulingState } from '@/features/scheduling';
 
 interface Props {
-    day: App.Data.WeekDayData;
+    days: App.Data.WeekDayData[];
     config: CalendarConfig;
     mode: 'overview' | 'configure';
     scheduling: SchedulingState | null;
@@ -25,11 +23,13 @@ interface Props {
 }
 
 /**
- * Orchestrates the daily view: computes visible slots and renders the day's
- * slot list inside a CalendarSection.
+ * Orchestrates the daily view: a rolling 24h window anchored on "now" that may
+ * span two calendar dates (today's remaining wake→sleep slots, then tomorrow's
+ * up to the same time). Each date is rendered as its own day section. The
+ * window is already now-anchored, so there's no "Now" focus toggle to snap to.
  */
 export default function DailyContainer({
-    day,
+    days,
     config,
     mode,
     scheduling,
@@ -41,54 +41,60 @@ export default function DailyContainer({
     onDraftCancel,
     onGhostExclude,
 }: Props) {
-    const { focused, toggle } = useNowFocus(true);
-    const currentDate = parseISO(day.date);
-    const allSlots = getVisibleTimeSlots(day.slots, config);
-    // "Now" focus only narrows today — other days have no current hour to snap to.
-    const visibleSlots = focused && day.isToday ? nowWindow(allSlots) : allSlots;
-    const nextTime = firstUnactionedSlot([{ date: day.date, slots: visibleSlots }])?.time ?? null;
-    const nowSlot = day.isToday ? currentSlotTime() : null;
+    const nowSlot = currentSlotTime();
+    // Single animated "next up" row across the whole window, in chronological order.
+    const nextSlot = firstUnactionedSlot(
+        days.map((d) => ({ date: d.date, slots: getVisibleTimeSlots(d.slots, config) })),
+    );
 
     return (
-        <CalendarSection
-            isToday={day.isToday}
-            layout="vertical"
-            header={
-                <CalendarSectionHeader
-                    label={day.dayName}
-                    sublabel={format(currentDate, 'd MMMM yyyy')}
-                    badge={day.isToday ? <CalendarNowToggle focused={focused} onToggle={toggle} /> : undefined}
-                />
-            }
-        >
-            {visibleSlots.map((slot) => (
-                <CalendarSectionArticle
-                    key={`${day.date}-${slot.time}`}
-                    slotKey={`${day.date}-${slot.time}`}
-                    date={day.date}
-                    time={slot.time}
-                    moment={slot.moment}
-                    config={config}
-                    capabilities={{
-                        addOnEmpty: true,
-                        draftEdit: true,
-                        conflictBadge: true,
-                        outOfOffice: true,
-                    }}
-                    mode={mode}
-                    scheduling={scheduling}
-                    onStartScheduling={() => onStartScheduling(day.date, slot.time)}
-                    onDraftNameChange={onGhostNameChange}
-                    onDraftIconChange={onGhostIconChange}
-                    onDraftApply={onDraftApply}
-                    onDraftApplyAll={onDraftApplyAll}
-                    onDraftCancel={onDraftCancel}
-                    onGhostExclude={onGhostExclude}
-                    isToday={day.isToday}
-                    isNext={!!nextTime && slot.time === nextTime}
-                    isNow={slot.time === nowSlot}
-                />
-            ))}
-        </CalendarSection>
+        <>
+            {days.map((day) => {
+                const slots = getVisibleTimeSlots(day.slots, config);
+
+                return (
+                    <CalendarSection
+                        key={day.date}
+                        isToday={day.isToday}
+                        layout="vertical"
+                        header={
+                            <CalendarSectionHeader
+                                label={day.dayName}
+                                sublabel={format(parseISO(day.date), 'd MMMM yyyy')}
+                            />
+                        }
+                    >
+                        {slots.map((slot) => (
+                            <CalendarSectionArticle
+                                key={`${day.date}-${slot.time}`}
+                                slotKey={`${day.date}-${slot.time}`}
+                                date={day.date}
+                                time={slot.time}
+                                moment={slot.moment}
+                                config={config}
+                                capabilities={{
+                                    addOnEmpty: true,
+                                    draftEdit: true,
+                                    conflictBadge: true,
+                                    outOfOffice: true,
+                                }}
+                                mode={mode}
+                                scheduling={scheduling}
+                                onStartScheduling={() => onStartScheduling(day.date, slot.time)}
+                                onDraftNameChange={onGhostNameChange}
+                                onDraftIconChange={onGhostIconChange}
+                                onDraftApply={onDraftApply}
+                                onDraftApplyAll={onDraftApplyAll}
+                                onDraftCancel={onDraftCancel}
+                                onGhostExclude={onGhostExclude}
+                                isToday={day.isToday}
+                                isNext={nextSlot?.date === day.date && slot.time === nextSlot?.time}
+                                isNow={day.isToday && slot.time === nowSlot}
+                            />
+                        ))}
+                    </CalendarSection>
+                );
+            })}
+        </>
     );
 }

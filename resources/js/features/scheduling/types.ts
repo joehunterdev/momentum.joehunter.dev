@@ -21,8 +21,8 @@ export interface RecurringScheduling extends SchedulingBase {
     daysOfWeek: IsoDayNumber[];
     time: string | null;
     anchorDate: string;
-    /** ISO date string (yyyy-MM-dd). Moment stops recurring after this date. */
-    endDate: string;
+    /** ISO date (yyyy-MM-dd) the moment stops recurring after; null = ongoing. */
+    endDate: string | null;
 }
 
 // Discriminated union — contradictory shapes (e.g. one-off with daysOfWeek)

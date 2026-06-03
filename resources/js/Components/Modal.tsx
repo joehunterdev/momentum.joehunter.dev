@@ -11,11 +11,14 @@ export default function Modal({
     show = false,
     maxWidth = '2xl',
     closeable = true,
+    fullScreen = false,
     onClose = () => { },
 }: PropsWithChildren<{
     show: boolean;
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
     closeable?: boolean;
+    /** Fill the entire viewport (no centering/backdrop gutter) — used for the moment editor. */
+    fullScreen?: boolean;
     onClose: CallableFunction;
 }>) {
     const close = () => {
@@ -37,7 +40,11 @@ export default function Modal({
             <Dialog
                 as="div"
                 id="modal"
-                className="fixed inset-0 z-50 flex transform items-center justify-center overflow-y-auto px-4 py-6 transition-all sm:px-6"
+                className={
+                    fullScreen
+                        ? 'fixed inset-0 z-50 flex transform overflow-y-auto transition-all'
+                        : 'fixed inset-0 z-50 flex transform items-center justify-center overflow-y-auto px-4 py-6 transition-all sm:px-6'
+                }
                 onClose={close}
             >
                 <TransitionChild
@@ -60,7 +67,11 @@ export default function Modal({
                     leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <DialogPanel
-                        className={`mb-6 transform overflow-hidden bg-white shadow-xl transition-all sm:mx-auto sm:w-full ${maxWidthClass}`}
+                        className={
+                            fullScreen
+                                ? 'relative z-10 flex min-h-full w-full transform flex-col bg-white shadow-xl transition-all'
+                                : `mb-6 transform overflow-hidden bg-white shadow-xl transition-all sm:mx-auto sm:w-full ${maxWidthClass}`
+                        }
                     >
                         {children}
                     </DialogPanel>

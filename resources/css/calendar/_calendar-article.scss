@@ -37,8 +37,8 @@ $border-light: var(--mm-border-light);
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        // Long-pressing the key (to unlock an office row) must not start a text
-        // selection or trigger the iOS callout/magnifier.
+        // The time label is a non-interactive marker — don't let a tap/swipe on
+        // the row accidentally select it or fire the iOS callout/magnifier.
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
@@ -256,17 +256,6 @@ $border-light: var(--mm-border-light);
     border-right: 1px solid var(--mm-border-light);
     border-bottom: none;
     background: var(--mm-surface-alt);
-}
-
-// ─── Clickable time label — empty slots in both overview and configure modes ──
-
-.calendar-article__key--clickable {
-    cursor: pointer;
-    user-select: none;
-
-    &:hover {
-        opacity: 0.7;
-    }
 }
 
 // ─── Live "now" slot — current 30-min slot on today ──────────────────────────

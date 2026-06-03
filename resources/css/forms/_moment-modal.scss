@@ -3,7 +3,10 @@
 .moment-modal {
   display: flex;
   flex-direction: column;
-  max-height: 85vh;
+  width: 100%;
+  height: 100vh; // fallback for browsers without dvh
+  height: 100dvh; // fill the whole screen (dynamic viewport for mobile chrome)
+  max-height: 100dvh;
   overflow: hidden;
 
   &__header {
@@ -96,7 +99,7 @@
   }
 
   &__title {
-    font-size: 1rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     color: var(--mm-text-body);
     flex: 1;
@@ -127,5 +130,15 @@
     overflow-y: auto;
     padding: 1.25rem 1.5rem 1.5rem;
     flex: 1;
+
+    // Tighter form controls — the @tailwindcss/forms defaults (16px text,
+    // 0.5rem/0.75rem padding) read oversized in this dense mobile sheet.
+    input,
+    textarea,
+    select {
+      font-size: 0.875rem;
+      padding-top: 0.4375rem;
+      padding-bottom: 0.4375rem;
+    }
   }
 }

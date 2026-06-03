@@ -205,6 +205,62 @@ class CalendarService
     }
 
     /**
+     * Build day objects for a rolling time window that may span two calendar
+     * dates (e.g. the daily view's 24h-from-now window). Each emitted
+     * WeekDayData carries only the wake→sleep slots whose datetime falls inside
+     * [$windowStart, $windowEnd); days with no in-window slots are omitted.
+     *
+     * @param  string[]  $slotLabels  Full wake→sleep 'H:i' labels for a day.
+     * @param  Collection<int, Moment>  $moments  Active moments to match per day.
+     * @return WeekDayData[]
+     */
+    public function buildRollingDays(
+        Carbon $windowStart,
+        Carbon $windowEnd,
+        array $slotLabels,
+        Collection $moments,
+        Carbon $consistencyWindow,
+        Carbon $today,
+        int $intervalMinutes = 30,
+    ): array {
+        $days = [];
+        $cursor = $windowStart->copy()->startOfDay();
+        $lastDay = $windowEnd->copy()->startOfDay();
+
+        while ($cursor->lte($lastDay)) {
+            $dateStr = $cursor->toDateString();
+
+            $inWindow = array_values(array_filter(
+                $slotLabels,
+                function (string $label) use ($dateStr, $windowStart, $windowEnd) {
+                    $slotAt = Carbon::parse($dateStr . ' ' . $label);
+
+                    return $slotAt->gte($windowStart) && $slotAt->lt($windowEnd);
+                },
+            ));
+
+            if ($inWindow !== []) {
+                $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($cursor));
+
+                $days[] = $this->buildWeekDayData(
+                    date: $cursor->copy(),
+                    slots: $inWindow,
+                    dayMoments: $dayMoments,
+                    isPast: $cursor->lt($today),
+                    isToday: $cursor->equalTo($today),
+                    consistencyWindow: $consistencyWindow,
+                    today: $today,
+                    intervalMinutes: $intervalMinutes,
+                );
+            }
+
+            $cursor->addDay();
+        }
+
+        return $days;
+    }
+
+    /**
      * Build a MonthlyDayData for a single calendar date (no time slots — just moment summaries).
      *
      * @param  Collection<int, Moment>  $dayMoments

@@ -11,13 +11,10 @@ import type { IsoDayNumber } from '@/features/scheduling';
 import { useScheduling } from '@/features/scheduling';
 import { SchedulingKind } from '@/shared/types/enums';
 import {
-    addWeeks,
-    endOfISOWeek,
-    endOfMonth,
+    addDays,
     format,
     parseISO,
-    startOfISOWeek,
-    subWeeks,
+    subDays,
 } from 'date-fns';
 import type { PageProps } from '@/types';
 
@@ -70,13 +67,12 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
             return;
         }
 
-        const endDate = format(endOfMonth(parseISO(date)), 'yyyy-MM-dd');
         scheduling.start({
             kind: SchedulingKind.Recurring,
             daysOfWeek: [isoWeekdayOf(date)],
             time,
             anchorDate: date,
-            endDate,
+            endDate: null, // ongoing by default — adjust the horizon in the moment editor
             name: '',
             icon: null,
         });
@@ -84,12 +80,14 @@ export default function Index({ weekStart, config, days, completedCount, totalCo
 
     const schedulingState = scheduling.state;
 
-    const currentWeekStart = startOfISOWeek(parseISO(weekStart));
-    const prevWeekStart = subWeeks(currentWeekStart, 1);
-    const nextWeekStart = addWeeks(currentWeekStart, 1);
+    // Rolling 7-day window anchored on weekStart (today by default) — page by a
+    // full week each click, not snapped to calendar-week boundaries.
+    const currentWeekStart = parseISO(weekStart);
+    const prevWeekStart = subDays(currentWeekStart, 7);
+    const nextWeekStart = addDays(currentWeekStart, 7);
 
     function weekLabel(start: Date): string {
-        return `${format(start, 'd MMM')} – ${format(endOfISOWeek(start), 'd MMM')}`;
+        return `${format(start, 'd MMM')} – ${format(addDays(start, 6), 'd MMM')}`;
     }
 
     return (

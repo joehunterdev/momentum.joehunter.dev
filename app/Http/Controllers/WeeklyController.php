@@ -22,14 +22,13 @@ class WeeklyController extends Controller
         $user = $request->user();
         $today = Carbon::today();
 
-        if ($request->filled('week')) {
-            $weekAnchor = Carbon::parse($request->input('week'));
-            $weekStart = $weekAnchor->copy()->startOfWeek(Carbon::MONDAY);
-        } else {
-            $weekStart = $today->copy()->startOfWeek(Carbon::MONDAY);
-        }
+        // Rolling 7-day window anchored on the requested day (default: today),
+        // not snapped to a calendar week — so the view opens on "now".
+        $weekStart = $request->filled('week')
+            ? Carbon::parse($request->input('week'))->startOfDay()
+            : $today->copy();
 
-        $weekEnd = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
+        $weekEnd = $weekStart->copy()->addDays(6);
 
         $config = UserConfig::firstOrNew(['user_id' => $user->id]);
         $wakeTime = $config->wake_time ?? '07:00:00';

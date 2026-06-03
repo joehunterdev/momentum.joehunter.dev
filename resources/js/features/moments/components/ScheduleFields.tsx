@@ -6,19 +6,31 @@ import {
     presetFromSchedule,
     scheduleFromPreset,
 } from '@/shared/constants/moments';
+import { addMonths, addWeeks, addYears, format, parseISO } from 'date-fns';
 
 interface ScheduleFieldsProps {
     frequency: App.Enums.Frequency;
     daysOfWeek: number[];
     preferredTime: string;
+    /** Horizon — ISO date the habit stops after; null = ongoing. */
+    endDate: string | null;
     errors: Partial<Record<string, string>>;
-    onChange: (field: string, value: string | number[]) => void;
+    onChange: (field: string, value: string | number[] | null) => void;
 }
+
+// Quick horizons, anchored to today. `null` = ongoing (no end date).
+const HORIZON_PRESETS: { label: string; build: () => string | null }[] = [
+    { label: '1 Week', build: () => format(addWeeks(new Date(), 1), 'yyyy-MM-dd') },
+    { label: '1 Month', build: () => format(addMonths(new Date(), 1), 'yyyy-MM-dd') },
+    { label: '1 Year', build: () => format(addYears(new Date(), 1), 'yyyy-MM-dd') },
+    { label: 'Ongoing', build: () => null },
+];
 
 export default function ScheduleFields({
     frequency,
     daysOfWeek,
     preferredTime,
+    endDate,
     errors,
     onChange,
 }: ScheduleFieldsProps) {
@@ -48,7 +60,7 @@ export default function ScheduleFields({
                             type="button"
                             onClick={() => selectPreset(preset.value)}
                             className={`px-4 py-1.5 text-sm font-medium transition-all ${activePreset === preset.value
-                                ? 'bg-white text-indigo-600 shadow-sm'
+                                ? 'bg-white text-[var(--mm-secondary)] shadow-sm'
                                 : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
@@ -70,8 +82,8 @@ export default function ScheduleFields({
                                 onClick={() => toggleDay(day.value)}
                                 aria-label={`Toggle ${day.full}`}
                                 aria-pressed={daysOfWeek.includes(day.value)}
-                                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-all ${daysOfWeek.includes(day.value)
-                                    ? 'bg-indigo-600 text-white'
+                                className={`flex h-9 w-9 items-center justify-center text-sm font-semibold transition-all ${daysOfWeek.includes(day.value)
+                                    ? 'bg-[var(--mm-secondary)] text-white'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
@@ -94,6 +106,38 @@ export default function ScheduleFields({
                 />
                 <InputError message={errors.preferred_time} className="mt-1" />
             </div>
+
+            {frequency !== 'once' && (
+                <div>
+                    <InputLabel value="Horizon" />
+                    <div className="mt-1 grid grid-cols-4 gap-1">
+                        {HORIZON_PRESETS.map((preset) => {
+                            const value = preset.build();
+                            const active = value === endDate;
+                            return (
+                                <button
+                                    key={preset.label}
+                                    type="button"
+                                    onClick={() => onChange('end_date', value)}
+                                    aria-pressed={active}
+                                    className={`border px-2 py-1.5 text-xs font-medium transition-all ${active
+                                        ? 'border-[var(--mm-secondary)] bg-white text-[var(--mm-secondary)] shadow-sm'
+                                        : 'border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-700'
+                                        }`}
+                                >
+                                    {preset.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                    <p className="mt-1 text-xs text-gray-400">
+                        {endDate
+                            ? `Ends ${format(parseISO(endDate), 'EEE d MMM yyyy')}`
+                            : 'No end date — runs ongoing'}
+                    </p>
+                    <InputError message={errors.end_date} className="mt-1" />
+                </div>
+            )}
         </div>
     );
 }

@@ -6,8 +6,9 @@ declare namespace App {
             environment_prompt: string | null;
         };
         export type DailyPageData = {
-            date: string;
-            day: App.Data.WeekDayData;
+            from: string;
+            whole: boolean;
+            days: App.Data.WeekDayData[];
             config: App.Data.UserConfigData;
             completedCount: number;
             totalCount: number;
@@ -38,6 +39,7 @@ declare namespace App {
             frequency: App.Enums.Frequency;
             days_of_week: number[] | null;
             preferred_time: string | null;
+            end_date: string | null;
         };
         export type MonthlyDayData = {
             date: string;
@@ -50,9 +52,9 @@ declare namespace App {
             totalCount: number;
         };
         export type MonthlyPageData = {
-            month: string;
-            monthStart: string;
-            monthEnd: string;
+            rangeStart: string;
+            rangeEnd: string;
+            whole: boolean;
             config: App.Data.UserConfigData;
             days: App.Data.MonthlyDayData[];
             scheduleRows: App.Data.MonthlyScheduleRowData[];

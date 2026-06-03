@@ -1,9 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { DailyContainer } from '@/features/calendar';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import Icon from '@/shared/components/Icon';
 import {
     CalendarNav,
+    CalendarNowToggle,
     CalendarProgressBar,
 } from '@/shared/components/calendar';
 import { addDays, format, parseISO, subDays } from 'date-fns';
@@ -13,12 +14,12 @@ import { SchedulingKind } from '@/shared/types/enums';
 
 interface Props extends PageProps, App.Data.DailyPageData { }
 
-export default function Index({ date, day, config, completedCount, totalCount }: Props) {
-    const scheduling = useScheduling({ redirectTo: route('daily', { date }) });
+export default function Index({ from, whole, days, config, completedCount, totalCount }: Props) {
+    const scheduling = useScheduling({ redirectTo: route('daily', { from, ...(whole ? { whole: 1 } : {}) }) });
 
-    // Daily has a single day on screen — no surface to preview a repeat — so a
-    // tap creates a one-off for that day. (Recurring habits are built in the
-    // weekly/monthly views where the ghosts can show the pattern.)
+    // Daily shows a rolling 24h window — no surface to preview a repeat — so a
+    // tap creates a one-off for the tapped slot's day. (Recurring habits are
+    // built in the weekly/monthly views where the ghosts can show the pattern.)
     function handleStartScheduling(targetDate: string, time: string) {
         scheduling.start({
             kind: SchedulingKind.OneOff,
@@ -29,9 +30,19 @@ export default function Index({ date, day, config, completedCount, totalCount }:
         });
     }
 
-    const currentDate = parseISO(date);
-    const prevDate = subDays(currentDate, 1);
-    const nextDate = addDays(currentDate, 1);
+    // Page by a full day each click (both modes shift the anchor ±1 day).
+    const windowStart = parseISO(from);
+    const prevStart = subDays(windowStart, 1);
+    const nextStart = addDays(windowStart, 1);
+    const fromParam = (d: Date) => format(d, "yyyy-MM-dd'T'HH:mm");
+    const dayParam = (d: Date): Record<string, string> =>
+        ({ from: fromParam(d), ...(whole ? { whole: '1' } : {}) });
+
+    // "Now / Today" toggle: rolling 24h-from-now ⇄ whole anchored day. Going to
+    // "Now" resets to today; going to "Today" expands the current anchor's day.
+    function toggleWhole() {
+        router.get(route('daily'), whole ? {} : { from, whole: 1 }, { preserveScroll: false });
+    }
 
     return (
         <AuthenticatedLayout
@@ -39,13 +50,16 @@ export default function Index({ date, day, config, completedCount, totalCount }:
                 <div className="calendar-page-header">
                     <div className="calendar-page-header__row">
                         <CalendarNav
-                            prevLabel={format(prevDate, 'EEE d MMM')}
-                            currentLabel={format(currentDate, 'EEE d MMM')}
-                            nextLabel={format(nextDate, 'EEE d MMM')}
-                            prevParam={{ date: format(prevDate, 'yyyy-MM-dd') }}
-                            nextParam={{ date: format(nextDate, 'yyyy-MM-dd') }}
+                            prevLabel={format(prevStart, 'EEE d MMM')}
+                            currentLabel={whole
+                                ? format(windowStart, 'EEE d MMM')
+                                : format(windowStart, 'EEE d MMM, HH:mm')}
+                            nextLabel={format(nextStart, 'EEE d MMM')}
+                            prevParam={dayParam(prevStart)}
+                            nextParam={dayParam(nextStart)}
                             routeName="daily"
                         />
+                        <CalendarNowToggle focused={!whole} onToggle={toggleWhole} idleLabel="Today" />
                         {scheduling.mode === 'overview' ? (
                             <button
                                 type="button"
@@ -79,7 +93,7 @@ export default function Index({ date, day, config, completedCount, totalCount }:
             <div className="py-0 sm:py-6">
                 <div className="mx-auto max-w-2xl sm:px-6 lg:px-8">
                     <DailyContainer
-                        day={day}
+                        days={days}
                         config={config}
                         mode={scheduling.mode}
                         scheduling={scheduling.state}

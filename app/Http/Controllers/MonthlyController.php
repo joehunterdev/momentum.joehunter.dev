@@ -24,16 +24,23 @@ class MonthlyController extends Controller
         $user = $request->user();
         $today = Carbon::today();
 
-        $monthAnchor = $request->filled('month')
-            ? Carbon::parse($request->input('month') . '-01')
-            : $today->copy()->startOfMonth();
+        // Two display modes, toggled by the "Now / Month" badge:
+        //  • rolling (default) — a 30-day window anchored on the requested day
+        //    (default: today), not snapped to a calendar month ("jump to now").
+        //  • whole — the entire calendar month containing the anchor.
+        // Either way the frontend buckets the days into "Week of X" sections.
+        $whole = $request->boolean('whole');
+        $anchor = $request->filled('start')
+            ? Carbon::parse($request->input('start'))->startOfDay()
+            : $today->copy();
 
-        $monthStart = $monthAnchor->copy()->startOfMonth();
-        $monthEnd = $monthAnchor->copy()->endOfMonth();
-
-        // Grid starts on the Monday on or before the 1st, ends on the Sunday on or after the last day
-        $gridStart = $monthStart->copy()->startOfWeek(Carbon::MONDAY);
-        $gridEnd = $monthEnd->copy()->endOfWeek(Carbon::SUNDAY);
+        if ($whole) {
+            $rangeStart = $anchor->copy()->startOfMonth();
+            $rangeEnd = $anchor->copy()->endOfMonth();
+        } else {
+            $rangeStart = $anchor;
+            $rangeEnd = $rangeStart->copy()->addDays(29);
+        }
 
         $config = UserConfig::firstOrNew(['user_id' => $user->id]);
         $officeStart = $config->office_start ?? '09:00:00';
@@ -47,17 +54,17 @@ class MonthlyController extends Controller
             ->with([
                 'schedule',
                 'instances' => fn($q) => $q->whereBetween('date', [
-                    $gridStart->toDateString(),
-                    $gridEnd->toDateString(),
+                    $rangeStart->toDateString(),
+                    $rangeEnd->toDateString(),
                 ]),
             ])
             ->orderBy('sort_order')
             ->get();
 
-        // Compute per-moment monthly progress (completed ÷ scheduled across current month)
+        // Compute per-moment progress (completed ÷ scheduled across the rolling range)
         $momentProgress = [];
-        $tempDate = $monthStart->copy();
-        while ($tempDate->lte($monthEnd)) {
+        $tempDate = $rangeStart->copy();
+        while ($tempDate->lte($rangeEnd)) {
             $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($tempDate));
             foreach ($dayMoments as $moment) {
                 if (! isset($momentProgress[$moment->id])) {
@@ -80,12 +87,11 @@ class MonthlyController extends Controller
         }
 
         $days = [];
-        $cursor = $gridStart->copy();
+        $cursor = $rangeStart->copy();
 
-        while ($cursor->lte($gridEnd)) {
+        while ($cursor->lte($rangeEnd)) {
             $isPast = $cursor->lt($today);
             $isToday = $cursor->equalTo($today);
-            $isCurrentMonth = $cursor->month === $monthStart->month;
 
             $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($cursor));
 
@@ -94,7 +100,8 @@ class MonthlyController extends Controller
                 dayMoments: $dayMoments,
                 isPast: $isPast,
                 isToday: $isToday,
-                isCurrentMonth: $isCurrentMonth,
+                // Rolling range has no "other month" padding — every day is in range.
+                isCurrentMonth: true,
                 today: $today,
                 momentProgress: $momentProgress,
             );
@@ -131,17 +138,14 @@ class MonthlyController extends Controller
         $completedCount = 0;
         $totalCount = 0;
         foreach ($days as $monthDay) {
-            if (! $monthDay->isCurrentMonth) {
-                continue;
-            }
             $completedCount += $monthDay->completedCount;
             $totalCount += $monthDay->totalCount;
         }
 
         $pageData = new MonthlyPageData(
-            month: $monthStart->format('Y-m'),
-            monthStart: $monthStart->toDateString(),
-            monthEnd: $monthEnd->toDateString(),
+            rangeStart: $rangeStart->toDateString(),
+            rangeEnd: $rangeEnd->toDateString(),
+            whole: $whole,
             config: new UserConfigData(
                 wake_time: substr($config->wake_time ?? '07:00:00', 0, 5),
                 sleep_time: substr($config->sleep_time ?? '22:00:00', 0, 5),

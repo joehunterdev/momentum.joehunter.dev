@@ -22,12 +22,18 @@ class DailyController extends Controller
         $user = $request->user();
         $today = Carbon::today();
 
-        $date = $request->filled('date')
-            ? Carbon::parse($request->input('date'))
-            : $today->copy();
-
-        $isPast = $date->lt($today);
-        $isToday = $date->equalTo($today);
+        // Two display modes, toggled by the "Now / Today" badge:
+        //  • rolling (default) — a 24h window from the current slot that crosses
+        //    midnight, so it may span two calendar dates ("jump to now").
+        //  • whole — the entire anchored day from start of day (wake→sleep).
+        $whole = $request->boolean('whole');
+        $windowStart = $request->filled('from')
+            ? Carbon::parse($request->input('from'))
+            : Carbon::now();
+        // Floor to the 30-min slot grid, zeroing seconds + microseconds so the
+        // live slot compares equal to its grid time (Carbon::now() carries µs).
+        $windowStart->setTime($windowStart->hour, $windowStart->minute - ($windowStart->minute % 30), 0, 0);
+        $windowEnd = $whole ? $windowStart->copy()->endOfDay() : $windowStart->copy()->addDay();
 
         $config = UserConfig::firstOrNew(['user_id' => $user->id]);
         $wakeTime = $config->wake_time ?? '07:00:00';
@@ -45,37 +51,58 @@ class DailyController extends Controller
                 'cue',
                 'instances' => fn($q) => $q->whereBetween('date', [
                     $consistencyWindow->toDateString(),
-                    $date->toDateString(),
+                    $windowEnd->toDateString(),
                 ]),
             ])
             ->orderBy('sort_order')
             ->get();
 
-        $slots = $this->calendar->buildTimeSlots($wakeTime, $sleepTime, intervalMinutes: 30);
-        $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($date));
+        $slotLabels = $this->calendar->buildTimeSlots($wakeTime, $sleepTime, intervalMinutes: 30);
 
-        $day = $this->calendar->buildWeekDayData(
-            date: $date,
-            slots: $slots,
-            dayMoments: $dayMoments,
-            isPast: $isPast,
-            isToday: $isToday,
-            consistencyWindow: $consistencyWindow,
-            today: $today,
-            intervalMinutes: 30,
-        );
+        if ($whole) {
+            // Whole anchored day, from start of day — a single full wake→sleep section.
+            $dayDate = $windowStart->copy()->startOfDay();
+            $days = [
+                $this->calendar->buildWeekDayData(
+                    date: $dayDate,
+                    slots: $slotLabels,
+                    dayMoments: $moments->filter(fn(Moment $m) => $m->isScheduledFor($dayDate)),
+                    isPast: $dayDate->lt($today),
+                    isToday: $dayDate->equalTo($today),
+                    consistencyWindow: $consistencyWindow,
+                    today: $today,
+                    intervalMinutes: 30,
+                ),
+            ];
+        } else {
+            $days = $this->calendar->buildRollingDays(
+                windowStart: $windowStart,
+                windowEnd: $windowEnd,
+                slotLabels: $slotLabels,
+                moments: $moments,
+                consistencyWindow: $consistencyWindow,
+                today: $today,
+                intervalMinutes: 30,
+            );
+        }
 
-        $completedCount = collect($day->slots)
-            ->filter(fn($slot) => $slot->moment?->status === MomentStatus::Completed)
-            ->count();
-
-        $totalCount = collect($day->slots)
-            ->filter(fn($slot) => $slot->moment !== null)
-            ->count();
+        $completedCount = 0;
+        $totalCount = 0;
+        foreach ($days as $day) {
+            foreach ($day->slots as $slot) {
+                if ($slot->moment !== null) {
+                    $totalCount++;
+                    if ($slot->moment->status === MomentStatus::Completed) {
+                        $completedCount++;
+                    }
+                }
+            }
+        }
 
         $pageData = new DailyPageData(
-            date: $date->toDateString(),
-            day: $day,
+            from: $windowStart->format('Y-m-d\TH:i'),
+            whole: $whole,
+            days: $days,
             config: new UserConfigData(
                 wake_time: substr($wakeTime, 0, 5),
                 sleep_time: substr($sleepTime, 0, 5),
