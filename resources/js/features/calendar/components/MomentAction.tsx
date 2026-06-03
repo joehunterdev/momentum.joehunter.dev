@@ -353,6 +353,7 @@ export default function MomentAction({
                 <MomentActionIcon
                     moment={moment}
                     dragProgress={dragProgress}
+                    arcProgress={arcProgress}
                     isCommitting={isCommitting}
                     isCompleted={isCompleted}
                     arcColor={arcColor}

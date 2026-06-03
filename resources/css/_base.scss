@@ -1,7 +1,7 @@
 // _base.scss — global resets, body, typography
 
 // Material Symbols — variable font, all axes locked to design spec:
-//   FILL=0 (no fill), wght=100, GRAD=-25, OPSZ=20
+//   FILL=0 (no fill), wght=400 (solid), GRAD=0, OPSZ=24
 .material-symbols-sharp,
 .material-symbols-outlined,
 .material-symbols-rounded {
@@ -9,7 +9,7 @@
   line-height: 1;
   vertical-align: middle;
   user-select: none;
-  font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 200, 'opsz' 20;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 body {

@@ -326,6 +326,22 @@
         height: 100%;
         border-radius: 0;
         transition: width 0.4s ease;
+        position: relative;
+        overflow: hidden;
+
+        // A slow sheen sweeps across the filled portion so progress reads as
+        // "live" rather than a flat static bar. Purely decorative.
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(100deg,
+                    transparent 20%,
+                    rgba(255, 255, 255, 0.5) 50%,
+                    transparent 80%);
+            transform: translateX(-100%);
+            animation: moment-progress-sheen 3s ease-in-out infinite;
+        }
     }
 
     &__preview {
@@ -361,6 +377,28 @@
 
 .moment-action--completed .moment-action__icon {
     cursor: pointer;
+    transform-origin: 50% 50%;
+    // A quick, springy pop the moment the row flips to completed — the little
+    // hit of "done!" satisfaction.
+    animation: moment-icon-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes moment-icon-pop {
+    0% {
+        transform: scale(1) rotate(0);
+    }
+
+    40% {
+        transform: scale(1.2) rotate(-7deg);
+    }
+
+    70% {
+        transform: scale(0.95) rotate(4deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+    }
 }
 
 .moment-action--completed {
@@ -407,6 +445,29 @@
 .moment-action--committing {
     opacity: 0.7;
     pointer-events: none;
+}
+
+@keyframes moment-progress-sheen {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    60%,
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .moment-progress__fill::after {
+        animation: none;
+        opacity: 0;
+    }
+
+    .moment-action--completed .moment-action__icon {
+        animation: none;
+    }
 }
 
 // ─── Description marquee (Quick Action Phase 3) ───────────────────────────

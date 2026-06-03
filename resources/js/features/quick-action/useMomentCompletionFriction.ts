@@ -12,9 +12,9 @@ export interface FrictionConfig {
     label: string;
 }
 
-const NONE: FrictionConfig = { requiredHoldMs: 0, frictionLevel: 'none', label: '' };
-const MID: FrictionConfig = { requiredHoldMs: 1500, frictionLevel: 'mid', label: 'Hold to complete' };
-const LOW: FrictionConfig = { requiredHoldMs: 3000, frictionLevel: 'low', label: 'Press and hold to complete' };
+const NONE: FrictionConfig = { requiredHoldMs: 1000, frictionLevel: 'none', label: '' };
+const MID: FrictionConfig = { requiredHoldMs: 2200, frictionLevel: 'mid', label: 'Hold to complete' };
+const LOW: FrictionConfig = { requiredHoldMs: 4000, frictionLevel: 'low', label: 'Press and hold to complete' };
 
 /**
  * Map a moment's consistency to a friction config, respecting the user's
