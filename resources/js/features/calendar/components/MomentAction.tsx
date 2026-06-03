@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Icon from '@/shared/components/Icon';
 import MomentIconPicker from '@/features/moments/components/MomentIconPicker';
@@ -9,9 +9,11 @@ import Ticker from '@/shared/components/Ticker';
 import MomentActionIcon from './MomentActionIcon';
 import MomentEditButton from './MomentEditButton';
 import { MomentStatus } from '@/shared/types/enums';
+import { useCalendarActions } from '@/features/calendar/hooks/useCalendarActions';
+import { broadcastDragProgress } from '@/features/quick-action/momentDragStore';
 import {
     consistencyBand,
-    useMomentComplete,
+    DragToComplete,
     useMomentCompletionFriction,
     useMomentDescriptionMarquee,
     useMomentDetailCycle,
@@ -124,14 +126,49 @@ export default function MomentAction({
     const isCompleted = moment.status === MomentStatus.Completed;
     const friction = useMomentCompletionFriction(moment.consistency);
     const siblingDragPreview = useMomentDragPreview(moment.id);
-    const { dragProgress, holdProgress, isCommitting, onActivate, bindHandlers } = useMomentComplete({
-        momentId: moment.id,
-        date: date ?? '',
-        time,
-        isCompleted: isCompleted || !date,
-        rowRef,
-        requiredHoldMs: friction.requiredHoldMs,
-    });
+
+    // ── Drag-to-complete state (Motion-owned gesture; see <DragToComplete>) ──
+    const { toggleMoment } = useCalendarActions();
+    const [dragProgress, setDragProgress] = useState(0);
+    const [holdProgress, setHoldProgress] = useState(0);
+    const [isCommitting, setIsCommitting] = useState(false);
+
+    // The gesture is disabled when there's no date target (e.g. preview rows).
+    const gestureEnabled = !!date && !isCommitting;
+
+    const handleProgress = useCallback((drag: number, hold: number) => {
+        setDragProgress(drag);
+        setHoldProgress(hold);
+        broadcastDragProgress(moment.id, drag);
+    }, [moment.id]);
+
+    const handleCommit = useCallback(() => {
+        setIsCommitting(true);
+        toggleMoment({ momentId: moment.id, date: date ?? '', time })
+            .catch(() => { /* swallow — partial reload reflects server truth */ })
+            .finally(() => {
+                setIsCommitting(false);
+                setDragProgress(0);
+                setHoldProgress(0);
+                broadcastDragProgress(moment.id, 0);
+            });
+    }, [toggleMoment, moment.id, date, time]);
+
+    // Keyboard activation (Enter/Space) commits immediately, skipping friction —
+    // pressing a key is already a deliberate confirmation.
+    const onActivate = useCallback(() => {
+        if (gestureEnabled) { handleCommit(); }
+    }, [gestureEnabled, handleCommit]);
+
+    // ── LEGACY (pre-Motion) pointer-event gesture ────────────────────────────
+    // const { dragProgress, holdProgress, isCommitting, onActivate, bindHandlers } = useMomentComplete({
+    //     momentId: moment.id,
+    //     date: date ?? '',
+    //     time,
+    //     isCompleted: isCompleted || !date,
+    //     rowRef,
+    //     requiredHoldMs: friction.requiredHoldMs,
+    // });
 
     const { isOverflowing: descOverflowing, overflowPx: descOverflowPx } =
         useMomentDescriptionMarquee(descRef, descTrackRef, !!moment.description, moment.description);
@@ -318,10 +355,11 @@ export default function MomentAction({
     // Cap travel so the icon stops ~48px from the right edge (thumb room).
     const RIGHT_MARGIN = 48;
     const maxTravel = Math.max(0, (rowRef.current?.clientWidth ?? 320) - 40 - RIGHT_MARGIN);
-    const iconTranslateX = isCompleted
-        ? `translateX(${dragProgress * -maxTravel}px)`
-        : `translateX(${dragProgress * maxTravel}px)`;
-    const iconTransition = dragProgress === 0 ? 'transform 0.3s ease' : 'none';
+    // LEGACY (pre-Motion) — horizontal travel + lean are now owned by <DragToComplete>.
+    // const iconTranslateX = isCompleted
+    //     ? `translateX(${dragProgress * -maxTravel}px)`
+    //     : `translateX(${dragProgress * maxTravel}px)`;
+    // const iconTransition = dragProgress === 0 ? 'transform 0.3s ease' : 'none';
 
     // Body fades out as the icon starts sliding, giving it clear runway.
     const bodyOpacity = Math.max(0, 1 - dragProgress * 3);
@@ -334,7 +372,7 @@ export default function MomentAction({
     //                Using holdProgress here would reset the transition every rAF tick.
     const normDrag = Math.min(1, dragProgress / 0.85);
     const atWall = dragProgress >= 0.85;
-    const arcProgress = hasFriction ? (atWall ? 1 : 0) : normDrag;
+    const arcProgress = hasFriction ? (atWall ? holdProgress : 0) : normDrag;
     const arcOffset = arcPerimeter * (1 - arcProgress);
     // Colour by friction level so the border signals urgency.
     const arcColor = friction.frictionLevel === 'low'
@@ -343,6 +381,8 @@ export default function MomentAction({
             ? '#f59e0b'
             : (moment.color ?? 'var(--mm-progress-complete, #00E5AA)');
 
+    const isActioning = dragProgress > 0 || holdProgress > 0;
+
     return (
         <div
             ref={rowRef}
@@ -350,22 +390,28 @@ export default function MomentAction({
             style={{ '--hold-progress': holdProgress } as React.CSSProperties}
         >
             <div className="moment-action__row">
-                <MomentActionIcon
-                    moment={moment}
-                    dragProgress={dragProgress}
-                    isCommitting={isCommitting}
-                    isCompleted={isCompleted}
-                    arcColor={arcColor}
-                    arcOffset={arcOffset}
-                    arcPerimeter={arcPerimeter}
-                    hasFriction={hasFriction}
+                <DragToComplete
+                    maxTravel={maxTravel}
+                    threshold={0.85}
                     requiredHoldMs={friction.requiredHoldMs}
-                    frictionLabel={friction.label}
-                    bindHandlers={bindHandlers}
-                    onActivate={onActivate}
-                    translateX={iconTranslateX}
-                    transition={iconTransition}
-                />
+                    direction={isCompleted ? -1 : 1}
+                    disabled={!gestureEnabled}
+                    onCommit={handleCommit}
+                    onProgress={handleProgress}
+                    aria-label={friction.label || (isCompleted ? 'Drag to mark incomplete' : 'Drag to mark complete')}
+                >
+                    <MomentActionIcon
+                        moment={moment}
+                        isActioning={isActioning}
+                        isCommitting={isCommitting}
+                        isCompleted={isCompleted}
+                        arcColor={arcColor}
+                        arcOffset={arcOffset}
+                        arcPerimeter={arcPerimeter}
+                        frictionLabel={friction.label}
+                        onActivate={onActivate}
+                    />
+                </DragToComplete>
                 <div
                     className="moment-action__body"
                     data-cycle={canCycle || undefined}

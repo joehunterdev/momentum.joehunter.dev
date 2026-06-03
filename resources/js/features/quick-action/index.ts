@@ -1,4 +1,6 @@
 export { useMomentComplete } from './useMomentComplete';
+export { useDragToComplete, DEFAULT_COMMIT_THRESHOLD } from './useDragToComplete';
+export { default as DragToComplete } from './DragToComplete';
 export { useMomentDescriptionMarquee } from './useMomentDescriptionMarquee';
 export { useMomentDetailCycle } from './useMomentDetailCycle';
 export { useMomentCompletionFriction } from './useMomentCompletionFriction';

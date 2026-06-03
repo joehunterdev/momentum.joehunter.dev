@@ -3,47 +3,39 @@ import type { CalendarMoment } from '@/shared/components/calendar/types';
 
 interface Props {
     moment: CalendarMoment;
-    /** 0–1 drag/hold progress; arc only renders when > 0. */
-    dragProgress: number;
+    /** True while a drag/hold gesture is in progress — gates the arc. */
+    isActioning: boolean;
     isCommitting: boolean;
     isCompleted: boolean;
     arcColor: string;
     arcOffset: number;
     arcPerimeter: number;
-    hasFriction: boolean;
-    requiredHoldMs: number;
     frictionLabel: string;
-    bindHandlers: Record<string, unknown>;
+    /** Keyboard activation (Enter/Space) — commits immediately, skipping friction. */
     onActivate: () => void;
-    translateX: string;
-    transition: string;
 }
 
+/**
+ * The draggable icon + friction arc for a read-variant moment row.
+ *
+ * NOTE: horizontal travel + lean rotation are now owned by the parent
+ * `<DragToComplete>` (Motion). This component only renders the icon and the
+ * SVG friction arc; it no longer applies its own transform or pointer handlers.
+ */
 export default function MomentActionIcon({
     moment,
-    dragProgress,
+    isActioning,
     isCommitting,
     isCompleted,
     arcColor,
     arcOffset,
     arcPerimeter,
-    hasFriction,
-    requiredHoldMs,
     frictionLabel,
-    bindHandlers,
     onActivate,
-    translateX,
-    transition,
 }: Props) {
-    const isActioning = dragProgress > 0;
-
     return (
         <span
             style={{
-                transform: translateX,
-                transition,
-                willChange: isActioning ? 'transform' : 'auto',
-                zIndex: isActioning ? 10 : undefined,
                 flexShrink: 0,
                 display: 'flex',
                 alignItems: 'center',
@@ -53,8 +45,7 @@ export default function MomentActionIcon({
             <span
                 className="moment-action__icon"
                 style={{
-                    touchAction: 'pan-y',
-                    cursor: isCommitting ? 'wait' : 'pointer',
+                    cursor: isCommitting ? 'wait' : 'grab',
                     overflow: 'visible',
                 }}
                 role="button"
@@ -66,7 +57,6 @@ export default function MomentActionIcon({
                         onActivate();
                     }
                 }}
-                {...bindHandlers}
             >
                 {moment.icon
                     ? <Icon name={moment.icon} />
@@ -93,7 +83,7 @@ export default function MomentActionIcon({
                         strokeLinecap="butt"
                         style={{
                             strokeDashoffset: arcOffset,
-                            transition: hasFriction ? `stroke-dashoffset ${requiredHoldMs}ms linear` : 'none',
+                            transition: 'stroke-dashoffset 0.08s linear',
                         }}
                     />
                 </svg>

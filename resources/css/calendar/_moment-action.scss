@@ -76,6 +76,9 @@
         font-size: var(--mm-text-2xl);
         line-height: 1;
         padding: 0.25rem;
+        // Lean rotation (owned by <DragToComplete>) pivots about the icon centre.
+        transform-origin: 50% 50%;
+        will-change: transform;
     }
 
     // Default logo fallback rendered when `moment.icon` is null. Sized to the
