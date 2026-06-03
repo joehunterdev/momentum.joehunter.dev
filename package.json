@@ -36,7 +36,7 @@
     "dependencies": {
         "@emoji-mart/data": "^1.2.1",
         "@emoji-mart/react": "^1.1.1",
-        "@material-symbols/font-100": "^0.44.10",
+        "@material-symbols/font-400": "^0.44.11",
         "@vitejs/plugin-react": "^6.0.1",
         "date-fns": "^4.1.0",
         "emoji-mart": "^5.6.0",
