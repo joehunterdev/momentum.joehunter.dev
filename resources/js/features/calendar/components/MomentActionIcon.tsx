@@ -5,6 +5,8 @@ interface Props {
     moment: CalendarMoment;
     /** 0–1 drag/hold progress; arc only renders when > 0. */
     dragProgress: number;
+    /** 0–1 border-fill progress — also drives the icon spin. */
+    arcProgress: number;
     isCommitting: boolean;
     isCompleted: boolean;
     arcColor: string;
@@ -22,6 +24,7 @@ interface Props {
 export default function MomentActionIcon({
     moment,
     dragProgress,
+    arcProgress,
     isCommitting,
     isCompleted,
     arcColor,
@@ -68,10 +71,27 @@ export default function MomentActionIcon({
                 }}
                 {...bindHandlers}
             >
-                {moment.icon
-                    ? <Icon name={moment.icon} />
-                    : <img src="/logo.png" alt="" className="moment-action__icon-img" />
-                }
+                {/* Inner glyph spins in lockstep with the border fill (arcProgress),
+                    eased in-out: it accelerates from rest, whips through the
+                    middle, then decelerates as the ring closes. Three full turns
+                    (1080°). The border/arc stay put — only the icon rotates. */}
+                <span
+                    className="moment-action__icon-spin"
+                    style={{
+                        display: 'inline-flex',
+                        transformOrigin: '50% 50%',
+                        transform: `rotate(${arcProgress * 1080}deg)`,
+                        transition: hasFriction
+                            ? `transform ${requiredHoldMs}ms cubic-bezier(0.85, 0, 0.15, 1)`
+                            : 'transform 0.25s cubic-bezier(0.85, 0, 0.15, 1)',
+                        willChange: isActioning ? 'transform' : 'auto',
+                    }}
+                >
+                    {moment.icon
+                        ? <Icon name={moment.icon} />
+                        : <img src="/logo.png" alt="" className="moment-action__icon-img" />
+                    }
+                </span>
             </span>
 
             {isActioning && (
@@ -93,7 +113,7 @@ export default function MomentActionIcon({
                         strokeLinecap="butt"
                         style={{
                             strokeDashoffset: arcOffset,
-                            transition: hasFriction ? `stroke-dashoffset ${requiredHoldMs}ms linear` : 'none',
+                            transition: hasFriction ? `stroke-dashoffset ${requiredHoldMs}ms cubic-bezier(0.45, 0, 0.55, 1)` : 'none',
                         }}
                     />
                 </svg>
