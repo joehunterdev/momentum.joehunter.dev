@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateMomentRequest;
 use App\Models\Moment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -47,6 +48,15 @@ class MomentController extends Controller
         $moment->reward()->create([
             'description' => $data['reward_description'] ?? null,
             'temptation_bundle' => $data['temptation_bundle'] ?? null,
+        ]);
+
+        Log::info('[MomentController@store] moment created', [
+            'user_id' => $request->user()->id,
+            'moment_id' => $moment->id,
+            'frequency' => $data['frequency'] ?? null,
+            'scheduled_date' => $data['scheduled_date'] ?? null,
+            'preferred_time' => $data['preferred_time'] ?? null,
+            'has_icon' => ! empty($data['icon']),
         ]);
 
         $redirectTo = $this->safeRedirect($request, $request->input('_redirect'), route('weekly'));
@@ -107,6 +117,15 @@ class MomentController extends Controller
                 'temptation_bundle' => $data['temptation_bundle'] ?? null,
             ]
         );
+
+        Log::info('[MomentController@update] moment updated', [
+            'user_id' => $request->user()->id,
+            'moment_id' => $moment->id,
+            'frequency' => $data['frequency'] ?? null,
+            'scheduled_date' => $data['scheduled_date'] ?? null,
+            'preferred_time' => $data['preferred_time'] ?? null,
+            'has_icon' => ! empty($data['icon']),
+        ]);
 
         $redirectTo = $this->safeRedirect($request, $request->input('_redirect'), route('weekly'));
 

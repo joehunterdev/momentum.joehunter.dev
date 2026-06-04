@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class StoreMomentRequest extends FormRequest
@@ -10,6 +12,23 @@ class StoreMomentRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * Log validation failures before the 422 is thrown. Quick-create flows
+     * (daily ghost) swallow the error client-side, so without this a rejected
+     * save looks like "nothing happened". Surfaces the failing fields + input
+     * in storage/logs/laravel.log (read via Boost `last-error` / `php artisan pail`).
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        Log::warning('[MomentController@store] validation failed', [
+            'user_id' => $this->user()?->id,
+            'errors' => $validator->errors()->toArray(),
+            'input' => $this->all(),
+        ]);
+
+        parent::failedValidation($validator);
     }
 
     /**
@@ -21,7 +40,7 @@ class StoreMomentRequest extends FormRequest
             'name' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'color' => ['nullable', 'string', 'max:7'],
-            'icon' => ['nullable', 'string', 'max:10'],
+            'icon' => ['nullable', 'string', 'max:64'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
 
             // Schedule — field-frequency contract:

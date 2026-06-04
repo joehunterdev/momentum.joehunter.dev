@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class UpdateMomentRequest extends FormRequest
@@ -15,6 +17,22 @@ class UpdateMomentRequest extends FormRequest
     }
 
     /**
+     * Log validation failures before the 422 is thrown, so a rejected save is
+     * visible in storage/logs/laravel.log instead of failing silently in the UI.
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        Log::warning('[MomentController@update] validation failed', [
+            'user_id' => $this->user()?->id,
+            'moment_id' => $this->route('moment')?->id,
+            'errors' => $validator->errors()->toArray(),
+            'input' => $this->all(),
+        ]);
+
+        parent::failedValidation($validator);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function rules(): array
@@ -23,7 +41,7 @@ class UpdateMomentRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'color' => ['nullable', 'string', 'max:7'],
-            'icon' => ['nullable', 'string', 'max:10'],
+            'icon' => ['nullable', 'string', 'max:64'],
             'is_active' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
 

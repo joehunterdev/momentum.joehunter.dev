@@ -10,6 +10,7 @@ use App\Models\UserConfig;
 use App\Services\CalendarService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -49,7 +50,7 @@ class DailyController extends Controller
             ->with([
                 'schedule',
                 'cue',
-                'instances' => fn($q) => $q->whereBetween('date', [
+                'instances' => fn ($q) => $q->whereBetween('date', [
                     $consistencyWindow->toDateString(),
                     $windowEnd->toDateString(),
                 ]),
@@ -66,7 +67,7 @@ class DailyController extends Controller
                 $this->calendar->buildWeekDayData(
                     date: $dayDate,
                     slots: $slotLabels,
-                    dayMoments: $moments->filter(fn(Moment $m) => $m->isScheduledFor($dayDate)),
+                    dayMoments: $moments->filter(fn (Moment $m) => $m->isScheduledFor($dayDate)),
                     isPast: $dayDate->lt($today),
                     isToday: $dayDate->equalTo($today),
                     consistencyWindow: $consistencyWindow,
@@ -98,6 +99,18 @@ class DailyController extends Controller
                 }
             }
         }
+
+        // Visibility for "created a moment but it doesn't show" reports: confirms
+        // how many active moments were loaded vs. how many actually landed in a
+        // visible slot for this window. Read via Boost `read-log-entries` / `php artisan pail`.
+        Log::debug('[DailyController@index] view built', [
+            'user_id' => $user->id,
+            'whole' => $whole,
+            'window' => [$windowStart->toDateTimeString(), $windowEnd->toDateTimeString()],
+            'moments_loaded' => $moments->count(),
+            'slots_with_moment' => $totalCount,
+            'completed' => $completedCount,
+        ]);
 
         $pageData = new DailyPageData(
             from: $windowStart->format('Y-m-d\TH:i'),

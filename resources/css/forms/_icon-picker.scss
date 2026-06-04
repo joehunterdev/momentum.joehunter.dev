@@ -125,6 +125,13 @@
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
 
+    // 16px on touch so focusing the icon search doesn't trigger iOS Safari's
+    // auto-zoom (which expands the viewport and spills content off-screen).
+    // Covers the picker outside the modal too (e.g. the daily draft row).
+    @media (pointer: coarse) {
+      font-size: 16px;
+    }
+
     &::placeholder {
       color: var(--mm-text-faint);
     }

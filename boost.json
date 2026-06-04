@@ -1,6 +1,7 @@
 {
     "agents": [
-        "copilot"
+        "copilot",
+        "claude"
     ],
     "guidelines": true,
     "mcp": true,

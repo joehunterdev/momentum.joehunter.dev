@@ -139,6 +139,15 @@
       font-size: 0.875rem;
       padding-top: 0.4375rem;
       padding-bottom: 0.4375rem;
+
+      // iOS Safari auto-zooms when a focused input's font-size is < 16px, and
+      // the zoom doesn't reliably reset — it expands the viewport and spills the
+      // modal off the right edge. Bump to 16px on touch to suppress the zoom;
+      // pointer devices keep the dense 14px (they don't auto-zoom). Do NOT lower
+      // this back below 16px for touch or the overspill bug returns.
+      @media (pointer: coarse) {
+        font-size: 16px;
+      }
     }
   }
 }
