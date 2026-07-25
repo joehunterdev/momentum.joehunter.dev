@@ -66,12 +66,13 @@ class Moment extends Model
             return true; // no schedule = daily by default
         }
 
-        // No backdating: a recurring/daily moment never applies to a date that
-        // predates its creation. One-off moments are exempt (they may target
-        // any explicit scheduled_date the user chose).
+        // No backdating before start_date (or created_at if no start_date).
+        // One-off moments are exempt (they may target any explicit scheduled_date).
         if ($schedule->frequency !== Frequency::Once) {
-            $createdDate = $this->created_at?->copy()->startOfDay();
-            if ($createdDate !== null && $date->copy()->startOfDay()->lt($createdDate)) {
+            $startDate = $schedule->start_date
+                ? Carbon::parse($schedule->start_date)->startOfDay()
+                : $this->created_at?->copy()->startOfDay();
+            if ($startDate !== null && $date->copy()->startOfDay()->lt($startDate)) {
                 return false;
             }
         }

@@ -115,6 +115,7 @@ export default function MomentForm({ moment, defaultValues, onSubmit, submitLabe
                                         frequency={form.data.frequency}
                                         daysOfWeek={form.data.days_of_week}
                                         preferredTime={form.data.preferred_time}
+                                        startDate={form.data.start_date}
                                         endDate={form.data.end_date}
                                         errors={form.errors}
                                         onChange={(field, value) => setField(field as keyof MomentFormData, value as never)}

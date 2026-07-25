@@ -39,7 +39,7 @@
     "frequency": "recurring",
     "days_of_week": [1, 3],
     "preferred_time": "07:00",
-    "implementation_intention": "When my 07:00 alarm fires on Mon/Wed, I will put on my trainers immediately.",
+    "implementation_intention": "When my 08:25 alarm fires on Mon/Thurs, I will put on my trainers immediately.",
     "habit_stack_after": "Waking up",
     "environment_prompt": "Trainers left by the bedroom door the night before.",
     "reward_description": "Endorphin rush and sense of accomplishment.",
@@ -79,22 +79,7 @@
     "completion_rate_start": 0.15,
     "completion_rate_end": 0.22
   },
-  {
-    "name": "Read",
-    "description": "30 minutes of non-fiction reading.",
-    "icon": "📚",
-    "color": "#60A5FA",
-    "frequency": "recurring",
-    "days_of_week": [1, 2, 3, 4, 5],
-    "preferred_time": "21:00",
-    "implementation_intention": "When I sit on the sofa after dinner, I will pick up my book instead of the remote.",
-    "habit_stack_after": "Dinner",
-    "environment_prompt": "Book left on the sofa arm, not on the shelf.",
-    "reward_description": "A sense of growth and winding down before bed.",
-    "temptation_bundle": "Make a cup of tea to enjoy while reading.",
-    "completion_rate_start": 0.40,
-    "completion_rate_end": 0.58
-  },
+ 
   {
     "name": "Journal",
     "description": "Reflective journalling session.",
@@ -118,7 +103,7 @@
     "color": "#A78BFA",
     "frequency": "daily",
     "days_of_week": null,
-    "preferred_time": "07:45",
+    "preferred_time": "22:00",
     "implementation_intention": "After my cold shower I will sit on the mat and open the meditation app.",
     "habit_stack_after": "Cold shower",
     "environment_prompt": "Meditation mat next to the bed.",
@@ -134,7 +119,7 @@
     "color": "#34D399",
     "frequency": "daily",
     "days_of_week": null,
-    "preferred_time": "22:00",
+    "preferred_time": "23:00",
     "implementation_intention": "When I brush my teeth at night, I will reflect and log the check-in.",
     "habit_stack_after": "Evening routine",
     "environment_prompt": "App notification at 22:00.",
@@ -238,5 +223,37 @@
     "temptation_bundle": null,
     "completion_rate_start": 0.70,
     "completion_rate_end": 0.90
+  },
+  {
+    "name": "Play an Instrument",
+    "description": "Play an instrument for a while — guitar, piano, whatever you enjoy.",
+    "icon": "🎸",
+    "color": "#A78BFA",
+    "frequency": "recurring",
+    "days_of_week": [7],
+    "preferred_time": "18:00",
+    "implementation_intention": "On Sunday evening, after dinner, I will pick up my instrument and play for at least 15 minutes.",
+    "habit_stack_after": "Sunday dinner",
+    "environment_prompt": "Keep the instrument out on a stand in view — never zipped away in its case.",
+    "reward_description": "Creative flow and the quiet satisfaction of hearing yourself improve.",
+    "temptation_bundle": "Play along to a favourite album you save just for practice.",
+    "completion_rate_start": 0.45,
+    "completion_rate_end": 0.68
+  },
+  {
+    "name": "Fresh Produce Run",
+    "description": "Head out for cheap, in-season fruit and vegetables — aim for a wide, varied mix.",
+    "icon": "🥦",
+    "color": "#84CC16",
+    "frequency": "recurring",
+    "days_of_week": [5],
+    "preferred_time": "12:00",
+    "implementation_intention": "On Friday around midday I will stop by the market or grocer and pick up a wide range of fruit and vegetables.",
+    "habit_stack_after": "Friday lunch break",
+    "environment_prompt": "Reusable shopping bags by the front door, ready to grab on the way out.",
+    "reward_description": "A colourful fridge and a varied, nutritious week of eating.",
+    "temptation_bundle": "Listen to a favourite podcast on the way to the market.",
+    "completion_rate_start": 0.30,
+    "completion_rate_end": 0.52
   }
 ]

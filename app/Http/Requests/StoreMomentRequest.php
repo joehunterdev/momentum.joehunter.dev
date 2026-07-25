@@ -60,6 +60,8 @@ class StoreMomentRequest extends FormRequest
             'days_of_week.*' => ['integer', 'between:1,7'],
             'scheduled_date' => ['required_if:frequency,once', 'nullable', 'date'],
             'preferred_time' => ['nullable', 'date_format:H:i'],
+            // Backdating grace window: at most 7 days in the past.
+            'start_date' => ['nullable', 'date', 'after_or_equal:'.now()->subDays(7)->toDateString()],
             'end_date' => ['nullable', 'date', 'after_or_equal:today'],
 
             // Cue

@@ -33,13 +33,17 @@ function toCalendarMoment(m: App.Data.MomentData): App.Data.SlotMomentData {
         icon: m.icon ?? null,
         color: m.color ?? null,
         frequency: m.schedule?.frequency ?? null,
-        consistency: null,
         status: null,
         instance_id: null,
         implementation_intention: m.cue?.implementation_intention ?? null,
         habit_stack_after: m.cue?.habit_stack_after ?? null,
         environment_prompt: m.cue?.environment_prompt ?? null,
-        progress: null,
+        bar_kind: 'ongoing',
+        bar_value: null,
+        bar_completed: null,
+        bar_scheduled_total: null,
+        bar_days_remaining: null,
+        bar_end_date: null,
     };
 }
 
@@ -52,12 +56,16 @@ function makeDraftMoment(scheduling: SchedulingState | null): CalendarMoment {
         color: null,
         icon: scheduling?.icon ?? null,
         frequency: null,
-        consistency: null,
         instance_id: null,
         implementation_intention: null,
         habit_stack_after: null,
         environment_prompt: null,
-        progress: null,
+        bar_kind: 'ongoing',
+        bar_value: null,
+        bar_completed: null,
+        bar_scheduled_total: null,
+        bar_days_remaining: null,
+        bar_end_date: null,
     };
 }
 

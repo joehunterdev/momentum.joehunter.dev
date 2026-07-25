@@ -16,8 +16,8 @@ export default function MomentIcon({ moment, date, onToggle, onSwipeProgress, is
     const isPast = moment.status === MomentStatus.Completed || moment.status === MomentStatus.Missed;
 
     // 0 = frictionless (perfect habit), 1 = maximum resistance (new/failing habit)
-    const resistanceFactor = moment.consistency !== null
-        ? Math.max(0, Math.min(1, 1 - moment.consistency / 100))
+    const resistanceFactor = moment.bar_value !== null
+        ? Math.max(0, Math.min(1, 1 - moment.bar_value / 100))
         : 1;
 
     const { dragX, dragProgress: _dragProgress, holdProgress, isDragging, isDone, handlers } = useSwipeComplete({

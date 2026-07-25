@@ -46,45 +46,18 @@ class MonthlyController extends Controller
         $officeStart = $config->office_start ?? '09:00:00';
         $officeEnd = $config->office_end ?? '17:00:00';
 
-        $consistencyWindow = $today->copy()->subDays(27);
-
         $moments = Moment::query()
             ->where('user_id', $user->id)
             ->where('is_active', true)
             ->with([
                 'schedule',
-                'instances' => fn($q) => $q->whereBetween('date', [
+                'instances' => fn ($q) => $q->whereBetween('date', [
                     $rangeStart->toDateString(),
                     $rangeEnd->toDateString(),
                 ]),
             ])
             ->orderBy('sort_order')
             ->get();
-
-        // Compute per-moment progress (completed ÷ scheduled across the rolling range)
-        $momentProgress = [];
-        $tempDate = $rangeStart->copy();
-        while ($tempDate->lte($rangeEnd)) {
-            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($tempDate));
-            foreach ($dayMoments as $moment) {
-                if (! isset($momentProgress[$moment->id])) {
-                    $momentProgress[$moment->id] = ['completed' => 0, 'total' => 0];
-                }
-                $momentProgress[$moment->id]['total']++;
-                $instance = $moment->instances->first(fn($i) => $i->date->toDateString() === $tempDate->toDateString());
-                if ($instance !== null) {
-                    $momentProgress[$moment->id]['completed']++;
-                }
-            }
-            $tempDate->addDay();
-        }
-
-        // Convert to percentage (0-100)
-        foreach ($momentProgress as $momentId => $stats) {
-            $momentProgress[$momentId] = $stats['total'] > 0
-                ? (int) round(($stats['completed'] / $stats['total']) * 100)
-                : 0;
-        }
 
         $days = [];
         $cursor = $rangeStart->copy();
@@ -93,17 +66,17 @@ class MonthlyController extends Controller
             $isPast = $cursor->lt($today);
             $isToday = $cursor->equalTo($today);
 
-            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($cursor));
+            $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($cursor));
 
             $days[] = $this->calendar->buildMonthDayData(
                 date: $cursor,
                 dayMoments: $dayMoments,
                 isPast: $isPast,
                 isToday: $isToday,
-                // Rolling range has no "other month" padding — every day is in range.
                 isCurrentMonth: true,
+                periodStart: $rangeStart,
+                periodEnd: $rangeEnd,
                 today: $today,
-                momentProgress: $momentProgress,
             );
 
             $cursor->addDay();
@@ -125,7 +98,7 @@ class MonthlyController extends Controller
                     default => false,
                 };
             })
-                ->map(fn(Moment $m) => MomentData::fromModel($m))
+                ->map(fn (Moment $m) => MomentData::fromModel($m))
                 ->values()
                 ->all();
 

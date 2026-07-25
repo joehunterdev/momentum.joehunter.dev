@@ -22,7 +22,9 @@
       "Bash(npx sass *)",
       "Bash(echo \"sass exit: $?\")",
       "Bash(rm -f /tmp/_chk2.css)",
-      "Bash(npx playwright *)"
+      "Bash(npx playwright *)",
+      "Bash(php artisan tinker --execute ' *)",
+      "Bash(npx tsc *)"
     ],
     "additionalDirectories": [
       "\\tmp"

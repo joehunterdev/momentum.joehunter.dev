@@ -19,6 +19,8 @@ export interface MomentFormData {
     frequency: App.Enums.Frequency;
     days_of_week: number[];
     preferred_time: string;
+    /** ISO date (yyyy-MM-dd); null defaults to moment's created_at. */
+    start_date: string | null;
     /** Horizon — ISO date (yyyy-MM-dd) the habit stops after; null = ongoing. */
     end_date: string | null;
     // Cue

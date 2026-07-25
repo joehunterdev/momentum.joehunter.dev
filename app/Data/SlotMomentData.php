@@ -8,7 +8,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
- * A moment as it appears in a weekly grid slot — includes status and consistency.
+ * A moment as it appears in a weekly grid slot — includes status and progress bar.
  */
 #[TypeScript]
 class SlotMomentData extends Data
@@ -20,18 +20,20 @@ class SlotMomentData extends Data
         public ?string $icon,
         public ?string $color,
         public ?Frequency $frequency,
-        public ?int $consistency,
         public ?MomentStatus $status,
         public ?int $instance_id,
         public ?string $implementation_intention,
         public ?string $habit_stack_after,
         public ?string $environment_prompt,
-        /**
-         * Completion percentage (0–100) over the current view's timespan.
-         * Daily  = 100 if this moment instance is completed today, else 0.
-         * Weekly = ratio across the visible Mon–Sun week.
-         * Monthly = ratio across the current month's days.
-         */
-        public ?int $progress = null,
+        // Progress bar fields (derived from moment type)
+        /** 'ongoing' | 'fixed' | 'once' */
+        public string $bar_kind = 'ongoing',
+        /** 0–100 for ongoing/fixed, null for once or when 0 due-days resolved */
+        public ?int $bar_value = null,
+        // Fixed-specific fields (null if not a Fixed habit)
+        public ?int $bar_completed = null,
+        public ?int $bar_scheduled_total = null,
+        public ?int $bar_days_remaining = null,
+        public ?string $bar_end_date = null,
     ) {}
 }

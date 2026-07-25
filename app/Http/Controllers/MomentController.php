@@ -36,6 +36,7 @@ class MomentController extends Controller
             'days_of_week' => $data['days_of_week'] ?? null,
             'preferred_time' => $data['preferred_time'] ?? null,
             'scheduled_date' => $data['scheduled_date'] ?? null,
+            'start_date' => $data['start_date'] ?? null,
             'end_date' => $data['end_date'] ?? null,
         ]);
 
@@ -97,6 +98,7 @@ class MomentController extends Controller
                 'days_of_week' => $data['days_of_week'] ?? null,
                 'preferred_time' => $data['preferred_time'] ?? null,
                 'scheduled_date' => $data['scheduled_date'] ?? null,
+                'start_date' => $data['start_date'] ?? null,
                 'end_date' => $data['end_date'] ?? null,
             ]
         );

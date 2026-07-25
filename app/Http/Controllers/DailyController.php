@@ -42,7 +42,9 @@ class DailyController extends Controller
         $officeStart = $config->office_start ?? '09:00:00';
         $officeEnd = $config->office_end ?? '17:00:00';
 
-        $consistencyWindow = $today->copy()->subDays(27);
+        // For daily view, the period is the calendar week containing today
+        $weekStart = $today->copy()->startOfWeek($config->week_starts_on ?? 1);
+        $weekEnd = $weekStart->copy()->addDays(6);
 
         $moments = Moment::query()
             ->where('user_id', $user->id)
@@ -51,8 +53,8 @@ class DailyController extends Controller
                 'schedule',
                 'cue',
                 'instances' => fn ($q) => $q->whereBetween('date', [
-                    $consistencyWindow->toDateString(),
-                    $windowEnd->toDateString(),
+                    $weekStart->toDateString(),
+                    $weekEnd->toDateString(),
                 ]),
             ])
             ->orderBy('sort_order')
@@ -70,7 +72,8 @@ class DailyController extends Controller
                     dayMoments: $moments->filter(fn (Moment $m) => $m->isScheduledFor($dayDate)),
                     isPast: $dayDate->lt($today),
                     isToday: $dayDate->equalTo($today),
-                    consistencyWindow: $consistencyWindow,
+                    periodStart: $weekStart,
+                    periodEnd: $weekEnd,
                     today: $today,
                     intervalMinutes: 30,
                 ),
@@ -81,7 +84,8 @@ class DailyController extends Controller
                 windowEnd: $windowEnd,
                 slotLabels: $slotLabels,
                 moments: $moments,
-                consistencyWindow: $consistencyWindow,
+                periodStart: $weekStart,
+                periodEnd: $weekEnd,
                 today: $today,
                 intervalMinutes: 30,
             );

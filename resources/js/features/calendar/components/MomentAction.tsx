@@ -122,7 +122,8 @@ export default function MomentAction({
     const descTrackRef = useRef<HTMLSpanElement>(null);
 
     const isCompleted = moment.status === MomentStatus.Completed;
-    const friction = useMomentCompletionFriction(moment.consistency);
+    // Use bar_value for friction (consistency for Ongoing, progress for Fixed)
+    const friction = useMomentCompletionFriction(moment.bar_value);
     const siblingDragPreview = useMomentDragPreview(moment.id);
     const { dragProgress, holdProgress, isCommitting, onActivate, bindHandlers } = useMomentComplete({
         momentId: moment.id,
@@ -296,7 +297,8 @@ export default function MomentAction({
     }
 
     // ── Read variant (default) ──────────────────────────────────────────────
-    const band = consistencyBand(moment.consistency);
+    // Consistency band determines animation intensity based on performance.
+    const band = consistencyBand(moment.bar_value);
     const readCls = [
         cls,
         band && `moment-action--consistency-${band}`,
@@ -402,7 +404,14 @@ export default function MomentAction({
                 </div>
             </div>
             <div className="moment-action__progress">
-                <MomentProgressBar consistency={moment.consistency} isCompleted={isCompleted} color={moment.color} previewProgress={Math.max(dragProgress, siblingDragPreview)} />
+                <MomentProgressBar
+                    barKind={moment.bar_kind}
+                    barValue={moment.bar_value}
+                    barCompleted={moment.bar_completed}
+                    barScheduledTotal={moment.bar_scheduled_total}
+                    color={moment.color}
+                    previewProgress={Math.max(dragProgress, siblingDragPreview)}
+                />
             </div>
         </div>
     );

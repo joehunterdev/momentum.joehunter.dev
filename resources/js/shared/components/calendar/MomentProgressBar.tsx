@@ -1,40 +1,69 @@
 interface Props {
-    /** 0–100 consistency percentage. null = brand-new moment, no history. */
-    consistency: number | null;
-    /** When true the bar shows as fully complete. */
-    isCompleted?: boolean;
+    /** 'ongoing' | 'fixed' | 'once' — determines bar rendering. */
+    barKind: string;
+    /** 0–100 fill % for ongoing/fixed bars; null = neutral/empty. */
+    barValue: number | null;
+    /** For fixed: completed reps. */
+    barCompleted?: number | null;
+    /** For fixed: scheduled reps in the commitment. */
+    barScheduledTotal?: number | null;
+    /** For fixed: days remaining. */
+    barDaysRemaining?: number | null;
     /** Optional moment colour — overrides the default purple. */
     color?: string | null;
     /**
      * 0–1 swipe progress. When > 0, renders a lighter preview segment
-     * showing the projected consistency gain from completing today.
+     * showing the projected gain from completing today (Ongoing only).
      */
     previewProgress?: number;
 }
 
 /**
- * Slim full-width consistency progress bar for a moment row.
- * Uses moment.color when available, otherwise falls back to brand purple.
+ * Progress bar for a moment row. Adapts based on habit type:
+ * - Ongoing: rate-so-far (0–100), neutral when no due-days resolved.
+ * - Fixed: tally of commitment (0–100 → completed), visually distinct.
+ * - Once: no bar rendered.
  */
-export default function MomentProgressBar({ consistency, isCompleted = false, color, previewProgress = 0 }: Props) {
-    const pct = isCompleted ? 100 : Math.max(0, Math.min(100, consistency ?? 0));
+export default function MomentProgressBar({
+    barKind,
+    barValue,
+    barCompleted,
+    barScheduledTotal,
+    color,
+    previewProgress = 0,
+}: Props) {
+    if (barKind === 'once') {
+        return null; // No bar for one-time items
+    }
 
-    // Projected gain: one completion ≈ moves needle by ~(100-pct)/20 capped at 8%.
-    // Scales with swipe progress so it grows as you drag.
-    const gainPct = isCompleted ? 0 : Math.min(8, (100 - pct) / 20) * previewProgress;
-
+    const pct = barValue ?? 0;
     const fillColor = color
         ? `linear-gradient(to right, ${color}44 0%, ${color} 100%)`
         : 'linear-gradient(to right, rgba(var(--mm-progress-base-rgb), 0.2) 0%, rgba(var(--mm-progress-base-rgb), 0.6) 100%)';
 
+    // Ongoing: preview gain effect
+    let gainPct = 0;
+    if (barKind === 'ongoing' && barValue !== null) {
+        gainPct = Math.min(8, (100 - pct) / 20) * previewProgress;
+    }
+
     const previewColor = color ? `${color}55` : 'rgba(var(--mm-progress-base-rgb), 0.25)';
+
+    // Neutral track appearance when barValue is null (no due-days resolved)
+    const isNeutral = barValue === null;
+    const trackClass = `moment-progress__track ${isNeutral ? 'moment-progress__track--neutral' : ''} ${
+        barKind === 'fixed' ? 'moment-progress__track--fixed' : ''
+    }`;
 
     return (
         <div className="moment-progress">
-            <div className="moment-progress__track">
+            <div className={trackClass}>
                 <div
                     className="moment-progress__fill"
-                    style={{ width: `${pct}%`, background: fillColor }}
+                    style={{
+                        width: `${isNeutral ? 0 : pct}%`,
+                        background: fillColor,
+                    }}
                 />
                 {gainPct > 0 && (
                     <div
@@ -47,6 +76,11 @@ export default function MomentProgressBar({ consistency, isCompleted = false, co
                     />
                 )}
             </div>
+            {barKind === 'fixed' && barCompleted !== undefined && barScheduledTotal !== undefined && (
+                <div className="moment-progress__label">
+                    {barCompleted}/{barScheduledTotal}
+                </div>
+            )}
         </div>
     );
 }

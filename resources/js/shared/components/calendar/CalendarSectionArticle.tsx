@@ -198,12 +198,16 @@ function makeDraftMoment(scheduling: SchedulingState | null): CalendarMoment {
         color: null,
         icon: scheduling?.icon ?? null,
         frequency: null,
-        consistency: null,
         instance_id: null,
         implementation_intention: null,
         habit_stack_after: null,
         environment_prompt: null,
-        progress: null,
+        bar_kind: 'ongoing',
+        bar_value: null,
+        bar_completed: null,
+        bar_scheduled_total: null,
+        bar_days_remaining: null,
+        bar_end_date: null,
     };
 }
 

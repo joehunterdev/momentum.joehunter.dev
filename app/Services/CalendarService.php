@@ -6,7 +6,6 @@ use App\Data\MonthlyDayData;
 use App\Data\SlotMomentData;
 use App\Data\TimeSlotData;
 use App\Data\WeekDayData;
-use App\Enums\Frequency;
 use App\Enums\MomentStatus;
 use App\Models\Moment;
 use Carbon\Carbon;
@@ -14,6 +13,8 @@ use Illuminate\Support\Collection;
 
 class CalendarService
 {
+    public function __construct(private MomentProgressService $progress) {}
+
     /**
      * Build an array of 'H:i' strings from wake to sleep in $intervalMinutes increments.
      *
@@ -74,52 +75,19 @@ class CalendarService
     }
 
     /**
-     * Calculate the consistency percentage (0–100) for a moment over a 28-day window.
-     */
-    public function calculateConsistency(Moment $moment, Carbon $windowStart, Carbon $today): ?int
-    {
-        $schedule = $moment->schedule;
-        $scheduled = 0;
-        $cursor = $windowStart->copy();
-        while ($cursor->lte($today)) {
-            $due = match ($schedule?->frequency) {
-                Frequency::Daily => true,
-                Frequency::Recurring => $schedule->days_of_week !== null
-                    && in_array($cursor->dayOfWeekIso, $schedule->days_of_week, strict: true),
-                default => false,
-            };
-
-            if ($due) {
-                $scheduled++;
-            }
-
-            $cursor->addDay();
-        }
-
-        if ($scheduled === 0) {
-            return null;
-        }
-
-        $completed = $moment->instances->filter(
-            fn($i) => $i->date->toDateString() >= $windowStart->toDateString()
-                && $i->date->toDateString() <= $today->toDateString()
-        )->count();
-
-        return (int) round(($completed / $scheduled) * 100);
-    }
-
-    /**
      * Build a SlotMomentData for a matched moment in a given slot.
+     * $periodStart/$periodEnd define the view's timeframe (week/month) for the bar computation.
      */
     public function buildSlotMoment(
         Moment $match,
         string $dateStr,
         bool $isPast,
         bool $isToday,
-        Carbon $consistencyWindow,
+        Carbon $periodStart,
+        Carbon $periodEnd,
         Carbon $today,
     ): SlotMomentData {
-        $instance = $match->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
+        $instance = $match->instances->first(fn ($i) => $i->date->toDateString() === $dateStr);
         $status = match (true) {
             $instance !== null => MomentStatus::Completed,
             $isPast => MomentStatus::Missed,
@@ -127,10 +95,7 @@ class CalendarService
             default => null,
         };
 
-        $consistency = $this->calculateConsistency($match, $consistencyWindow, $today);
-
-        // Daily view progress: 100 if completed today, else 0
-        $progress = $status === MomentStatus::Completed ? 100 : 0;
+        $barPayload = $this->progress->momentBar($match, $periodStart, $periodEnd, $today);
 
         return new SlotMomentData(
             id: $match->id,
@@ -139,22 +104,26 @@ class CalendarService
             icon: $match->icon,
             color: $match->color,
             frequency: $match->schedule?->frequency,
-            consistency: $consistency,
             status: $status,
             instance_id: $instance?->id,
             implementation_intention: $match->cue?->implementation_intention,
             habit_stack_after: $match->cue?->habit_stack_after,
             environment_prompt: $match->cue?->environment_prompt,
-            progress: $progress,
+            bar_kind: $barPayload['kind'],
+            bar_value: $barPayload['value'] ?? null,
+            bar_completed: $barPayload['completed'] ?? null,
+            bar_scheduled_total: $barPayload['scheduled_total'] ?? null,
+            bar_days_remaining: $barPayload['days_remaining'] ?? null,
+            bar_end_date: $barPayload['end_date'] ?? null,
         );
     }
 
     /**
      * Build a WeekDayData for a single calendar date given a set of loaded moments.
+     * $periodStart/$periodEnd define the view's timeframe (week/month) for the bar computation.
      *
      * @param  string[]  $slots
      * @param  Collection<int, Moment>  $dayMoments
-     * @param  array<int, int>  $momentProgress  Weekly progress map (momentId => percentage)
      */
     public function buildWeekDayData(
         Carbon $date,
@@ -162,14 +131,14 @@ class CalendarService
         Collection $dayMoments,
         bool $isPast,
         bool $isToday,
-        Carbon $consistencyWindow,
+        Carbon $periodStart,
+        Carbon $periodEnd,
         Carbon $today,
         int $intervalMinutes = 30,
-        array $momentProgress = [],
     ): WeekDayData {
         $dateStr = $date->toDateString();
 
-        $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $consistencyWindow, $today, $intervalMinutes, $momentProgress) {
+        $daySlots = array_map(function (string $slotTime) use ($dayMoments, $dateStr, $isPast, $isToday, $periodStart, $periodEnd, $today, $intervalMinutes) {
             $match = $dayMoments->first(function (Moment $m) use ($slotTime, $intervalMinutes) {
                 if (! $m->schedule?->preferred_time) {
                     return false;
@@ -182,12 +151,7 @@ class CalendarService
                 return new TimeSlotData(time: $slotTime, moment: null);
             }
 
-            $slotMoment = $this->buildSlotMoment($match, $dateStr, $isPast, $isToday, $consistencyWindow, $today);
-
-            // Override progress with weekly aggregate if provided
-            if (isset($momentProgress[$match->id])) {
-                $slotMoment->progress = $momentProgress[$match->id];
-            }
+            $slotMoment = $this->buildSlotMoment($match, $dateStr, $isPast, $isToday, $periodStart, $periodEnd, $today);
 
             return new TimeSlotData(
                 time: $slotTime,
@@ -209,6 +173,7 @@ class CalendarService
      * dates (e.g. the daily view's 24h-from-now window). Each emitted
      * WeekDayData carries only the wake→sleep slots whose datetime falls inside
      * [$windowStart, $windowEnd); days with no in-window slots are omitted.
+     * $periodStart/$periodEnd define the view's timeframe (week/month) for the bar computation.
      *
      * @param  string[]  $slotLabels  Full wake→sleep 'H:i' labels for a day.
      * @param  Collection<int, Moment>  $moments  Active moments to match per day.
@@ -219,7 +184,8 @@ class CalendarService
         Carbon $windowEnd,
         array $slotLabels,
         Collection $moments,
-        Carbon $consistencyWindow,
+        Carbon $periodStart,
+        Carbon $periodEnd,
         Carbon $today,
         int $intervalMinutes = 30,
     ): array {
@@ -233,14 +199,14 @@ class CalendarService
             $inWindow = array_values(array_filter(
                 $slotLabels,
                 function (string $label) use ($dateStr, $windowStart, $windowEnd) {
-                    $slotAt = Carbon::parse($dateStr . ' ' . $label);
+                    $slotAt = Carbon::parse($dateStr.' '.$label);
 
                     return $slotAt->gte($windowStart) && $slotAt->lt($windowEnd);
                 },
             ));
 
             if ($inWindow !== []) {
-                $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($cursor));
+                $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($cursor));
 
                 $days[] = $this->buildWeekDayData(
                     date: $cursor->copy(),
@@ -248,7 +214,8 @@ class CalendarService
                     dayMoments: $dayMoments,
                     isPast: $cursor->lt($today),
                     isToday: $cursor->equalTo($today),
-                    consistencyWindow: $consistencyWindow,
+                    periodStart: $periodStart,
+                    periodEnd: $periodEnd,
                     today: $today,
                     intervalMinutes: $intervalMinutes,
                 );
@@ -262,9 +229,9 @@ class CalendarService
 
     /**
      * Build a MonthlyDayData for a single calendar date (no time slots — just moment summaries).
+     * $periodStart/$periodEnd define the month range for the bar computation.
      *
      * @param  Collection<int, Moment>  $dayMoments
-     * @param  array<int, int>  $momentProgress  Monthly progress map (momentId => percentage)
      */
     public function buildMonthDayData(
         Carbon $date,
@@ -272,42 +239,18 @@ class CalendarService
         bool $isPast,
         bool $isToday,
         bool $isCurrentMonth,
+        Carbon $periodStart,
+        Carbon $periodEnd,
         Carbon $today,
         int $intervalMinutes = 20,
-        array $momentProgress = [],
     ): MonthlyDayData {
         $dateStr = $date->toDateString();
 
-        $moments = $dayMoments->map(function (Moment $m) use ($dateStr, $isPast, $isToday, $momentProgress) {
-            $instance = $m->instances->first(fn($i) => $i->date->toDateString() === $dateStr);
-
-            $status = match (true) {
-                $instance !== null => MomentStatus::Completed,
-                $isPast => MomentStatus::Missed,
-                $isToday => MomentStatus::Pending,
-                default => null,
-            };
-
-            $progress = $momentProgress[$m->id] ?? null;
-
-            return new SlotMomentData(
-                id: $m->id,
-                name: $m->name,
-                description: $m->description,
-                icon: $m->icon,
-                color: $m->color,
-                frequency: $m->schedule?->frequency,
-                consistency: null,
-                status: $status,
-                instance_id: $instance?->id,
-                implementation_intention: $m->cue?->implementation_intention,
-                habit_stack_after: $m->cue?->habit_stack_after,
-                environment_prompt: $m->cue?->environment_prompt,
-                progress: $progress,
-            );
+        $moments = $dayMoments->map(function (Moment $m) use ($dateStr, $isPast, $isToday, $periodStart, $periodEnd, $today) {
+            return $this->buildSlotMoment($m, $dateStr, $isPast, $isToday, $periodStart, $periodEnd, $today);
         })->values()->all();
 
-        $completedCount = collect($moments)->filter(fn($m) => $m->status === MomentStatus::Completed)->count();
+        $completedCount = collect($moments)->filter(fn ($m) => $m->status === MomentStatus::Completed)->count();
         $totalCount = count($moments);
 
         return new MonthlyDayData(

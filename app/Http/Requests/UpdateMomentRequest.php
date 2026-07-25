@@ -62,6 +62,7 @@ class UpdateMomentRequest extends FormRequest
             'days_of_week.*' => ['integer', 'between:1,7'],
             'scheduled_date' => ['required_if:frequency,once', 'nullable', 'date'],
             'preferred_time' => ['nullable', 'date_format:H:i'],
+            'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date'],
 
             // Cue

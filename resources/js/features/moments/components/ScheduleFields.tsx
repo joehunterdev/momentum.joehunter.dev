@@ -12,6 +12,8 @@ interface ScheduleFieldsProps {
     frequency: App.Enums.Frequency;
     daysOfWeek: number[];
     preferredTime: string;
+    /** Start date — when the habit begins; null = today (created_at). */
+    startDate: string | null;
     /** Horizon — ISO date the habit stops after; null = ongoing. */
     endDate: string | null;
     errors: Partial<Record<string, string>>;
@@ -30,6 +32,7 @@ export default function ScheduleFields({
     frequency,
     daysOfWeek,
     preferredTime,
+    startDate,
     endDate,
     errors,
     onChange,
@@ -106,6 +109,25 @@ export default function ScheduleFields({
                 />
                 <InputError message={errors.preferred_time} className="mt-1" />
             </div>
+
+            {frequency !== 'once' && (
+                <div>
+                    <InputLabel htmlFor="start_date" value="Starts (optional)" />
+                    <input
+                        id="start_date"
+                        type="date"
+                        value={startDate || ''}
+                        onChange={(e) => onChange('start_date', e.target.value || null)}
+                        className="mm-input mt-1 block border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    />
+                    <p className="mt-1 text-xs text-gray-400">
+                        {startDate
+                            ? `Starts ${format(parseISO(startDate), 'EEE d MMM yyyy')}`
+                            : 'Defaults to today'}
+                    </p>
+                    <InputError message={errors.start_date} className="mt-1" />
+                </div>
+            )}
 
             {frequency !== 'once' && (
                 <div>

@@ -15,6 +15,8 @@ class MomentScheduleData extends Data
         /** @var int[]|null */
         public ?array $days_of_week,
         public ?string $preferred_time,
+        /** ISO date (yyyy-MM-dd); null defaults to moment's created_at. */
+        public ?string $start_date,
         /** ISO date (yyyy-MM-dd) the recurrence stops after; null = ongoing. */
         public ?string $end_date,
     ) {}
@@ -25,6 +27,7 @@ class MomentScheduleData extends Data
             frequency: $schedule->frequency,
             days_of_week: $schedule->days_of_week,
             preferred_time: $schedule->preferred_time ? substr($schedule->preferred_time, 0, 5) : null,
+            start_date: $schedule->start_date,
             end_date: $schedule->end_date,
         );
     }

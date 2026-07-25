@@ -355,6 +355,30 @@
 
     &__track {
         position: relative;
+
+        // Neutral state: no due-days resolved yet (Ongoing habit at start of period).
+        // Renders as a lighter-than-usual empty track with no fill.
+        &--neutral {
+            background: rgba(var(--mm-progress-base-rgb), 0.08);
+        }
+
+        // Fixed habits: distinct styling to signal a bounded commitment.
+        // Slightly taller, stronger border.
+        &--fixed {
+            height: 4px;
+            border: 1px solid rgba(var(--mm-progress-base-rgb), 0.3);
+            background: rgba(var(--mm-progress-base-rgb), 0.1);
+        }
+    }
+
+    // Tally label for Fixed habits (e.g. "12/30").
+    &__label {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: rgba(var(--mm-progress-base-rgb), 0.8);
+        margin-top: 0.25rem;
+        text-align: center;
     }
 }
 

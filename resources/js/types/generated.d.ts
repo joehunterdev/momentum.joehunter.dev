@@ -39,6 +39,7 @@ declare namespace App {
             frequency: App.Enums.Frequency;
             days_of_week: number[] | null;
             preferred_time: string | null;
+            start_date: string | null;
             end_date: string | null;
         };
         export type MonthlyDayData = {
@@ -76,13 +77,17 @@ declare namespace App {
             icon: string | null;
             color: string | null;
             frequency: App.Enums.Frequency | null;
-            consistency: number | null;
             status: App.Enums.MomentStatus | null;
             instance_id: number | null;
             implementation_intention: string | null;
             habit_stack_after: string | null;
             environment_prompt: string | null;
-            progress: number | null;
+            bar_kind: string;
+            bar_value: number | null;
+            bar_completed: number | null;
+            bar_scheduled_total: number | null;
+            bar_days_remaining: number | null;
+            bar_end_date: string | null;
         };
         export type StatsPageData = {
             rangeDays: number;
@@ -131,10 +136,7 @@ declare namespace App {
     namespace Enums {
         export type Frequency = "daily" | "recurring" | "once";
         export type MomentStatus =
-            | "pending"
-            | "completed"
-            | "missed"
-            | "skipped";
+            "pending" | "completed" | "missed" | "skipped";
         export type UserRole = "super_admin" | "admin" | "basic" | "demo";
     }
 }

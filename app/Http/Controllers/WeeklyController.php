@@ -36,16 +36,14 @@ class WeeklyController extends Controller
         $officeStart = $config->office_start ?? '09:00:00';
         $officeEnd = $config->office_end ?? '17:00:00';
 
-        $consistencyWindow = $today->copy()->subDays(27);
-
         $moments = Moment::query()
             ->where('user_id', $user->id)
             ->where('is_active', true)
             ->with([
                 'schedule',
                 'cue',
-                'instances' => fn($q) => $q->whereBetween('date', [
-                    $consistencyWindow->toDateString(),
+                'instances' => fn ($q) => $q->whereBetween('date', [
+                    $weekStart->toDateString(),
                     $weekEnd->toDateString(),
                 ]),
             ])
@@ -54,37 +52,12 @@ class WeeklyController extends Controller
 
         $slots = $this->calendar->buildTimeSlots($wakeTime, $sleepTime);
 
-        // Compute per-moment weekly progress (completed ÷ scheduled across the 7 days)
-        $momentProgress = [];
-        $tempDate = $weekStart->copy();
-        for ($d = 0; $d < 7; $d++) {
-            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($tempDate));
-            foreach ($dayMoments as $moment) {
-                if (! isset($momentProgress[$moment->id])) {
-                    $momentProgress[$moment->id] = ['completed' => 0, 'total' => 0];
-                }
-                $momentProgress[$moment->id]['total']++;
-                $instance = $moment->instances->first(fn($i) => $i->date->toDateString() === $tempDate->toDateString());
-                if ($instance !== null) {
-                    $momentProgress[$moment->id]['completed']++;
-                }
-            }
-            $tempDate->addDay();
-        }
-
-        // Convert to percentage (0-100)
-        foreach ($momentProgress as $momentId => $stats) {
-            $momentProgress[$momentId] = $stats['total'] > 0
-                ? (int) round(($stats['completed'] / $stats['total']) * 100)
-                : 0;
-        }
-
         $days = [];
         $date = $weekStart->copy();
         $dayCount = $date->diffInDays($weekEnd) + 1;
 
         for ($i = 0; $i < $dayCount; $i++) {
-            $dayMoments = $moments->filter(fn(Moment $m) => $m->isScheduledFor($date));
+            $dayMoments = $moments->filter(fn (Moment $m) => $m->isScheduledFor($date));
 
             $days[] = $this->calendar->buildWeekDayData(
                 date: $date,
@@ -92,9 +65,9 @@ class WeeklyController extends Controller
                 dayMoments: $dayMoments,
                 isPast: $date->lt($today),
                 isToday: $date->equalTo($today),
-                consistencyWindow: $consistencyWindow,
+                periodStart: $weekStart,
+                periodEnd: $weekEnd,
                 today: $today,
-                momentProgress: $momentProgress,
             );
 
             $date = $date->addDay();

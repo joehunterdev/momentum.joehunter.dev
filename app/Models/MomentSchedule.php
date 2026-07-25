@@ -14,6 +14,7 @@ class MomentSchedule extends Model
         'days_of_week',
         'preferred_time',
         'scheduled_date',
+        'start_date',
         'end_date',
     ];
 
@@ -22,6 +23,7 @@ class MomentSchedule extends Model
         'days_of_week' => 'array',
         'preferred_time' => 'string',
         'scheduled_date' => 'string',
+        'start_date' => 'string',
         'end_date' => 'string',
     ];
 
