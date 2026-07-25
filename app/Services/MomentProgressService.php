@@ -62,7 +62,10 @@ class MomentProgressService
             ];
         }
 
-        // For Ongoing habits, rate-so-far over the period (resolved due-days only)
+        // For Ongoing habits, compute exponential-smoothing strength (forgiving, frequency-aware)
+        $strength = $this->habitStrength($moment, $today);
+
+        // Also compute rate-so-far for context (but not shown on bar anymore)
         $resolved = $this->countResolvedDueDays(
             $moment,
             $periodStart,
@@ -76,11 +79,9 @@ class MomentProgressService
                 && $i->date->toDateString() <= $periodEnd->toDateString(),
         )->count();
 
-        $value = $resolved > 0 ? (int) round(($completed / $resolved) * 100) : null;
-
         return [
             'kind' => 'ongoing',
-            'value' => $value,
+            'value' => $strength,
             'completed' => $completed,
             'resolved' => $resolved,
         ];
@@ -144,5 +145,78 @@ class MomentProgressService
         }
 
         return $count;
+    }
+
+    /**
+     * Compute habit strength using exponential smoothing (Loop Habit Tracker algorithm).
+     *
+     * Strength is frequency-aware, forgiving (misses dent but don't reset), and recency-weighted.
+     * Formula: S_n = S_{n-1} * m + value * (1 - m)
+     * where m = 0.5^(√frequency / 13), so daily habits have α ≈ 0.052.
+     *
+     * Returns: 0–100 (or null if no history).
+     */
+    public function habitStrength(Moment $moment, Carbon $today): ?int
+    {
+        $schedule = $moment->schedule;
+        if (! $schedule) {
+            return null; // No schedule = can't compute strength
+        }
+
+        // Determine start date (start_date or created_at)
+        $startDate = $schedule->start_date
+            ? Carbon::parse($schedule->start_date)->startOfDay()
+            : $moment->created_at?->copy()->startOfDay();
+
+        if (! $startDate || $startDate->isAfter($today)) {
+            return null; // No history yet
+        }
+
+        // Build a completed-set for fast lookup
+        $completedSet = [];
+        foreach ($moment->instances as $inst) {
+            $completedSet[$inst->date->toDateString()] = true;
+        }
+
+        // Compute frequency-dependent decay constants.
+        // Frequency is reps/week. Daily = 7/week, 3x/week = 3/week, etc.
+        $frequencyPerWeek = match ($schedule->frequency) {
+            Frequency::Daily => 7,
+            Frequency::Recurring => count($schedule->days_of_week ?? []),
+            default => 1,
+        };
+
+        // m = 0.5^(√frequency / 13)
+        // For daily: √7/13 ≈ 0.205 → m ≈ 0.866 → α ≈ 0.134 (per day)
+        // Rescale to per-week for more intuitive decay: α_day = 1 - (1 - α_week)^(1/7)
+        $sqrtFrequency = sqrt($frequencyPerWeek);
+        $m = pow(0.5, $sqrtFrequency / 13);
+
+        // Compute strength from start to today
+        $strength = 0.0;
+        $cursor = $startDate->copy();
+
+        while ($cursor->lte($today)) {
+            if (! $moment->isScheduledFor($cursor)) {
+                $cursor->addDay();
+                continue; // Not due; skip
+            }
+
+            // This day is due. Check if completed.
+            $isCompleted = isset($completedSet[$cursor->toDateString()]);
+
+            if ($isCompleted) {
+                // Hit: S_n = (1-α)*S_{n-1} + α = S_{n-1} + α*(1 - S_{n-1})
+                $strength = $strength * $m + (1 - $m);
+            } else {
+                // Miss: S_n = (1-β)*S_{n-1} (decay without recovery)
+                // β = α (same weight) so misses and hits have symmetric impact
+                $strength = $strength * $m;
+            }
+
+            $cursor->addDay();
+        }
+
+        return (int) round($strength * 100);
     }
 }

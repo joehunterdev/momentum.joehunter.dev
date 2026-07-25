@@ -12,8 +12,13 @@ use Carbon\Carbon;
 
 class StatsService
 {
+    public function __construct(private MomentProgressService $progress) {}
+
     /**
      * Aggregate completion stats for a user over a rolling window of N days.
+     *
+     * Ongoing habits: strength-based scoring + grid + streaks over the window.
+     * Fixed habits: tally-based scoring scoped to the commitment (start → end).
      *
      * Everything is "due-aware": a habit only counts toward a day when its
      * schedule makes it due (see Moment::isScheduledFor). Cells are therefore
@@ -54,6 +59,37 @@ class StatsService
         $maxLongest = 0;
 
         foreach ($moments as $moment) {
+            $isFixed = $moment->schedule?->end_date !== null;
+
+            if ($isFixed) {
+                // Fixed habit: tally over the commitment (start → end)
+                $barPayload = $this->progress->momentBar(
+                    $moment,
+                    Carbon::parse($moment->schedule->start_date ?? $moment->created_at)->startOfDay(),
+                    Carbon::parse($moment->schedule->end_date),
+                    $today,
+                );
+
+                $habits[] = new HabitStatData(
+                    id: $moment->id,
+                    name: $moment->name ?? 'Untitled',
+                    icon: $moment->icon,
+                    color: $moment->color,
+                    habit_type: 'fixed',
+                    completionRate: $barPayload['scheduled_total'] > 0
+                        ? (int) round($barPayload['completed'] / $barPayload['scheduled_total'] * 100)
+                        : null,
+                    scheduled_total: $barPayload['scheduled_total'],
+                    completed_total: $barPayload['completed'],
+                    days_remaining: $barPayload['days_remaining'],
+                    end_date: $barPayload['end_date'],
+                );
+
+                // Fixed habits don't contribute to trend (they're scoped to their own period)
+                continue;
+            }
+
+            // Ongoing habit: strength-based scoring + grid + streaks over the window
             $doneSet = [];
             foreach ($moment->instances as $inst) {
                 $doneSet[$inst->date->toDateString()] = true;
@@ -68,7 +104,7 @@ class StatsService
             foreach ($days as $dateStr) {
                 if (! $moment->isScheduledFor(Carbon::parse($dateStr))) {
                     $cells[] = 'notdue';
-                    continue; // not-due days never break a streak
+                    continue;
                 }
 
                 $scheduled++;
@@ -86,8 +122,7 @@ class StatsService
                 }
             }
 
-            // Current streak: trailing run of completed scheduled days (newest
-            // first), skipping not-due days, stopping at the first miss.
+            // Current streak
             $current = 0;
             for ($i = count($cells) - 1; $i >= 0; $i--) {
                 if ($cells[$i] === 'notdue') {
@@ -100,12 +135,16 @@ class StatsService
                 }
             }
 
+            // Compute habit strength (all-time exponential smoothing)
+            $strength = $this->progress->habitStrength($moment, $today);
+
             $habits[] = new HabitStatData(
                 id: $moment->id,
                 name: $moment->name ?? 'Untitled',
                 icon: $moment->icon,
                 color: $moment->color,
-                completionRate: $scheduled > 0 ? (int) round($completed / $scheduled * 100) : null,
+                habit_type: 'ongoing',
+                strength: $strength,
                 currentStreak: $current,
                 longestStreak: $longest,
                 cells: $cells,

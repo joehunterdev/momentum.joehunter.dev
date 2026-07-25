@@ -13,10 +13,19 @@ class HabitStatData extends Data
         public string $name,
         public ?string $icon,
         public ?string $color,
-        public ?int $completionRate,
-        public int $currentStreak,
-        public int $longestStreak,
+        /** 'ongoing' | 'fixed' — determines which fields are populated */
+        public string $habit_type,
+        // Ongoing-specific
+        public ?int $strength = null, // Habit strength 0–100 (exponential smoothing)
+        public int $currentStreak = 0,
+        public int $longestStreak = 0,
         /** @var string[] one of 'done' | 'missed' | 'notdue', oldest → newest */
-        public array $cells,
+        public array $cells = [],
+        // Fixed-specific
+        public ?int $completionRate = null, // For Fixed: % complete
+        public ?int $scheduled_total = null,
+        public ?int $completed_total = null,
+        public ?int $days_remaining = null,
+        public ?string $end_date = null,
     ) {}
 }

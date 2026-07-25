@@ -18,10 +18,16 @@ declare namespace App {
             name: string;
             icon: string | null;
             color: string | null;
-            completionRate: number | null;
+            habit_type: string;
+            strength: number | null;
             currentStreak: number;
             longestStreak: number;
             cells: string[];
+            completionRate: number | null;
+            scheduled_total: number | null;
+            completed_total: number | null;
+            days_remaining: number | null;
+            end_date: string | null;
         };
         export type MomentData = {
             id: number;
