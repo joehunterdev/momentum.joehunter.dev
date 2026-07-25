@@ -8,17 +8,20 @@ interface Props {
 const FALLBACK = 'var(--mm-primary)';
 
 /**
- * Habits × days grid. Each cell is done / missed / not-due. "Done" cells take
+ * Ongoing habits × days grid. Each cell is done / missed / not-due. "Done" cells take
  * the habit's own colour; the column strip scrolls horizontally for long ranges.
+ * Fixed habits are excluded (they have their own dedicated period).
  */
 export default function HabitGrid({ habits, days }: Props) {
-    if (habits.length === 0) {
-        return <p className="stats-empty">No active habits to chart yet.</p>;
+    const ongoing = habits.filter(h => h.habit_type === 'ongoing');
+
+    if (ongoing.length === 0) {
+        return <p className="stats-empty">No ongoing habits to chart yet.</p>;
     }
 
     return (
         <div className="stats-grid">
-            {habits.map((h) => (
+            {ongoing.map((h) => (
                 <div key={h.id} className="stats-grid__row">
                     <div className="stats-grid__label" title={h.name}>
                         {h.icon
