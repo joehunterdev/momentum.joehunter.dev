@@ -131,31 +131,39 @@ export default function ScheduleFields({
 
             {frequency !== 'once' && (
                 <div>
-                    <InputLabel value="Horizon" />
-                    <div className="mt-1 grid grid-cols-4 gap-1">
-                        {HORIZON_PRESETS.map((preset) => {
-                            const value = preset.build();
-                            const active = value === endDate;
-                            return (
-                                <button
-                                    key={preset.label}
-                                    type="button"
-                                    onClick={() => onChange('end_date', value)}
-                                    aria-pressed={active}
-                                    className={`border px-2 py-1.5 text-xs font-medium transition-all ${active
-                                        ? 'border-[var(--mm-secondary)] bg-white text-[var(--mm-secondary)] shadow-sm'
-                                        : 'border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-700'
-                                        }`}
-                                >
-                                    {preset.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-                    <p className="mt-1 text-xs text-gray-400">
+                    <InputLabel value="Habit Type" />
+                    <p className="mt-1 text-xs font-semibold text-[var(--mm-secondary)]">
                         {endDate
-                            ? `Ends ${format(parseISO(endDate), 'EEE d MMM yyyy')}`
-                            : 'No end date — runs ongoing'}
+                            ? `📍 Fixed Habit — ${format(parseISO(endDate), 'MMM d yyyy')}`
+                            : '♾️ Ongoing Habit — runs indefinitely'}
+                    </p>
+                    <div className="mt-3">
+                        <p className="text-xs font-medium text-gray-600 mb-1">Duration</p>
+                        <div className="grid grid-cols-4 gap-1">
+                            {HORIZON_PRESETS.map((preset) => {
+                                const value = preset.build();
+                                const active = value === endDate;
+                                return (
+                                    <button
+                                        key={preset.label}
+                                        type="button"
+                                        onClick={() => onChange('end_date', value)}
+                                        aria-pressed={active}
+                                        className={`border px-2 py-1.5 text-xs font-medium transition-all ${active
+                                            ? 'border-[var(--mm-secondary)] bg-white text-[var(--mm-secondary)] shadow-sm'
+                                            : 'border-gray-200 bg-gray-50 text-gray-500 hover:text-gray-700'
+                                            }`}
+                                    >
+                                        {preset.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    <p className="mt-2 text-xs text-gray-500">
+                        {endDate
+                            ? `This is a time-boxed challenge that will graduate to a permanent habit on completion.`
+                            : 'Identity-based. No end date — this is a lifelong habit.'}
                     </p>
                     <InputError message={errors.end_date} className="mt-1" />
                 </div>

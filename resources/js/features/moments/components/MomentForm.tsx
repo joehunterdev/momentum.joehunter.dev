@@ -4,6 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { FormEvent, useState } from 'react';
+import { parseISO, isPast, format } from 'date-fns';
 import Icon from '@/shared/components/Icon';
 import type { Moment, MomentFormData } from '../types';
 import { useMomentForm } from '../hooks/useMomentForm';
@@ -28,6 +29,10 @@ export default function MomentForm({ moment, defaultValues, onSubmit, submitLabe
     const initialSection = !moment && defaultValues?.frequency ? 'schedule' : 'basics';
     const [openSection, setOpenSection] = useState<string>(initialSection);
 
+    // Check if this is a Fixed habit past its end date
+    const isFixedHabit = form.data.end_date !== null;
+    const hasReachedEnd = isFixedHabit && form.data.end_date && isPast(parseISO(form.data.end_date));
+
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
         onSubmit(form.data, form);
@@ -37,8 +42,35 @@ export default function MomentForm({ moment, defaultValues, onSubmit, submitLabe
         form.setData(field, value as never);
     }
 
+    function graduateHabit() {
+        setField('end_date', null);
+    }
+
     return (
         <form onSubmit={handleSubmit} className="space-y-3">
+            {hasReachedEnd && (
+                <div className="rounded-lg bg-green-50 border border-green-200 p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                        <span className="text-xl">🎉</span>
+                        <div className="flex-1">
+                            <p className="font-semibold text-green-900">
+                                You completed your challenge!
+                            </p>
+                            <p className="text-sm text-green-800 mt-1">
+                                This habit was scheduled to end on {format(parseISO(form.data.end_date!), 'MMM d, yyyy')}.
+                                Ready to make it permanent?
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={graduateHabit}
+                        className="inline-block px-3 py-2 text-sm font-medium bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                    >
+                        Make it Permanent ♾️
+                    </button>
+                </div>
+            )}
             {MOMENT_FORM_SECTIONS.map((section) => {
                 const isOpen = openSection === section.id;
 
