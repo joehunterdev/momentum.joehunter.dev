@@ -73,6 +73,12 @@ export default function Authenticated({
                                     Monthly
                                 </NavLink>
                                 <NavLink
+                                    href={route('yearly')}
+                                    active={route().current('yearly')}
+                                >
+                                    Yearly
+                                </NavLink>
+                                <NavLink
                                     href={route('stats')}
                                     active={route().current('stats')}
                                 >
@@ -165,6 +171,12 @@ export default function Authenticated({
                             active={route().current('monthly')}
                         >
                             Monthly
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('yearly')}
+                            active={route().current('yearly')}
+                        >
+                            Yearly
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('stats')}

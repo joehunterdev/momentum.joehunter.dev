@@ -70,7 +70,7 @@ export default function HabitBars({ habits }: Props) {
                                         style={{ width: `${rate}%`, backgroundColor: h.color ?? FALLBACK }}
                                     />
                                 </div>
-                                {h.days_remaining !== undefined && h.days_remaining > 0 && (
+                                {h.days_remaining != null && h.days_remaining > 0 && (
                                     <span className="stats-bar__streak">
                                         📍 {h.days_remaining}d left
                                     </span>

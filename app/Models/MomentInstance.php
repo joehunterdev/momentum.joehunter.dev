@@ -14,7 +14,7 @@ class MomentInstance extends Model
     ];
 
     protected $casts = [
-        'date'         => 'date',
+        'date' => 'date',
         'completed_at' => 'datetime',
     ];
 

@@ -17,9 +17,9 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 #[TypeScript]
 enum Frequency: string
 {
-    case Daily     = 'daily';
+    case Daily = 'daily';
     case Recurring = 'recurring';
-    case Once      = 'once';
+    case Once = 'once';
 
     /**
      * @return string[]

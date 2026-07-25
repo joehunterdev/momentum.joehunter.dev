@@ -9,6 +9,7 @@ use App\Http\Controllers\MonthlyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\WeeklyController;
+use App\Http\Controllers\YearlyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -69,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/daily', [DailyController::class, 'index'])->name('daily');
     Route::get('/weekly', [WeeklyController::class, 'index'])->name('weekly');
     Route::get('/monthly', [MonthlyController::class, 'index'])->name('monthly');
+    Route::get('/yearly', [YearlyController::class, 'index'])->name('yearly');
     Route::get('/stats', [StatsController::class, 'index'])->name('stats');
 
     Route::resource('moments', MomentController::class)
@@ -88,4 +90,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

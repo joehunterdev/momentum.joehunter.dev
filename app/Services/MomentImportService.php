@@ -136,7 +136,7 @@ class MomentImportService
         $moments = json_decode(file_get_contents($path), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Invalid JSON: ' . json_last_error_msg());
+            throw new \InvalidArgumentException('Invalid JSON: '.json_last_error_msg());
         }
 
         return $moments;

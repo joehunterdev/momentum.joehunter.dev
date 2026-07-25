@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\BookmarkGenerator;
 use Illuminate\Console\Command;
 
 class ToolsCommand extends Command
@@ -108,7 +109,7 @@ class ToolsCommand extends Command
 
             return 0;
         } catch (\Exception $e) {
-            $this->error('❌ Error: ' . $e->getMessage());
+            $this->error('❌ Error: '.$e->getMessage());
 
             return 1;
         }
@@ -121,7 +122,7 @@ class ToolsCommand extends Command
         $this->newLine();
 
         try {
-            $generator = new \App\Services\BookmarkGenerator(base_path());
+            $generator = new BookmarkGenerator(base_path());
             $bookmarks = $generator->generate();
 
             $this->info('✅ Bookmarks generated successfully!');
@@ -139,7 +140,7 @@ class ToolsCommand extends Command
 
             return 0;
         } catch (\Exception $e) {
-            $this->error('❌ Error: ' . $e->getMessage());
+            $this->error('❌ Error: '.$e->getMessage());
 
             return 1;
         }
@@ -200,26 +201,26 @@ class ToolsCommand extends Command
         $existingTags = shell_exec('git tag -l') ?? '';
         if (str_contains($existingTags, "v{$version}")) {
             $this->warn("Tag 'v{$version}' already exists.");
-            $this->info("Updating annotation with current TODO stats...");
+            $this->info('Updating annotation with current TODO stats...');
 
             // Delete existing tag locally
-            shell_exec('git tag -d ' . escapeshellarg("v{$version}") . ' 2>&1');
+            shell_exec('git tag -d '.escapeshellarg("v{$version}").' 2>&1');
 
             if ($this->confirm('Also delete from remote before recreating?', false)) {
-                shell_exec('git push origin :refs/tags/' . escapeshellarg("v{$version}") . ' 2>&1');
+                shell_exec('git push origin :refs/tags/'.escapeshellarg("v{$version}").' 2>&1');
             }
         }
 
         // Create tag with TODO stats
         $tagMessage = "Version v{$version}: {$stats['completed']}/{$stats['total']} TODOs completed ({$stats['completion_percentage']}%)";
-        $command = 'git tag -a ' . escapeshellarg("v{$version}") . ' -m ' . escapeshellarg($tagMessage);
+        $command = 'git tag -a '.escapeshellarg("v{$version}").' -m '.escapeshellarg($tagMessage);
 
-        shell_exec($command . ' 2>&1');
+        shell_exec($command.' 2>&1');
         $this->info("✅ Tag 'v{$version}' created successfully!");
         $this->info("📊 TODO stats aggregated: {$stats['completed']}/{$stats['total']} completed");
 
         if ($this->confirm('Push tag to remote?', false)) {
-            shell_exec('git push origin ' . escapeshellarg("v{$version}"));
+            shell_exec('git push origin '.escapeshellarg("v{$version}"));
             $this->info("✅ Tag 'v{$version}' pushed to remote!");
         }
 
@@ -240,12 +241,12 @@ class ToolsCommand extends Command
         $version = ltrim($latestTag, 'v');
 
         // Get the tag annotation to extract the TODO count
-        $annotation = shell_exec('git tag -l -n99 ' . escapeshellarg($latestTag)) ?? '';
+        $annotation = shell_exec('git tag -l -n99 '.escapeshellarg($latestTag)) ?? '';
         $todoCount = 0;
 
         // Parse annotation like "v8.23.25 Version v8.23.25: 118/131 TODOs completed (90.08%)"
         if (preg_match('/(\d+)\/\d+\s+TODOs?\s+completed/i', $annotation, $matches)) {
-            $todoCount = (int)$matches[1];
+            $todoCount = (int) $matches[1];
         }
 
         return [
@@ -262,7 +263,7 @@ class ToolsCommand extends Command
         $todoDifference = $currentCompleted - $gitData['completed_todos'];
 
         // Add the difference to the patch number
-        $newPatch = (int)$patch + $todoDifference;
+        $newPatch = (int) $patch + $todoDifference;
 
         return "{$major}.{$minor}.{$newPatch}";
     }
@@ -303,24 +304,24 @@ class ToolsCommand extends Command
     {
         [$major, $minor, $patch] = explode('.', $version);
 
-        return $major . '.' . $minor . '.' . ($patch + 1);
+        return $major.'.'.$minor.'.'.($patch + 1);
     }
 
     protected function displayTodoStats(array $stats): void
     {
         $rows = [
-            ['Completed tasks', $stats['completed'] . ' ✅'],
-            ['Incomplete tasks', $stats['incomplete'] . ' ⏳'],
-            ['Total tasks', $stats['total'] . ' 📝'],
-            ['Completion', $stats['completion_percentage'] . '% 📈'],
+            ['Completed tasks', $stats['completed'].' ✅'],
+            ['Incomplete tasks', $stats['incomplete'].' ⏳'],
+            ['Total tasks', $stats['total'].' 📝'],
+            ['Completion', $stats['completion_percentage'].'% 📈'],
         ];
 
         if (isset($stats['latest_git_version']) && $stats['latest_git_version']) {
-            $rows[] = ['Latest git version', 'v' . $stats['latest_git_version'] . ' 🏷️'];
-            $rows[] = ['TODO-based version', 'v' . $this->calculateVersion($stats) . ' 📝'];
-            $rows[] = ['Aggregated version', 'v' . $stats['aggregated_version'] . ' 🎯'];
+            $rows[] = ['Latest git version', 'v'.$stats['latest_git_version'].' 🏷️'];
+            $rows[] = ['TODO-based version', 'v'.$this->calculateVersion($stats).' 📝'];
+            $rows[] = ['Aggregated version', 'v'.$stats['aggregated_version'].' 🎯'];
         } else {
-            $rows[] = ['TODO-based version', 'v' . $this->calculateVersion($stats) . ' 🎯'];
+            $rows[] = ['TODO-based version', 'v'.$this->calculateVersion($stats).' 🎯'];
         }
 
         $this->table(['Metric', 'Value'], $rows);
@@ -367,7 +368,7 @@ class ToolsCommand extends Command
             // Clear Laravel Logs
             $this->info('→ Clearing Laravel logs...');
             $logPath = storage_path('logs');
-            $logFiles = glob($logPath . '/*.log');
+            $logFiles = glob($logPath.'/*.log');
             $clearedCount = 0;
             foreach ($logFiles as $logFile) {
                 if (file_exists($logFile)) {
@@ -439,7 +440,8 @@ class ToolsCommand extends Command
 
             return 0;
         } catch (\Exception $e) {
-            $this->error('❌ Error during optimization: ' . $e->getMessage());
+            $this->error('❌ Error during optimization: '.$e->getMessage());
+
             return 1;
         }
     }
@@ -455,6 +457,7 @@ class ToolsCommand extends Command
 
             if (! file_exists($envPath)) {
                 $this->error('✗ .env file not found');
+
                 return 1;
             }
 
@@ -487,6 +490,7 @@ class ToolsCommand extends Command
                 // Preserve blank lines
                 if (empty($trimmed)) {
                     $output[] = $line;
+
                     continue;
                 }
 
@@ -517,6 +521,7 @@ class ToolsCommand extends Command
                             if ($shouldMask) {
                                 $prefix = str_replace($commentContent, '', $line);
                                 $output[] = "{$prefix}{$key}=";
+
                                 continue;
                             }
                         }
@@ -524,6 +529,7 @@ class ToolsCommand extends Command
 
                     // Otherwise preserve the comment as-is
                     $output[] = $line;
+
                     continue;
                 }
 
@@ -580,7 +586,7 @@ class ToolsCommand extends Command
             // Write to .env.example
             $examplePath = "{$basePath}/.env.example";
             $content = implode("\n", $output);
-            file_put_contents($examplePath, $content . "\n");
+            file_put_contents($examplePath, $content."\n");
 
             $this->newLine();
             $this->info('✓ Generated .env.example');
@@ -591,7 +597,8 @@ class ToolsCommand extends Command
 
             return 0;
         } catch (\Exception $e) {
-            $this->error('❌ Error generating .env.example: ' . $e->getMessage());
+            $this->error('❌ Error generating .env.example: '.$e->getMessage());
+
             return 1;
         }
     }
@@ -609,6 +616,7 @@ class ToolsCommand extends Command
 
             if (! file_exists($envPath)) {
                 $this->error('❌ .env file not found');
+
                 return 1;
             }
 
@@ -627,10 +635,10 @@ class ToolsCommand extends Command
 
             // Validate required vars
             $required = ['SFTP_HOST', 'SFTP_USERNAME', 'SFTP_PASSWORD'];
-            $missing = array_filter($required, fn($v) => empty($envVars[$v]));
+            $missing = array_filter($required, fn ($v) => empty($envVars[$v]));
 
             if (! empty($missing)) {
-                $this->error('❌ Missing required .env variables: ' . implode(', ', $missing));
+                $this->error('❌ Missing required .env variables: '.implode(', ', $missing));
                 $this->newLine();
                 $this->line('Add the following to your .env file:');
                 $this->line('  SFTP_HOST=');
@@ -639,6 +647,7 @@ class ToolsCommand extends Command
                 $this->line('  SFTP_PROTOCOL=ftp');
                 $this->line('  SFTP_PORT=21');
                 $this->line('  SFTP_REMOTE_PATH=/');
+
                 return 1;
             }
 
@@ -661,8 +670,8 @@ class ToolsCommand extends Command
                 mkdir($vscodePath, 0755, true);
             }
 
-            $outputPath = $vscodePath . '/sftp.json';
-            file_put_contents($outputPath, json_encode($sftpConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+            $outputPath = $vscodePath.'/sftp.json';
+            file_put_contents($outputPath, json_encode($sftpConfig, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n");
 
             $this->info('✅ .vscode/sftp.json generated successfully!');
             $this->line("   Host:     {$sftpConfig['host']}");
@@ -674,7 +683,8 @@ class ToolsCommand extends Command
 
             return 0;
         } catch (\Exception $e) {
-            $this->error('❌ Error generating sftp.json: ' . $e->getMessage());
+            $this->error('❌ Error generating sftp.json: '.$e->getMessage());
+
             return 1;
         }
     }

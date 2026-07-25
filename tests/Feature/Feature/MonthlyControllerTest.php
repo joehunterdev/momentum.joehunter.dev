@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -24,7 +23,7 @@ class MonthlyControllerTest extends TestCase
             ->get(route('monthly'))
             ->assertOk()
             ->assertInertia(
-                fn($page) => $page
+                fn ($page) => $page
                     ->component('Monthly/Index')
                     ->has('month')
                     ->has('monthStart')
@@ -43,7 +42,7 @@ class MonthlyControllerTest extends TestCase
             ->get(route('monthly', ['month' => '2026-03']))
             ->assertOk()
             ->assertInertia(
-                fn($page) => $page
+                fn ($page) => $page
                     ->component('Monthly/Index')
                     ->where('month', '2026-03')
                     ->where('monthStart', '2026-03-01')
@@ -60,12 +59,12 @@ class MonthlyControllerTest extends TestCase
             ->get(route('monthly', ['month' => '2026-05']))
             ->assertOk()
             ->assertInertia(
-                fn($page) => $page
+                fn ($page) => $page
                     ->component('Monthly/Index')
                     ->where('monthStart', '2026-05-01')
                     ->has(
                         'days',
-                        fn($days) => $days
+                        fn ($days) => $days
                             ->where('date', '2026-04-27')
                             ->where('isCurrentMonth', false)
                             ->etc()
@@ -81,11 +80,11 @@ class MonthlyControllerTest extends TestCase
             ->get(route('monthly'))
             ->assertOk()
             ->assertInertia(
-                fn($page) => $page
+                fn ($page) => $page
                     ->component('Monthly/Index')
                     ->has(
                         'days.0',
-                        fn($day) => $day
+                        fn ($day) => $day
                             ->has('date')
                             ->has('dayName')
                             ->has('isToday')
@@ -106,19 +105,19 @@ class MonthlyControllerTest extends TestCase
             ->get(route('monthly'))
             ->assertOk()
             ->assertInertia(
-                fn($page) => $page
+                fn ($page) => $page
                     ->component('Monthly/Index')
                     ->has('scheduleRows', 7)
                     ->has(
                         'scheduleRows.0',
-                        fn($row) => $row
+                        fn ($row) => $row
                             ->where('isoDayNumber', 1)
                             ->where('dayLabel', 'Monday')
                             ->has('moments')
                     )
                     ->has(
                         'scheduleRows.6',
-                        fn($row) => $row
+                        fn ($row) => $row
                             ->where('isoDayNumber', 7)
                             ->where('dayLabel', 'Sunday')
                             ->has('moments')

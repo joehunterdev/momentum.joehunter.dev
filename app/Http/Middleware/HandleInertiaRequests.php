@@ -36,10 +36,10 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'friction_level' => fn() => $request->user()
+            'friction_level' => fn () => $request->user()
                 ? (UserConfig::where('user_id', $request->user()->id)->value('friction_level') ?? 'auto')
                 : 'auto',
-            'ziggy' => fn() => [
+            'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],

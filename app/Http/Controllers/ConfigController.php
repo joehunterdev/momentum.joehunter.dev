@@ -44,10 +44,10 @@ class ConfigController extends Controller
     public function exportMoments(Request $request, MomentExportService $exporter): JsonResponse
     {
         $payload = $exporter->export($request->user());
-        $filename = 'moments-export-' . now()->format('Y-m-d') . '.json';
+        $filename = 'moments-export-'.now()->format('Y-m-d').'.json';
 
         return response()->json($payload, 200, [
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }

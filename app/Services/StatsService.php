@@ -104,6 +104,7 @@ class StatsService
             foreach ($days as $dateStr) {
                 if (! $moment->isScheduledFor(Carbon::parse($dateStr))) {
                     $cells[] = 'notdue';
+
                     continue;
                 }
 

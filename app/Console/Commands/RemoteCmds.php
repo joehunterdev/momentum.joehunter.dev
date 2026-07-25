@@ -98,7 +98,7 @@ Examples:
         $sshKeyPath = env('SSH_KEY_PATH');
 
         // Get path from main .env
-        $pathKey = 'SSH_PATH_' . strtoupper($env);
+        $pathKey = 'SSH_PATH_'.strtoupper($env);
         $remotePath = env($pathKey);
 
         if (! $remotePath) {
@@ -108,7 +108,7 @@ Examples:
         }
 
         // Get PHP path from main .env (optional, defaults to 'php')
-        $phpPathKey = 'SSH_PHP_PATH_' . strtoupper($env);
+        $phpPathKey = 'SSH_PHP_PATH_'.strtoupper($env);
         $phpPath = env($phpPathKey, 'php');
 
         // Security: Validate remote path format
@@ -122,7 +122,7 @@ Examples:
         $this->newLine();
         $this->info("📍 Environment: {$env}");
         $this->line("   SSH Target: {$sshUser}@{$sshHost}:{$sshPort}");
-        $this->line('   SSH Key: ' . ($sshKeyPath ?: '(system default)'));
+        $this->line('   SSH Key: '.($sshKeyPath ?: '(system default)'));
         $this->line("   Remote Path: {$remotePath}");
         $this->line("   PHP Path: {$phpPath}");
 
@@ -230,7 +230,7 @@ Examples:
             $selectedCommands = array_keys(self::ALLOWED_COMMANDS);
         } else {
             // Filter to only keep actual commands (not 'logs', 'all', or 'reset-sync')
-            $selectedCommands = array_filter($selectedCommands, fn($cmd) => isset(self::ALLOWED_COMMANDS[$cmd]));
+            $selectedCommands = array_filter($selectedCommands, fn ($cmd) => isset(self::ALLOWED_COMMANDS[$cmd]));
         }
 
         // Display selected commands
@@ -258,7 +258,7 @@ Examples:
     {
         $keyPath = env('SSH_KEY_PATH');
         if ($keyPath && file_exists($keyPath)) {
-            return '-i ' . escapeshellarg($keyPath) . ' ';
+            return '-i '.escapeshellarg($keyPath).' ';
         }
 
         return '';
@@ -293,7 +293,7 @@ Examples:
         }
 
         if (! empty($output)) {
-            $this->line('<fg=gray>Output: ' . implode(' | ', $output) . '</>');
+            $this->line('<fg=gray>Output: '.implode(' | ', $output).'</>');
         }
         $this->line("<fg=gray>Return code: {$returnCode}</>");
 
@@ -320,8 +320,8 @@ Examples:
             if (isset(self::ALLOWED_COMMANDS[$cmd])) {
                 $command = $this->replacePhpPath(self::ALLOWED_COMMANDS[$cmd], $phpPath);
                 $this->line("<fg=green>✓ {$cmd}</>");
-                $this->line('   Command: ' . $command);
-                $this->line("   Path: cd {$remotePath} && " . $command);
+                $this->line('   Command: '.$command);
+                $this->line("   Path: cd {$remotePath} && ".$command);
                 $this->newLine();
             }
         }
@@ -385,13 +385,13 @@ Examples:
             }
 
             // Get latest payments log (sorted first due to date sorting)
-            $paymentsLog = collect($logFiles)->first(fn($f) => str_starts_with($f, 'payments-'));
+            $paymentsLog = collect($logFiles)->first(fn ($f) => str_starts_with($f, 'payments-'));
             if ($paymentsLog) {
                 $logsToFetch[] = $paymentsLog;
             }
 
             // Get latest jobs log
-            $jobsLog = collect($logFiles)->first(fn($f) => str_starts_with($f, 'jobs-'));
+            $jobsLog = collect($logFiles)->first(fn ($f) => str_starts_with($f, 'jobs-'));
             if ($jobsLog) {
                 $logsToFetch[] = $jobsLog;
             }
@@ -401,7 +401,7 @@ Examples:
                 $logsToFetch[] = $logFiles[0];
             }
 
-            $this->info('Fetching: ' . implode(', ', $logsToFetch));
+            $this->info('Fetching: '.implode(', ', $logsToFetch));
             $this->newLine();
 
             foreach ($logsToFetch as $logFile) {
@@ -435,7 +435,7 @@ Examples:
         }
 
         // Filter out empty lines and sort (newest dated logs first)
-        $files = array_filter($output, fn($f) => ! empty(trim($f)));
+        $files = array_filter($output, fn ($f) => ! empty(trim($f)));
 
         // Sort: dated logs descending, then alphabetically
         usort($files, function ($a, $b) {
@@ -569,7 +569,7 @@ Examples:
             return;
         }
 
-        $this->info('Downloading: ' . implode(', ', $filesToDownload));
+        $this->info('Downloading: '.implode(', ', $filesToDownload));
         $this->newLine();
 
         $keyOption = $this->getSshKeyOption();
@@ -595,7 +595,7 @@ Examples:
 
             if ($returnCode === 0 && file_exists($localPath)) {
                 $size = filesize($localPath);
-                $this->line("  ✓ {$logFile} (" . $this->formatBytes($size) . ')');
+                $this->line("  ✓ {$logFile} (".$this->formatBytes($size).')');
                 $successCount++;
             } else {
                 $this->line("  ✗ {$logFile} - failed");
@@ -662,7 +662,7 @@ Examples:
         } else {
             $this->error('✗ Failed to clear log files');
             if (! empty($output)) {
-                $this->line('Error: ' . implode("\n", $output));
+                $this->line('Error: '.implode("\n", $output));
             }
         }
     }
@@ -675,11 +675,11 @@ Examples:
         if ($bytes < 1024) {
             return "{$bytes} B";
         } elseif ($bytes < 1048576) {
-            return round($bytes / 1024, 2) . ' KB';
+            return round($bytes / 1024, 2).' KB';
         } elseif ($bytes < 1073741824) {
-            return round($bytes / 1048576, 2) . ' MB';
+            return round($bytes / 1048576, 2).' MB';
         } else {
-            return round($bytes / 1073741824, 2) . ' GB';
+            return round($bytes / 1073741824, 2).' GB';
         }
     }
 
@@ -797,7 +797,7 @@ Examples:
         } else {
             $this->warn('  Could not list log files');
             if (! empty($output)) {
-                $this->line('  Error: ' . implode(' ', $output));
+                $this->line('  Error: '.implode(' ', $output));
             }
         }
         $this->newLine();
@@ -810,7 +810,7 @@ Examples:
     {
         $logFile = "{$logPath}/laravel.log";
 
-        $this->line('<fg=yellow>Fetching laravel.log (last ' . $lines . ' lines):</></>');
+        $this->line('<fg=yellow>Fetching laravel.log (last '.$lines.' lines):</></>');
         $this->line("<fg=gray>Log file: {$logFile}</>");
         $this->line('<fg=cyan>═══════════════════════════════════════════════</>');
 
@@ -873,7 +873,7 @@ Examples:
             }
         } else {
             $this->warn("❌ Could not fetch laravel.log (exit code: {$returnCode})");
-            $this->line('<fg=yellow>Response:</> ' . implode(' | ', $output));
+            $this->line('<fg=yellow>Response:</> '.implode(' | ', $output));
             $this->newLine();
             $this->line('<fg=yellow>Attempting to debug...</></>');
             $this->line('Try running manually:');
@@ -936,10 +936,10 @@ Examples:
             mkdir($logsDir, 0755, true);
         }
 
-        $filename = "{$logsDir}/{$env}-laravel-" . date('Y-m-d_H-i-s') . '.log';
+        $filename = "{$logsDir}/{$env}-laravel-".date('Y-m-d_H-i-s').'.log';
         file_put_contents($filename, implode("\n", $logs));
 
-        $this->info('✓ Logs saved to: storage/remote-logs/' . basename($filename));
+        $this->info('✓ Logs saved to: storage/remote-logs/'.basename($filename));
     }
 
     /**
@@ -1093,7 +1093,7 @@ Examples:
 
         foreach ($keys as $index => $key) {
             $description = $options[$key];
-            $this->line('  [<fg=yellow>' . ($index + 1) . "</>] {$key}: {$description}");
+            $this->line('  [<fg=yellow>'.($index + 1)."</>] {$key}: {$description}");
         }
 
         $this->newLine();
@@ -1229,7 +1229,7 @@ Examples:
 
         if (! $remotePath) {
             $env = $this->argument('environment') ?? 'staging';
-            $pathKey = 'SSH_PATH_' . strtoupper($env);
+            $pathKey = 'SSH_PATH_'.strtoupper($env);
             $remotePath = env($pathKey);
         }
 
@@ -1263,7 +1263,7 @@ Examples:
         if ($dlCode !== 0 || ! file_exists($tempFile)) {
             $this->error('❌ Could not download sync state file from remote');
             if (! empty($dlOutput)) {
-                $this->line('Error: ' . implode(' ', $dlOutput));
+                $this->line('Error: '.implode(' ', $dlOutput));
             }
 
             return;
@@ -1281,7 +1281,7 @@ Examples:
         $this->info('✅ Sync state file downloaded');
         $this->newLine();
 
-        $this->line('<fg=cyan>Tracked entries: ' . count($data) . ' items</></>');
+        $this->line('<fg=cyan>Tracked entries: '.count($data).' items</></>');
         $this->newLine();
 
         // Show first 30 entries
@@ -1299,7 +1299,7 @@ Examples:
         }
 
         if (count($data) > 30) {
-            $this->line('<fg=yellow>  ... and ' . (count($data) - 30) . ' more items</>');
+            $this->line('<fg=yellow>  ... and '.(count($data) - 30).' more items</>');
         }
 
         $this->line('<fg=cyan>─────────────────────────────────────────────</>');
@@ -1341,7 +1341,7 @@ Examples:
 
         if (! $remotePath) {
             $env = $this->argument('environment') ?? 'staging';
-            $pathKey = 'SSH_PATH_' . strtoupper($env);
+            $pathKey = 'SSH_PATH_'.strtoupper($env);
             $remotePath = env($pathKey);
         }
 
@@ -1372,7 +1372,7 @@ Examples:
 
         $this->newLine();
         $this->info('📤 Restoring FTP sync state from backup...');
-        $this->line('Backup file: ' . basename($latestBackup));
+        $this->line('Backup file: '.basename($latestBackup));
         $this->line("Uploading to: {$remotePath}/.ftp-deploy-sync-state.json");
         $this->newLine();
 
@@ -1396,7 +1396,7 @@ Examples:
         } else {
             $this->error('❌ Failed to restore sync state file');
             if (! empty($output)) {
-                $this->warn('Error: ' . implode(' ', $output));
+                $this->warn('Error: '.implode(' ', $output));
             }
         }
     }
@@ -1419,7 +1419,7 @@ Examples:
         if (! $remotePath) {
             // Try to determine environment from context
             $env = $this->argument('environment') ?? 'staging';
-            $pathKey = 'SSH_PATH_' . strtoupper($env);
+            $pathKey = 'SSH_PATH_'.strtoupper($env);
             $remotePath = env($pathKey);
         }
 
@@ -1466,7 +1466,7 @@ Examples:
         $backupFile = "{$backupDir}/sync-state-backup-{$timestamp}.json";
 
         // Download backup copy
-        $scpKeyOption = env('SSH_KEY_PATH') && file_exists(env('SSH_KEY_PATH')) ? '-i ' . escapeshellarg(env('SSH_KEY_PATH')) . ' ' : '';
+        $scpKeyOption = env('SSH_KEY_PATH') && file_exists(env('SSH_KEY_PATH')) ? '-i '.escapeshellarg(env('SSH_KEY_PATH')).' ' : '';
         $downloadCmd = sprintf(
             'scp %s-P %d %s@%s:%s %s 2>&1',
             $scpKeyOption,
@@ -1503,7 +1503,7 @@ Examples:
         } else {
             $this->error('❌ Failed to delete FTP sync state file');
             if (! empty($deleteOutput)) {
-                $this->warn('Error: ' . implode(' ', $deleteOutput));
+                $this->warn('Error: '.implode(' ', $deleteOutput));
             }
         }
     }
@@ -1532,14 +1532,14 @@ Examples:
         $this->info('📋 FTP Sync State File:');
         $this->newLine();
         $this->line("  Path: {$syncStateFile}");
-        $this->line('  Size: ' . number_format($fileSize) . ' bytes');
+        $this->line('  Size: '.number_format($fileSize).' bytes');
         $this->line("  Last Updated: {$lastModifiedDate} ({$fileAge} ago)");
         $this->newLine();
 
         // Show content preview
         $content = json_decode(file_get_contents($syncStateFile), true);
         if (is_array($content)) {
-            $this->line('  Entries tracked: ' . count($content) . ' files/directories');
+            $this->line('  Entries tracked: '.count($content).' files/directories');
         }
     }
 
@@ -1549,24 +1549,24 @@ Examples:
     private function getReadableTime(int $seconds): string
     {
         if ($seconds < 60) {
-            return $seconds . ' second' . ($seconds !== 1 ? 's' : '');
+            return $seconds.' second'.($seconds !== 1 ? 's' : '');
         }
 
         if ($seconds < 3600) {
             $minutes = (int) ($seconds / 60);
 
-            return $minutes . ' minute' . ($minutes !== 1 ? 's' : '');
+            return $minutes.' minute'.($minutes !== 1 ? 's' : '');
         }
 
         if ($seconds < 86400) {
             $hours = (int) ($seconds / 3600);
 
-            return $hours . ' hour' . ($hours !== 1 ? 's' : '');
+            return $hours.' hour'.($hours !== 1 ? 's' : '');
         }
 
         $days = (int) ($seconds / 86400);
 
-        return $days . ' day' . ($days !== 1 ? 's' : '');
+        return $days.' day'.($days !== 1 ? 's' : '');
     }
 
     /**
@@ -1607,7 +1607,7 @@ Examples:
             $fileSize = filesize($localFile);
             $this->info('✅ Log file downloaded successfully!');
             $this->line("  Location: {$localFile}");
-            $this->line('  Size: ' . number_format($fileSize) . ' bytes');
+            $this->line('  Size: '.number_format($fileSize).' bytes');
             $this->newLine();
             $this->line('Preview (first 20 lines):');
             $this->line('<fg=cyan>───────────────────────────────────────</>');
@@ -1625,7 +1625,7 @@ Examples:
         } else {
             $this->error('❌ Failed to download log file via SCP');
             if (! empty($output)) {
-                $this->warn('Error: ' . implode(' ', $output));
+                $this->warn('Error: '.implode(' ', $output));
             }
             $this->newLine();
             $this->line('Make sure SCP is available on your system.');

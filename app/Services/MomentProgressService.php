@@ -199,6 +199,7 @@ class MomentProgressService
         while ($cursor->lte($today)) {
             if (! $moment->isScheduledFor($cursor)) {
                 $cursor->addDay();
+
                 continue; // Not due; skip
             }
 

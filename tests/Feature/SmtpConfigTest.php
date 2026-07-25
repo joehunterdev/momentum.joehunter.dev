@@ -3,6 +3,7 @@
 namespace Tests\Feature\Mail;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
@@ -65,7 +66,7 @@ class SmtpConfigTest extends TestCase
         ]);
 
         // Send real password reset email
-        $user->sendPasswordResetNotification('test-token-' . time());
+        $user->sendPasswordResetNotification('test-token-'.time());
 
         // Just verify no exception was thrown
         $this->assertTrue(true);
@@ -84,7 +85,7 @@ class SmtpConfigTest extends TestCase
 
         $user->sendEmailVerificationNotification();
 
-        Notification::assertSentTo($user, \Illuminate\Auth\Notifications\VerifyEmail::class);
+        Notification::assertSentTo($user, VerifyEmail::class);
     }
 
     /**

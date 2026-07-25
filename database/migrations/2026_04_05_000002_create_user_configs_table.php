@@ -18,6 +18,7 @@ return new class extends Migration
             $table->time('office_end')->default('17:00');
             $table->string('identity_statement', 500)->nullable();
             $table->enum('friction_level', ['auto', 'none', 'mid', 'low'])->default('auto');
+            $table->unsignedTinyInteger('grace_window_days')->default(7);
             $table->timestamps();
         });
     }

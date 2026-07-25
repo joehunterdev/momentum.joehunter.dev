@@ -12,7 +12,7 @@ class CalendarServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new CalendarService();
+        $this->service = new CalendarService;
     }
 
     public function test_builds_time_slots_for_normal_day(): void
