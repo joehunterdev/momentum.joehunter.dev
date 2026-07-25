@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Moment;
 use App\Models\MomentInstance;
+use App\Models\UserConfig;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,7 +27,8 @@ class MomentInstanceController extends Controller
 
         $toggleDate = Carbon::parse($data['date'])->startOfDay();
         $today = Carbon::today();
-        $graceWindow = 7;
+        $config = UserConfig::firstOrNew(['user_id' => $request->user()->id]);
+        $graceWindow = $config->grace_window_days ?? 7;
 
         // Validate date bounds
         if ($toggleDate->gt($today)) {

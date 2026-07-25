@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('moment_id')->unique()->constrained()->cascadeOnDelete();
             $table->enum('frequency', Frequency::values())->default(Frequency::Daily->value);
+            $table->date('start_date')->nullable();
             $table->json('days_of_week')->nullable();
             $table->time('preferred_time')->nullable();
             $table->date('scheduled_date')->nullable();

@@ -16,6 +16,7 @@ class UserConfig extends Model
         'office_end',
         'identity_statement',
         'friction_level',
+        'grace_window_days',
     ];
 
     protected $casts = [
